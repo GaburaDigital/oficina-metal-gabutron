@@ -1,0 +1,143 @@
+{
+  "projeto": "Oficina do Metal GabuTRON",
+  "versao": 2,
+  "atualizado": "2026-09-02",
+  "comoUsar": "Este arquivo e o indice do conteudo. Para adicionar material: 1) coloque o .json na pasta certa dentro de ATIVIDADES; 2) escreva uma linha aqui apontando para ele. O campo fase diz a partir de qual fase do projeto a missao pode ser jogada. O site le so este arquivo ao abrir e busca a missao inteira quando o aluno clica nela, por isso o menu carrega rapido mesmo com centenas de exercicios.",
+  "conteudos": {
+    "componentes": [
+      {
+        "id": "basico",
+        "titulo": "Componentes basicos",
+        "arquivo": "ATIVIDADES/COMPONENTES/basico.json",
+        "descricao": "Textos de curiosidade, uso e detalhes tecnicos que o GabuTRON fala."
+      }
+    ],
+    "curiosidades": [
+      {
+        "id": "falas-gerais",
+        "titulo": "Falas soltas do GabuTRON",
+        "arquivo": "ATIVIDADES/CURIOSIDADES/falas-gabutron.json",
+        "descricao": "Comentarios de bancada, dicas e piadas que ele solta entre uma tarefa e outra."
+      }
+    ],
+    "construcao": [
+      {
+        "id": "primeira-luz",
+        "titulo": "A primeira luz da nave",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/primeira-luz.json",
+        "tipo": "construcao",
+        "dificuldade": "novato",
+        "minutos": 10,
+        "pontos": 60,
+        "resumo": "Um LED, um resistor e a licao mais importante da eletronica.",
+        "componentes": [
+          "protoboard",
+          "gaburino",
+          "led",
+          "resistor"
+        ],
+        "fase": 2
+      },
+      {
+        "id": "farol-de-emergencia",
+        "titulo": "Farol de emergencia do corredor",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/farol-de-emergencia.json",
+        "tipo": "construcao",
+        "dificuldade": "facil",
+        "minutos": 12,
+        "pontos": 90,
+        "resumo": "Acionar o LED por um pino da placa, usando o painel Firmware.",
+        "componentes": [
+          "gaburino",
+          "led",
+          "resistor"
+        ],
+        "fase": 2
+      },
+      {
+        "id": "sirene-da-nave",
+        "titulo": "Sirene do deck de carga",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/sirene-da-nave.json",
+        "tipo": "construcao",
+        "dificuldade": "facil",
+        "minutos": 10,
+        "pontos": 80,
+        "resumo": "Buzzer acionado por pino. Cabe no limite de corrente, e isso e o ponto.",
+        "componentes": [
+          "gaburino",
+          "buzzer"
+        ],
+        "fase": 2
+      },
+      {
+        "id": "dimmer-do-painel",
+        "titulo": "Dimmer do painel da ponte",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/dimmer-do-painel.json",
+        "tipo": "construcao",
+        "dificuldade": "intermediario",
+        "minutos": 15,
+        "pontos": 130,
+        "resumo": "Brilho no meio do caminho, com PWM num pino marcado com til.",
+        "componentes": [
+          "gaburino",
+          "led",
+          "resistor"
+        ],
+        "fase": 2
+      },
+      {
+        "id": "braco-do-robo",
+        "titulo": "O bracinho que eu perdi",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/braco-do-robo.json",
+        "tipo": "construcao",
+        "dificuldade": "intermediario",
+        "minutos": 20,
+        "pontos": 170,
+        "resumo": "Servo com alimentacao externa, GND comum e sinal em PWM.",
+        "componentes": [
+          "gaburino",
+          "servo180",
+          "suporteaa"
+        ],
+        "fase": 2
+      },
+      {
+        "id": "seguidor-de-linha",
+        "titulo": "Carrinho seguidor de linha",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/seguidor-de-linha.json",
+        "tipo": "construcao",
+        "dificuldade": "intermediario",
+        "minutos": 20,
+        "pontos": 180,
+        "resumo": "Dois sensores IR, ponte H e alimentacao separada.",
+        "componentes": [
+          "gaburino",
+          "ponteh",
+          "irobstaculo",
+          "motordc",
+          "suporteaa"
+        ],
+        "fase": 3
+      }
+    ],
+    "manutencao": [
+      {
+        "id": "drone-motor-queimado",
+        "titulo": "O drone que so gira para um lado",
+        "arquivo": "ATIVIDADES/MANUTENCAO/drone-motor-queimado.json",
+        "dificuldade": "facil",
+        "minutos": 12,
+        "pontos": 90,
+        "resumo": "Um dos motores nao responde. Descobrir se e fio, motor ou alimentacao.",
+        "componentes": [
+          "bura32",
+          "motordc",
+          "ponteh",
+          "suporteaa"
+        ],
+        "fase": 3,
+        "tipo": "manutencao"
+      }
+    ]
+  }
+}

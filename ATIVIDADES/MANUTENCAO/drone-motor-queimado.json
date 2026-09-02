@@ -1,0 +1,38 @@
+{
+  "id": "drone-motor-queimado",
+  "titulo": "O drone que so gira para um lado",
+  "tipo": "manutencao",
+  "dificuldade": "facil",
+  "minutos": 12,
+  "pontos": 90,
+  "fase": 3,
+
+  "briefing": "Trouxeram o drone de inspecao do casco. Ele liga, tenta subir e roda no proprio eixo feito peiao. Um dos motores nao esta respondendo. Pode ser o motor, pode ser o fio, pode ser a saida da ponte H. Descubra antes de trocar peca boa por peca boa.",
+
+  "montagemInicial": "bura32-ponteh-dois-motores",
+
+  "defeito": {
+    "tipo": "fio-rompido",
+    "onde": "ponteh:out2 -> motordc-b:a",
+    "visivel": false,
+    "explicacao": "O fio parece inteiro por fora, mas esta partido dentro do isolamento. So o teste de continuidade acusa."
+  },
+
+  "passos": [
+    { "id": "medir-bateria", "texto": "Medir a tensao da bateria com o multimetro" },
+    { "id": "medir-saida", "texto": "Medir a tensao nos bornes OUT do motor parado" },
+    { "id": "continuidade", "texto": "Testar continuidade do fio suspeito" },
+    { "id": "trocar", "texto": "Substituir o fio defeituoso" },
+    { "id": "testar", "texto": "Energizar e confirmar os dois motores girando" }
+  ],
+
+  "dicas": [
+    "Antes de acusar o motor, pergunte se a energia esta chegando ate ele.",
+    "Multimetro no simbolo de onda sonora e o teste de continuidade: se apitar, o caminho existe.",
+    "Se chega tensao no borne mas nao chega no motor, o problema esta entre os dois. Ou seja: no fio."
+  ],
+
+  "sucesso": "Fio partido por dentro. O defeito mais covarde que existe. Voce achou sem trocar peca boa, e isso separa tecnico de trocador de peca.",
+
+  "componentesLiberados": ["bura32", "ponteh", "motordc", "suporteaa", "multimetro"]
+}

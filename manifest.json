@@ -1,0 +1,29 @@
+{
+  "name": "Oficina do Metal GabuTRON",
+  "short_name": "GabuTRON",
+  "description": "Bancada virtual para treinar eletronica e robotica com o engenheiro chefe Metal GabuTRON.",
+  "id": "/oficina-metal-gabutron/",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#05060A",
+  "theme_color": "#05060A",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {
+      "src": "assets/icone-pwa.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icone-pwa.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

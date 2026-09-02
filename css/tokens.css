@@ -1,0 +1,74 @@
+/* ============================================================
+   TOKENS — Oficina do Metal GabuTRON
+   Paleta unica do projeto. Nao escrever hex fora deste arquivo
+   (excecao: cores fisicas de componentes em js/desenhos.js,
+   que precisam ser fieis ao mundo real e nao invertem no modo claro).
+   ============================================================ */
+
+:root {
+  /* superficies */
+  --vacuo:      #05060A;   /* fundo, espaco profundo */
+  --casco:      #0E1014;   /* paineis e barras */
+  --casco-alto: #161A21;   /* cartoes, campos, hover */
+  --bancada:    #0A0C11;   /* area de trabalho */
+
+  /* traco e texto */
+  --luz:        #E8E8E4;   /* texto principal */
+  --grafite:    #8A8F98;   /* texto secundario, icones */
+  --poeira:     #565C66;   /* texto apagado, dicas */
+  --linha:      #262B33;   /* bordas hairline */
+  --linha-viva: #3A414D;   /* bordas em foco/hover */
+
+  /* sinalizacao */
+  --fosforo:    #5CE07A;   /* verde destaque, energia ok */
+  --fosforo-op: rgba(92, 224, 122, 0.14);
+  --gelo:       #7DD3FC;   /* detalhe frio, dados, i2c */
+  --ambar:      #E0A73C;   /* atencao, 3.3V */
+  --brasa:      #E24B4A;   /* erro, terra queimado, 5V+ */
+
+  /* tipografia */
+  --mono: "Cascadia Mono", "JetBrains Mono", "SF Mono", "Menlo",
+          "DejaVu Sans Mono", "Consolas", "Courier New", monospace;
+  --t-micro: 11px;
+  --t-min:   12px;
+  --t-base:  13px;
+  --t-med:   15px;
+  --t-alto:  19px;
+  --t-titulo:26px;
+
+  /* espaco e forma */
+  --e1: 4px;  --e2: 8px;  --e3: 12px; --e4: 18px; --e5: 28px;
+  --raio: 3px;
+  --borda: 1px solid var(--linha);
+  --barra-topo: 46px;
+  --barra-base: 34px;
+  --painel-l: 268px;
+  --painel-r: 320px;
+
+  /* movimento */
+  --rapido: 120ms;
+  --normal: 240ms;
+}
+
+/* Modo claro: alto contraste invertido, mantendo o verde de destaque
+   escurecido para continuar legivel sobre branco. */
+:root[data-modo="claro"] {
+  --vacuo:      #FFFFFF;
+  --casco:      #F4F4F1;
+  --casco-alto: #E7E7E2;
+  --bancada:    #FAFAF7;
+  --luz:        #101216;
+  --grafite:    #555B64;
+  --poeira:     #7C828C;
+  --linha:      #CFD2D6;
+  --linha-viva: #A8ADB4;
+  --fosforo:    #1E7A3C;
+  --fosforo-op: rgba(30, 122, 60, 0.12);
+  --gelo:       #1F6FA8;
+  --ambar:      #8A5B06;
+  --brasa:      #B02F2E;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --rapido: 0ms; --normal: 0ms; }
+}

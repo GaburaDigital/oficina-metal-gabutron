@@ -1,0 +1,227 @@
+/* ============================================================
+   LAYOUT — grade da aplicacao
+   Paisagem (computador):  [ pecas | bancada | gabutron ]
+   Retrato (celular):      abas na base
+   ============================================================ */
+
+#app {
+  display: grid;
+  height: 100dvh;
+  grid-template-columns: var(--painel-l) minmax(0, 1fr) var(--painel-r);
+  grid-template-rows: var(--barra-topo) minmax(0, 1fr) var(--barra-base);
+  grid-template-areas:
+    "topo  topo    topo"
+    "pecas obra    robo"
+    "base  base    base";
+}
+
+/* --- barra superior ------------------------------------------- */
+
+#barra-topo {
+  grid-area: topo;
+  display: flex; align-items: center; gap: var(--e3);
+  padding: 0 var(--e3);
+  background: var(--casco);
+  border-bottom: var(--borda);
+}
+
+.marca { display: flex; align-items: center; gap: var(--e2); }
+.marca svg { width: 26px; height: 26px; }
+.marca b { font-weight: 500; font-size: var(--t-med); letter-spacing: 0.03em; }
+.marca span { color: var(--poeira); font-size: var(--t-micro); }
+
+.painel-estado {
+  display: flex; align-items: center; gap: var(--e3);
+  margin-left: auto;
+  font-size: var(--t-min); color: var(--grafite);
+}
+.leitura { display: flex; align-items: baseline; gap: 5px; }
+.leitura b { color: var(--fosforo); font-weight: 500; }
+
+/* --- painel de pecas (esquerda) -------------------------------- */
+
+#painel-pecas {
+  grid-area: pecas;
+  display: flex; flex-direction: column;
+  background: var(--casco);
+  border-right: var(--borda);
+  min-height: 0;
+}
+
+.busca-pecas { padding: var(--e2); border-bottom: var(--borda); }
+.busca-pecas input { width: 100%; }
+
+.moveis { flex: 1; overflow-y: auto; padding: var(--e2); }
+
+.gaveta { border: var(--borda); border-radius: var(--raio); margin-bottom: 6px; }
+
+.gaveta-puxador {
+  display: flex; align-items: center; gap: var(--e2);
+  width: 100%; padding: 7px var(--e2);
+  background: var(--casco-alto);
+  border: 0; border-radius: var(--raio);
+  color: var(--luz); font: inherit; font-size: var(--t-min);
+  cursor: pointer; text-align: left;
+}
+.gaveta-puxador:hover { color: var(--fosforo); }
+.gaveta-puxador svg { width: 18px; height: 18px; flex: none; }
+.gaveta-puxador .conta { margin-left: auto; color: var(--poeira); font-size: var(--t-micro); }
+.gaveta[open] .gaveta-puxador { border-bottom: var(--borda); border-radius: var(--raio) var(--raio) 0 0; }
+
+.gaveta-conteudo {
+  display: grid; gap: 5px;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  padding: var(--e2);
+}
+
+.peca {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 6px 3px;
+  background: transparent;
+  border: var(--borda); border-radius: var(--raio);
+  color: var(--grafite); font: inherit; font-size: 10px;
+  text-align: center; cursor: grab;
+  transition: border-color var(--rapido), color var(--rapido);
+}
+.peca:hover { border-color: var(--fosforo); color: var(--luz); }
+.peca svg { width: 40px; height: 30px; }
+.peca span { line-height: 1.2; }
+
+/* --- area de trabalho (centro) --------------------------------- */
+
+#obra { grid-area: obra; position: relative; background: var(--bancada); min-height: 0; }
+
+#bancada { width: 100%; height: 100%; display: block; touch-action: none; cursor: default; }
+
+.ferramentas {
+  position: absolute; top: var(--e2); left: var(--e2);
+  display: flex; gap: 5px; flex-wrap: wrap;
+  max-width: calc(100% - var(--e3));
+  z-index: 5;
+}
+.ferramentas .btn { background: var(--casco); }
+
+.ferramentas-zoom { left: auto; right: var(--e2); }
+
+#lixeira {
+  position: absolute; right: var(--e3); bottom: var(--e3);
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: var(--e2);
+  background: var(--casco);
+  border: 1px dashed var(--linha-viva); border-radius: var(--raio);
+  color: var(--poeira); font-size: var(--t-micro);
+  z-index: 5;
+}
+#lixeira svg { width: 22px; height: 22px; }
+#lixeira.mirada { border-color: var(--brasa); color: var(--brasa); }
+
+.dica-canto {
+  position: absolute; left: var(--e2); bottom: var(--e2);
+  color: var(--poeira); font-size: var(--t-micro);
+  pointer-events: none; max-width: 60%;
+}
+
+/* --- painel do GabuTRON (direita) ------------------------------ */
+
+#painel-robo {
+  grid-area: robo;
+  display: flex; flex-direction: column;
+  background: var(--casco);
+  border-left: var(--borda);
+  min-height: 0;
+}
+
+#retrato { padding: var(--e3) var(--e3) 0; }
+#retrato svg { width: 100%; height: auto; max-height: 190px; display: block; }
+
+.fala {
+  flex: 1; min-height: 0;
+  display: flex; flex-direction: column;
+  margin: var(--e2) var(--e3);
+  border: var(--borda); border-radius: var(--raio);
+  background: var(--bancada);
+}
+.fala-topo {
+  display: flex; align-items: center; gap: var(--e2);
+  padding: 5px var(--e2); border-bottom: var(--borda);
+  color: var(--poeira); font-size: var(--t-micro);
+}
+.fala-topo .btn { margin-left: auto; }
+.fala-texto {
+  flex: 1; overflow-y: auto;
+  padding: var(--e2); font-size: var(--t-min); line-height: 1.6;
+}
+.fala-texto .cursor { color: var(--fosforo); }
+
+.abas-info { display: flex; gap: 4px; padding: 0 var(--e3) var(--e3); flex-wrap: wrap; }
+.abas-info .btn { flex: 1; justify-content: center; }
+
+/* --- rodape ---------------------------------------------------- */
+
+#barra-base {
+  grid-area: base;
+  display: flex; align-items: center; gap: var(--e3);
+  padding: 0 var(--e3);
+  background: var(--casco);
+  border-top: var(--borda);
+  font-size: var(--t-micro); color: var(--grafite);
+}
+#barra-base a { color: var(--grafite); }
+#barra-base a:hover { color: var(--fosforo); }
+#barra-base .repo { margin-left: auto; display: flex; align-items: center; gap: 5px; }
+#barra-base .repo svg { width: 14px; height: 14px; }
+
+/* --- abas de celular (escondidas no computador) ---------------- */
+
+#abas-mobile { display: none; }
+
+/* ============================================================
+   RESPONSIVO
+   ============================================================ */
+
+@media (max-width: 1180px) {
+  :root { --painel-l: 226px; --painel-r: 268px; }
+}
+
+@media (max-width: 900px) {
+  #app {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: var(--barra-topo) minmax(0, 1fr) 44px var(--barra-base);
+    grid-template-areas:
+      "topo"
+      "obra"
+      "abas"
+      "base";
+  }
+
+  #painel-pecas, #painel-robo {
+    position: fixed; inset: var(--barra-topo) 0 calc(var(--barra-base) + 44px);
+    z-index: 20; border: 0;
+  }
+  #painel-pecas[hidden], #painel-robo[hidden] { display: none; }
+
+  #obra { grid-area: obra; }
+
+  #abas-mobile {
+    grid-area: abas;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    background: var(--casco); border-top: var(--borda);
+  }
+  #abas-mobile button {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    background: transparent; border: 0; border-right: var(--borda);
+    color: var(--grafite); font: inherit; font-size: var(--t-min);
+    cursor: pointer;
+  }
+  #abas-mobile button:last-child { border-right: 0; }
+  #abas-mobile button[aria-selected="true"] { color: var(--fosforo); box-shadow: inset 0 2px 0 var(--fosforo); }
+
+  .painel-estado { gap: var(--e2); font-size: var(--t-micro); }
+  .marca span { display: none; }
+  #barra-base .creditos { display: none; }
+  #retrato svg { max-height: 150px; }
+}
+
+@media (max-width: 560px) {
+  .leitura.oculta-min { display: none; }
+}

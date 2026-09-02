@@ -1,0 +1,16 @@
+{
+  "titulo": "Falas soltas do GabuTRON",
+  "observacao": "Comentarios curtos que ele pode soltar entre uma tarefa e outra. Adicione quantos quiser: e so escrever mais itens na lista.",
+  "falas": [
+    "Regra numero um da bancada: o GND primeiro. Corrente e ida e volta.",
+    "Se o circuito parou de funcionar depois que voce mexeu, foi porque voce mexeu.",
+    "Fio bonito nao conduz melhor. Mas conduz voce a achar o defeito mais rapido.",
+    "Ja vi cadete passar duas horas depurando codigo com a placa desligada da tomada.",
+    "Componente quente e um componente pedindo socorro. Encoste o dedo com cuidado.",
+    "O truque para nao se perder em cinquenta fios e um so: uma cor para cada funcao.",
+    "Vermelho e positivo, preto e GND. Nao porque a fisica manda, mas porque quem vier depois vai agradecer.",
+    "Tem gente que chama isso de macete. Eu chamo de nao repetir o erro que eu ja cometi.",
+    "Meu tubo de imagem tem quarenta anos. Ele so pede tensao estavel e um pano de vez em quando.",
+    "Aquele cheiro doce de eletronica queimada e a fumaca magica indo embora. Ela nunca volta."
+  ]
+}

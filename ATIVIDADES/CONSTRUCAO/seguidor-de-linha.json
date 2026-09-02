@@ -1,0 +1,33 @@
+{
+  "id": "seguidor-de-linha",
+  "titulo": "Carrinho seguidor de linha",
+  "tipo": "construcao",
+  "dificuldade": "intermediario",
+  "minutos": 20,
+  "pontos": 180,
+  "fase": 2,
+
+  "briefing": "Assistente, a nave tem corredores marcados com fita no chao e ninguem quer empurrar carrinho de peca a mao. Monte um seguidor de linha: dois sensores infravermelhos olhando para baixo, dois motores com ponte H e alimentacao propria. E antes que voce pergunte: nao, o motor nao vai ligado no pino da placa. Nunca vai.",
+
+  "objetivos": [
+    { "id": "alimentacao", "texto": "Suporte de pilhas ligado ao borne de 12V e ao GND da ponte H" },
+    { "id": "gnd-comum", "texto": "GND da ponte H ligado ao GND da placa de controle" },
+    { "id": "motores", "texto": "Dois motores DC nos bornes OUT1/OUT2 e OUT3/OUT4" },
+    { "id": "sensores-alim", "texto": "Sensores IR alimentados com VCC e GND" },
+    { "id": "sensores-sinal", "texto": "Saidas dos sensores em pinos digitais da placa" },
+    { "id": "velocidade", "texto": "ENA e ENB ligados em pinos PWM" }
+  ],
+
+  "dicas": [
+    "Comece pela alimentacao. Circuito sem energia bem resolvida nao vale a pena depurar.",
+    "O GND comum e o erro mais comum aqui: a ponte H e a placa precisam concordar sobre onde fica o zero.",
+    "ENA e ENB precisam de PWM. Procure o til no numero do pino.",
+    "Se um motor gira ao contrario, nao refaca o circuito: inverta os dois fios dele."
+  ],
+
+  "erroComum": "Alimentar os motores pela porta USB da placa. A placa reinicia sozinha e o aluno acha que o codigo esta errado.",
+
+  "sucesso": "Ficou bom. Esse carrinho anda. E anda porque voce respeitou a corrente, nao porque teve sorte.",
+
+  "componentesLiberados": ["gaburino", "ponteh", "irobstaculo", "motordc", "suporteaa", "protoboard", "resistor"]
+}

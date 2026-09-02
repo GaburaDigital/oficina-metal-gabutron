@@ -1,0 +1,32 @@
+{
+  "id": "braco-do-robo",
+  "titulo": "O bracinho que eu perdi",
+  "tipo": "construcao",
+  "dificuldade": "intermediario",
+  "minutos": 20,
+  "pontos": 170,
+  "creditos": 120,
+
+  "briefing": "Perdi meu bracinho direito numa discussao com uma porta corta-fogo. Monte um servo para ser o substituto. Tres regras, e eu vou repetir ate voce sonhar com elas: o servo se alimenta pelo suporte de pilhas, NUNCA pelo pino da placa; o GND da bateria e o GND da placa tem que ser o mesmo ponto; e o fio de sinal vai num pino PWM. Um servo puxa mais de quinhentos miliamperes no pico. O pino da GaburINO entrega quarenta.",
+
+  "objetivos": [
+    { "id": "tem-servo", "texto": "Servo na bancada", "regra": { "tipo": "existe", "componente": "servo180" } },
+    { "id": "tem-fonte", "texto": "Suporte de pilhas como alimentacao externa", "regra": { "tipo": "existe", "componente": "suporteaa" } },
+    { "id": "alim-externa", "texto": "VCC do servo ligado ao positivo das pilhas", "regra": { "tipo": "mesmoNo", "a": { "componente": "servo180", "pino": "vcc" }, "b": { "componente": "suporteaa", "pino": "p" } } },
+    { "id": "gnd-comum", "texto": "GND das pilhas e GND da placa no mesmo ponto", "regra": { "tipo": "mesmoNo", "a": { "componente": "suporteaa", "pino": "n" }, "b": { "componente": "gaburino", "papel": "gnd" } } },
+    { "id": "sinal-pwm", "texto": "Fio de sinal do servo num pino PWM", "regra": { "tipo": "pinoEm", "componente": "servo180", "pino": "sig", "papelAlvo": "pwm" } },
+    { "id": "servo-vivo", "texto": "Servo energizado", "regra": { "tipo": "ligado", "componente": "servo180" } },
+    { "id": "sem-dano", "texto": "Nenhum limite estourado", "regra": { "tipo": "semCriticos" } }
+  ],
+
+  "dicas": [
+    "Comece pelas pilhas. O fio vermelho do servo vai no positivo delas, nao no cinco volts da placa.",
+    "GND comum e o passo que todo mundo pula. Sem ele, o sinal da placa nao tem referencia e o servo treme ou fica parado.",
+    "O fio laranja ou amarelo do servo e o sinal. Ele precisa de um pino com til.",
+    "Se voce alimentar o servo pela placa, eu aviso uma vez. Na segunda, o pino queima e vai para o museu."
+  ],
+
+  "erroComum": "Alimentar o servo pelo pino 5V da placa. Funciona por trinta segundos, depois a placa reinicia sozinha e ninguem entende por que.",
+  "sucesso": "Alimentacao separada, GND comum, sinal no PWM. Esses tres passos valem para servo, motor, tira de LED e tudo que puxa corrente. Guarde isso.",
+  "componentesLiberados": ["protoboard", "gaburino", "servo180", "suporteaa", "resistor"]
+}

@@ -1,0 +1,30 @@
+{
+  "id": "dimmer-do-painel",
+  "titulo": "Dimmer do painel da ponte",
+  "tipo": "construcao",
+  "dificuldade": "intermediario",
+  "minutos": 15,
+  "pontos": 130,
+  "creditos": 80,
+
+  "briefing": "O comandante reclamou que o painel esta claro demais durante o turno da noite. Nivel alto e nivel baixo nao resolvem: preciso de meio-termo. Monte o LED num pino PWM e ajuste o ciclo no Firmware ate o brilho ficar suave. PWM nao muda a tensao de verdade, ele pisca tao rapido que o olho acredita na media.",
+
+  "objetivos": [
+    { "id": "tem-placa", "texto": "GaburINO na bancada", "regra": { "tipo": "existe", "componente": "gaburino" } },
+    { "id": "tem-resistor", "texto": "Resistor em serie", "regra": { "tipo": "existe", "componente": "resistor" } },
+    { "id": "pino-pwm", "texto": "Pino configurado em PWM no Firmware", "regra": { "tipo": "firmware", "componente": "gaburino", "modo": "pwm", "n": 1 } },
+    { "id": "acende", "texto": "LED aceso com brilho parcial", "regra": { "tipo": "aceso", "componente": "led", "n": 1 } },
+    { "id": "sem-dano", "texto": "Nenhum limite estourado", "regra": { "tipo": "semCriticos" } }
+  ],
+
+  "dicas": [
+    "Nem todo pino faz PWM. Na GaburINO, procure os que tem til na frente do numero: 3, 5, 6, 9, 10 e 11.",
+    "No painel Firmware, escolha PWM e depois arraste a barra de ciclo. Zero e apagado, 255 e brilho total.",
+    "Repare no desenho do LED: quanto menor o ciclo, mais fraco o halo. O brilho na tela segue a corrente calculada.",
+    "Se voce colocar PWM num pino sem til, o circuito funciona na simulacao mas nao funcionaria na bancada real. Respeite o til."
+  ],
+
+  "erroComum": "Usar um pino digital comum achando que todo pino faz PWM.",
+  "sucesso": "Brilho controlado. O comandante vai dormir melhor e voce entendeu o que ciclo de trabalho significa.",
+  "componentesLiberados": ["protoboard", "gaburino", "led", "resistor"]
+}

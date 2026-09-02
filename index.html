@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-modo="escuro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Oficina do Metal GabuTRON — simulador de eletronica</title>
+<meta name="description" content="Aplicacao web para treinar eletronica e robotica montando circuitos numa bancada virtual, ao lado do engenheiro chefe Metal GabuTRON.">
+<meta name="theme-color" content="#05060A">
+<meta name="color-scheme" content="dark light">
+
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="assets/favicon-16.svg" sizes="16x16" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icone-pwa.svg">
+<link rel="manifest" href="manifest.json">
+
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/missao.css">
+<link rel="stylesheet" href="css/boot.css">
+</head>
+<body>
+
+<!-- ============ partida do sistema ============ -->
+<div id="boot">
+  <div class="estrelas"></div>
+  <div class="cabecalho">
+    <span class="selo"></span>
+    <div><b>OFICINA DO METAL GABUTRON</b><br><small>terminal de bancada — deck de engenharia</small></div>
+  </div>
+  <pre id="boot-linhas"></pre>
+  <div class="rodape-boot">
+    <span>toque em qualquer lugar para pular</span>
+    <span class="cursor-bloco"></span>
+  </div>
+</div>
+
+<!-- ============ aplicacao ============ -->
+<div id="app">
+
+  <header id="barra-topo">
+    <div class="marca">
+      <span id="marca-selo"></span>
+      <div><b>Oficina do Metal GabuTRON</b><br><span>bancada de eletronica — fase 1</span></div>
+    </div>
+
+    <div class="painel-estado">
+      <span class="leitura oculta-min">tempo <b id="relogio">15:00</b></span>
+      <span class="leitura oculta-min">pontos <b id="pontos">0</b></span>
+      <span class="leitura oculta-min" id="patente-caixa">patente <b id="patente">Cadete de solda</b></span>
+      <button class="btn btn-icone" id="b-museu" aria-label="Museu dos Desastres" title="Museu dos Desastres"></button>
+      <button class="btn btn-icone" id="b-instalar" hidden aria-label="Instalar aplicativo" title="Instalar no dispositivo"></button>
+      <button class="btn btn-icone" id="b-ajustes" aria-label="Ajustes" title="Ajustes"></button>
+    </div>
+  </header>
+
+  <aside id="painel-pecas" aria-label="Pecas da oficina">
+    <div id="missao-caixa" hidden></div>
+    <div class="busca-pecas">
+      <input type="text" id="busca" placeholder="procurar peca" aria-label="Procurar peca">
+    </div>
+    <div class="moveis" id="moveis"></div>
+  </aside>
+
+  <main id="obra">
+    <svg id="bancada" aria-label="Bancada de montagem"></svg>
+
+    <div class="ferramentas">
+      <button class="btn btn-verde" id="b-energia">Energizar bancada</button>
+      <button class="btn" id="b-raiox" title="Ver as tiras internas da protoboard">Raio-X</button>
+      <button class="btn" id="b-organizar" title="Arrumar o tracado dos fios">Organizar fios</button>
+      <button class="btn" id="b-missoes" title="Escolher missao">Missoes</button>
+      <button class="btn" id="b-firmware" title="Definir o estado dos pinos da placa">Firmware</button>
+      <button class="btn btn-icone" id="b-girar" aria-label="Girar peca" title="Girar (tecla R)"></button>
+      <button class="btn btn-icone" id="b-png" aria-label="Exportar imagem" title="Exportar PNG"></button>
+      <button class="btn btn-icone" id="b-json" aria-label="Salvar projeto" title="Salvar projeto em JSON"></button>
+      <button class="btn btn-icone" id="b-abrir" aria-label="Abrir projeto" title="Abrir projeto"></button>
+    </div>
+
+    <div class="ferramentas ferramentas-zoom">
+      <button class="btn btn-icone" id="b-mais" aria-label="Aproximar"></button>
+      <button class="btn btn-icone" id="b-menos" aria-label="Afastar"></button>
+      <button class="btn btn-icone" id="b-enquadrar" aria-label="Enquadrar tudo"></button>
+    </div>
+
+    <div id="lixeira" aria-label="Lixeira"></div>
+    <p class="dica-canto" id="dica">Arraste uma peca da gaveta. Clique num pino para saber o que ele e.</p>
+  </main>
+
+  <aside id="painel-robo" aria-label="Metal GabuTRON">
+    <div id="retrato"></div>
+    <div class="fala">
+      <div class="fala-topo">
+        <span>metal-gabutron@nave</span>
+        <button class="btn btn-icone" id="b-falar" aria-label="Falar em voz alta" title="Falar"></button>
+      </div>
+      <div class="fala-texto" id="fala" tabindex="0"></div>
+    </div>
+    <div class="abas-info">
+      <button class="btn" id="b-curio" disabled>Curiosidades</button>
+      <button class="btn" id="b-uso" disabled>Onde e usado</button>
+      <button class="btn" id="b-tec" disabled>Detalhes tecnicos</button>
+    </div>
+  </aside>
+
+  <nav id="abas-mobile" aria-label="Secoes">
+    <button data-aba="pecas" aria-selected="false">Pecas</button>
+    <button data-aba="bancada" aria-selected="true">Bancada</button>
+    <button data-aba="robo" aria-selected="false">GabuTRON</button>
+  </nav>
+
+  <footer id="barra-base">
+    <span class="creditos">criado por GABURA — estude, aprenda e compartilhe mais exercício em:
+      <a href="https://sites.google.com/view/links-gabura" target="_blank" rel="noopener">sites.google.com/view/links-gabura</a>
+    </span>
+    <a class="repo" href="https://github.com/GaburaDigital/oficina-metal-gabutron" target="_blank" rel="noopener">
+      <span id="icone-repo"></span>Acessar repositório — CÓDIGO ABERTO
+    </a>
+  </footer>
+
+</div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

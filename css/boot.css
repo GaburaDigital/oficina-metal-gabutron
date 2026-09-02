@@ -1,0 +1,60 @@
+/* ============================================================
+   BOOT — partida do sistema da nave
+   ============================================================ */
+
+#boot {
+  position: fixed; inset: 0; z-index: 90;
+  display: flex; flex-direction: column;
+  padding: clamp(16px, 5vw, 56px);
+  background: var(--vacuo);
+  color: var(--fosforo);
+  font-size: var(--t-base);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+#boot.saindo { opacity: 0; transition: opacity var(--normal) linear; }
+
+#boot .estrelas {
+  position: absolute; inset: 0;
+  pointer-events: none; opacity: 0.5;
+}
+
+#boot .cabecalho {
+  display: flex; align-items: center; gap: var(--e3);
+  padding-bottom: var(--e2);
+  border-bottom: 1px solid var(--fosforo);
+  color: var(--luz);
+}
+#boot .cabecalho svg { width: 34px; height: 34px; }
+#boot .cabecalho b { font-size: var(--t-alto); font-weight: 500; letter-spacing: 0.06em; }
+#boot .cabecalho small { color: var(--grafite); font-size: var(--t-micro); }
+
+#boot-linhas {
+  flex: 1; margin-top: var(--e3);
+  overflow: hidden;
+  white-space: pre-wrap;
+  line-height: 1.7;
+}
+#boot-linhas .ok { color: var(--fosforo); }
+#boot-linhas .aten { color: var(--ambar); }
+#boot-linhas .frio { color: var(--gelo); }
+#boot-linhas .apagado { color: var(--poeira); }
+
+#boot .rodape-boot {
+  display: flex; justify-content: space-between; gap: var(--e3);
+  color: var(--poeira); font-size: var(--t-micro);
+}
+
+.cursor-bloco {
+  display: inline-block;
+  width: 8px; height: 14px;
+  background: var(--fosforo);
+  vertical-align: -2px;
+  animation: pisca 1s steps(1) infinite;
+}
+@keyframes pisca { 50% { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-bloco { animation: none; }
+}

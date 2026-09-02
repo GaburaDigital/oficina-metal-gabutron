@@ -1,0 +1,127 @@
+/* ============================================================
+   MISSAO — painel do exercicio, firmware e museu (Fase 2)
+   ============================================================ */
+
+.janela-larga { width: min(760px, 100%); }
+
+/* --- painel da missao no alto do movel de pecas ---------------- */
+
+#missao-caixa {
+  border-bottom: var(--borda);
+  background: var(--bancada);
+  padding: var(--e2);
+}
+
+.missao-topo {
+  display: flex; align-items: center; gap: var(--e2);
+  margin-bottom: var(--e2);
+}
+.missao-topo b { flex: 1; font-size: var(--t-min); font-weight: 500; }
+
+.checklist { list-style: none; margin: 0; padding: 0; }
+.checklist li {
+  display: flex; gap: var(--e2);
+  padding: 4px 0;
+  font-size: var(--t-min); color: var(--grafite);
+  line-height: 1.4;
+}
+.checklist .marca {
+  flex: none; width: 20px;
+  color: var(--poeira); font-size: var(--t-micro);
+}
+.checklist li.feito { color: var(--fosforo); }
+.checklist li.feito .marca { color: var(--fosforo); }
+
+.missao-base {
+  display: flex; align-items: center; gap: var(--e2);
+  margin-top: var(--e2);
+}
+.orcamento { margin-left: auto; color: var(--grafite); font-size: var(--t-micro); }
+.orcamento.estourado { color: var(--brasa); }
+
+/* --- seletor de missoes --------------------------------------- */
+
+.grade-missoes {
+  display: grid; gap: var(--e2);
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.cartao-missao {
+  display: flex; flex-direction: column; gap: 6px;
+  padding: var(--e3);
+  background: var(--casco-alto);
+  border: var(--borda); border-radius: var(--raio);
+  color: var(--luz); font: inherit; text-align: left;
+  cursor: pointer;
+}
+.cartao-missao:hover { border-color: var(--fosforo); }
+.cartao-missao b { font-size: var(--t-base); font-weight: 500; }
+.cartao-missao small { color: var(--poeira); font-size: var(--t-micro); line-height: 1.5; }
+
+.etiquetas { display: flex; flex-wrap: wrap; gap: 4px; }
+.etq {
+  font-style: normal; font-size: 10px;
+  padding: 2px 6px; border-radius: 2px;
+  background: var(--vacuo); color: var(--grafite);
+  border: var(--borda);
+}
+.etq-novato { color: var(--fosforo); border-color: var(--fosforo); }
+.etq-facil { color: var(--gelo); border-color: var(--gelo); }
+.etq-intermediario { color: var(--ambar); border-color: var(--ambar); }
+.etq-hacker { color: var(--brasa); border-color: var(--brasa); }
+
+/* --- firmware de teste ---------------------------------------- */
+
+.grade-pinos { display: grid; gap: 2px; }
+
+.linha-pino {
+  display: grid;
+  grid-template-columns: 92px 1fr 110px 34px;
+  align-items: center; gap: var(--e2);
+  padding: 3px 0;
+  border-bottom: 1px solid var(--linha);
+}
+.linha-pino .nome-pino { color: var(--luz); font-size: var(--t-min); }
+.linha-pino .nome-pino b { color: var(--fosforo); }
+.linha-pino .nome-pino i { color: var(--gelo); font-style: normal; font-size: 10px; }
+.linha-pino .valor-duty { color: var(--grafite); font-size: var(--t-micro); text-align: right; }
+.linha-pino.morto .nome-pino { color: var(--poeira); text-decoration: line-through; }
+.etiqueta-morta { grid-column: 2 / -1; color: var(--brasa); font-size: var(--t-micro); }
+
+@media (max-width: 620px) {
+  .linha-pino { grid-template-columns: 80px 1fr; }
+  .linha-pino input[type="range"], .linha-pino .valor-duty { grid-column: 1 / -1; }
+}
+
+/* --- museu dos desastres -------------------------------------- */
+
+.museu-conta {
+  display: inline-flex; align-items: center; gap: 5px;
+  color: var(--brasa);
+}
+
+.lista-museu { list-style: none; margin: 0; padding: 0; }
+.lista-museu li {
+  padding: var(--e2) 0;
+  border-bottom: 1px solid var(--linha);
+  font-size: var(--t-min);
+}
+.lista-museu b { color: var(--brasa); font-weight: 500; }
+.lista-museu small { display: block; color: var(--poeira); font-size: var(--t-micro); margin-top: 2px; }
+
+/* --- alerta de dano ------------------------------------------- */
+
+.alarme {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  max-width: min(420px, 86%);
+  padding: var(--e3) var(--e4);
+  background: var(--casco);
+  border: 2px solid var(--brasa);
+  border-radius: var(--raio);
+  color: var(--luz); font-size: var(--t-min); line-height: 1.6;
+  text-align: center;
+}
+.alarme h3 { color: var(--brasa); margin-bottom: var(--e2); }
+.alarme .btn { margin-top: var(--e3); }

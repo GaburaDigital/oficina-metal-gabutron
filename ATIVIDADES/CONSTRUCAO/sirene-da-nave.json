@@ -1,0 +1,29 @@
+{
+  "id": "sirene-da-nave",
+  "titulo": "Sirene do deck de carga",
+  "tipo": "construcao",
+  "dificuldade": "facil",
+  "minutos": 10,
+  "pontos": 80,
+  "creditos": 60,
+
+  "briefing": "O deck de carga precisa avisar quando a comporta abre. Ligue um buzzer ativo acionado por um pino da GaburINO. Repare numa coisa: o buzzer puxa uns trinta miliamperes e cabe no pino. O servo da missao anterior puxava quinhentos e nao cabia. A diferenca entre os dois e a licao inteira desta bancada.",
+
+  "objetivos": [
+    { "id": "tem-buzzer", "texto": "Buzzer na bancada", "regra": { "tipo": "existe", "componente": "buzzer" } },
+    { "id": "pino-alto", "texto": "Pino da placa em nivel alto", "regra": { "tipo": "firmware", "componente": "gaburino", "modo": "alto", "n": 1 } },
+    { "id": "toca", "texto": "Buzzer energizado e apitando", "regra": { "tipo": "ligado", "componente": "buzzer" } },
+    { "id": "sem-dano", "texto": "Nenhum limite estourado", "regra": { "tipo": "semCriticos" } }
+  ],
+
+  "dicas": [
+    "O buzzer tem polaridade. O pino marcado com mais recebe o positivo; o outro vai no GND.",
+    "Ligue o positivo do buzzer num pino digital e configure esse pino em nivel alto no Firmware.",
+    "Se nada acontecer, confira o GND. E sempre o GND.",
+    "Quando ele apitar, o desenho mostra ondinhas saindo do buzzer."
+  ],
+
+  "erroComum": "Ligar o buzzer ao contrario e concluir que ele esta queimado.",
+  "sucesso": "Sirene funcionando. Trinta miliamperes, dentro do limite do pino, sem driver nenhum. Nem tudo precisa de ponte H.",
+  "componentesLiberados": ["protoboard", "gaburino", "buzzer", "resistor", "led"]
+}
