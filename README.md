@@ -33,21 +33,15 @@ A aplicação roda inteira no navegador. Não tem servidor, não tem banco de da
 
 ---
 
-## Publicar no GitHub Pages
+## Rodar na sua máquina
 
-1. Crie o repositório `oficina-metal-gabutron` na conta `GaburaDigital`.
-2. Envie todos os arquivos deste projeto para a raiz do repositório.
-3. Em **Settings → Pages**, escolha *Deploy from a branch*, branch `main`, pasta `/ (root)`.
-4. Aguarde um minuto e abra o endereço que o GitHub mostrar.
+A aplicação usa módulos JavaScript nativos, então abrir o `index.html` com dois cliques não funciona. Rode um servidor local:
 
-A licença MIT você adiciona pelo próprio GitHub, em **Add file → Create new file → LICENSE**.
+```bash
+python3 -m http.server 8000
+```
 
-> A aplicação usa módulos JavaScript nativos. Abrir o `index.html` com dois cliques (protocolo `file://`) não funciona — o navegador bloqueia. Para testar na sua máquina antes de publicar, rode um servidor local:
->
-> ```bash
-> python3 -m http.server 8000
-> ```
-> e abra `http://localhost:8000`.
+e abra `http://localhost:8000`.
 
 ---
 

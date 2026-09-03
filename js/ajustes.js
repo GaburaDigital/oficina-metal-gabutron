@@ -33,11 +33,17 @@ export function abrir(ganchos = {}) {
       ${chave("a-modo", ajustes.modo === "claro", "Modo claro", "Fundo branco com texto preto")}
       ${chave("a-grade", ajustes.gradeVisivel, "Grade da bancada")}
       ${chave("a-digitacao", ajustes.digitacao, "Texto digitado", "O GabuTRON escreve letra por letra")}
+      <div class="troca"><span><label for="a-bancada">Cor da bancada</label><small>Independente do modo claro</small></span>
+        <select id="a-bancada">
+          ${[["carvao", "carvao"], ["ardosia", "ardosia"], ["musgo", "verde claro"], ["papel", "papel"]]
+            .map(([v, r]) => `<option value="${v}" ${ajustes.corBancada === v ? "selected" : ""}>${r}</option>`).join("")}
+        </select></div>
     </div>
 
     <div class="grupo"><h3>Som e voz</h3>
       ${chave("a-som", ajustes.som, "Efeitos sonoros")}
-      ${chave("a-voz", ajustes.voz, "Voz do GabuTRON", "Fala sintetizada do navegador")}
+      ${chave("a-voz", ajustes.voz, "Voz do GabuTRON", "Libera a leitura em voz alta pelo botao Falar")}
+      ${chave("a-falaauto", ajustes.falaAutomatica, "Ler tudo em voz alta", "Sem isto, ele so fala quando voce pede")}
       ${vozes.length ? `<div class="troca"><label for="a-vozlista">Voz do sistema</label>
         <select id="a-vozlista">${vozes.map((v) => `<option value="${v.name}" ${ajustes.vozEscolhida === v.name ? "selected" : ""}>${v.name}</option>`).join("")}</select></div>
         <button class="btn" id="a-testarvoz">${ico("falar", 16)}Testar a voz</button>`
@@ -110,6 +116,8 @@ function ligar(ganchos) {
   troca("#a-digitacao", "digitacao");
   troca("#a-som", "som", (v) => { if (v) SOM.encaixe(); });
   troca("#a-voz", "voz");
+  troca("#a-falaauto", "falaAutomatica");
+  q("#a-bancada").addEventListener("change", (e) => definir("corBancada", e.target.value));
   troca("#a-auto", "autoSalvar");
   troca("#a-infinito", "tempoInfinito", (v) => { q("#a-min").disabled = v; if (ganchos.aoMudarTempo) ganchos.aoMudarTempo(); });
 

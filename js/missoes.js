@@ -27,6 +27,7 @@ import { somarPontos } from "./config.js";
 
 export const sessao = {
   missao: null,
+  pausada: false,
   feitos: new Set(),
   dicasUsadas: 0,
   queimadas: 0,
@@ -96,6 +97,30 @@ export function verificar(regra, comps, circ) {
         .reduce((soma, c) => soma + Object.values(c.firmware || {})
           .filter((f) => f.modo === regra.modo).length, 0) >= (regra.n || 1);
 
+    case "emSerie": {
+      // Duas pecas em serie de verdade: um terminal de cada uma no
+      // mesmo no, e o outro terminal de cada uma em nos diferentes.
+      const as = comps.filter((c) => c.tipo === regra.a && !c.queimado);
+      const bs = comps.filter((c) => c.tipo === regra.b && !c.queimado);
+      for (const ca of as) {
+        const da = PORID[ca.tipo];
+        for (const cb of bs) {
+          const db = PORID[cb.tipo];
+          for (const pa of da.pinos) {
+            for (const pb of db.pinos) {
+              const compartilham = circ.noDe(ca.id, pa.id) === circ.noDe(cb.id, pb.id);
+              if (!compartilham) continue;
+              const outroA = da.pinos.find((x) => x.id !== pa.id);
+              const outroB = db.pinos.find((x) => x.id !== pb.id);
+              if (!outroA || !outroB) continue;
+              if (circ.noDe(ca.id, outroA.id) !== circ.noDe(cb.id, outroB.id)) return true;
+            }
+          }
+        }
+      }
+      return false;
+    }
+
     case "semCriticos":
       return !circ.diagnosticos.some((d) => d.nivel === "critico");
 
@@ -142,6 +167,36 @@ export function gastoAtual(comps) {
   return comps.reduce((s, c) => s + ((PORID[c.tipo] || {}).custo || 0), 0);
 }
 
+/* ---------- treino por tempo ---------------------------------- */
+
+/* Em vez de escolher uma missao, o aluno define quanto tempo tem e que
+   tipo de exercicio quer. O GabuTRON sorteia e vai emendando uma na
+   outra ate o tempo acabar. E o formato que funciona em aula. */
+export const treino = { ativo: false, fila: [], feitas: 0, filtros: null };
+
+export function montarTreino(filtros) {
+  const todas = [...(catalogo.construcao || []), ...(catalogo.manutencao || [])]
+    .filter((m) => (m.fase || 2) <= 2)
+    .filter((m) => (filtros.tipos.length ? filtros.tipos.includes(m.tipo) : true))
+    .filter((m) => (filtros.dificuldades.length ? filtros.dificuldades.includes(m.dificuldade) : true));
+  const embaralhada = todas.map((m) => [Math.random(), m]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
+  treino.ativo = embaralhada.length > 0;
+  treino.fila = embaralhada;
+  treino.feitas = 0;
+  treino.filtros = filtros;
+  return embaralhada.length;
+}
+
+export function proximaDoTreino() {
+  if (!treino.ativo || !treino.fila.length) return null;
+  return treino.fila.shift();
+}
+
+export function encerrarTreino() {
+  treino.ativo = false;
+  treino.fila = [];
+}
+
 /* ---------- interface: seletor de missao ---------------------- */
 
 let veu = null;
@@ -167,7 +222,25 @@ export function abrirSeletor(aoEscolher) {
         ${futuras.map((m) => `<li>${m.titulo} — precisa do multimetro e da solda</li>`).join("")}
       </ul></div>` : ""}
   </div>
-  <div class="janela-base">
+  <div class="janela-base" style="flex-direction:column;align-items:stretch;gap:10px">
+    <div class="grupo" style="margin:0">
+      <h3>${ico("relogio", 14)} Treinar por tempo</h3>
+      <p style="color:var(--poeira);font-size:11px;margin:0 0 8px">O GabuTRON sorteia missoes e vai emendando uma na outra ate o tempo acabar.</p>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+        <label style="font-size:12px">minutos
+          <select id="tr-min">${[10, 15, 20, 30, 40, 50].map((n) => `<option ${n === 20 ? "selected" : ""}>${n}</option>`).join("")}</select>
+        </label>
+        <span style="font-size:12px">tipo:
+          ${[["construcao", "construcao"], ["manutencao", "manutencao"]].map(([v, r]) =>
+            `<label style="margin-left:6px"><input type="checkbox" class="tr-tipo" value="${v}" checked> ${r}</label>`).join("")}
+        </span>
+      </div>
+      <div style="margin-top:6px;font-size:12px">nivel:
+        ${["novato", "facil", "intermediario", "hacker"].map((d) =>
+          `<label style="margin-left:6px"><input type="checkbox" class="tr-dif" value="${d}" checked> ${d}</label>`).join("")}
+      </div>
+      <button class="btn btn-verde" id="tr-comecar" style="margin-top:10px">${ico("tocar", 16)}Comecar treino sorteado</button>
+    </div>
     <button class="btn" id="mis-livre">${ico("bancada", 16)}Voltar para montagem livre</button>
   </div>
 </div>`;
@@ -177,6 +250,22 @@ export function abrirSeletor(aoEscolher) {
   veu.addEventListener("click", (e) => { if (e.target === veu) fechar(); });
   veu.querySelector("#x-mis").addEventListener("click", fechar);
   veu.querySelector("#mis-livre").addEventListener("click", () => { fechar(); aoEscolher(null); });
+
+  veu.querySelector("#tr-comecar").addEventListener("click", async () => {
+    const filtros = {
+      minutos: Number(veu.querySelector("#tr-min").value),
+      tipos: [...veu.querySelectorAll(".tr-tipo:checked")].map((x) => x.value),
+      dificuldades: [...veu.querySelectorAll(".tr-dif:checked")].map((x) => x.value),
+    };
+    const quantas = montarTreino(filtros);
+    fechar();
+    if (!quantas) { aoEscolher(null, "Nenhuma missao combina com esses filtros."); return; }
+    const entrada = proximaDoTreino();
+    try {
+      const dados = await carregarMissao(entrada);
+      aoEscolher({ ...entrada, ...dados }, null, filtros);
+    } catch (e) { aoEscolher(null, "Nao consegui abrir a primeira missao do treino."); }
+  });
 
   veu.querySelectorAll("[data-missao]").forEach((b) => {
     b.addEventListener("click", async () => {
@@ -214,7 +303,14 @@ export function iniciarMissao(missao) {
   sessao.dicasUsadas = 0;
   sessao.queimadas = 0;
   sessao.concluida = false;
+  sessao.pausada = false;
   sessao.inicio = Date.now();
+}
+
+export function alternarPausa() {
+  sessao.pausada = !sessao.pausada;
+  document.body.classList.toggle("pausado", sessao.pausada);
+  return sessao.pausada;
 }
 
 export function encerrarMissao() {
@@ -232,7 +328,11 @@ export function pintarPainel(alvo, comps) {
   alvo.innerHTML = `
 <div class="missao-topo">
   <b>${m.titulo}</b>
-  <button class="btn btn-icone" id="mis-sair" aria-label="Encerrar missao" title="Encerrar missao">${ico("fechar", 14)}</button>
+  <span class="missao-controles">
+    <button class="btn btn-icone" id="mis-pausa" aria-label="${sessao.pausada ? "Retomar" : "Pausar"}" title="${sessao.pausada ? "Retomar missao" : "Pausar missao"}">${ico(sessao.pausada ? "tocar" : "pausar", 14)}</button>
+    <button class="btn btn-icone" id="mis-reiniciar" aria-label="Reiniciar missao" title="Reiniciar do zero">${ico("reiniciar", 14)}</button>
+    <button class="btn btn-icone" id="mis-sair" aria-label="Encerrar missao" title="Encerrar missao">${ico("fechar", 14)}</button>
+  </span>
 </div>
 <ul class="checklist">
   ${(m.objetivos || []).map((o) => `<li class="${sessao.feitos.has(o.id) ? "feito" : ""}">

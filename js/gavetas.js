@@ -40,26 +40,42 @@ function render(filtro = "") {
   ligarEventos();
 }
 
+/* Forma diz funcao: quadrado e macho, circulo e femea, retangulo e jacare. */
+function marcaPonta(tipo, x, y, cor) {
+  if (tipo === "femea") return `<circle cx="${x}" cy="${y}" r="4" fill="${cor}" stroke="#05060A"/>`;
+  if (tipo === "jacare") return `<rect x="${x - 5}" y="${y - 3}" width="10" height="6" rx="1" fill="${cor}" stroke="#05060A"/>`;
+  return `<rect x="${x - 4}" y="${y - 4}" width="8" height="8" rx="1" fill="${cor}" stroke="#05060A"/>`;
+}
+
 function sacolaJumpers() {
   return `<details class="gaveta" open>
     <summary class="gaveta-puxador">${ico("jumper", 18)}<span>Sacola de jumpers</span><span class="conta">${JUMPERS.length}</span></summary>
     <div style="padding:8px">
       <div style="display:grid;gap:4px">
         ${JUMPERS.map((j) => `<button class="btn ${fioAtivo === j.id ? "ativo" : ""}" data-fio="${j.id}" style="justify-content:flex-start">
-          <svg viewBox="0 0 40 14" width="34" height="12" aria-hidden="true"><path d="M4 10q16 -14 32 0" fill="none" stroke="${j.cor}" stroke-width="3"/></svg>${j.nome}</button>`).join("")}
+          <svg viewBox="0 0 48 16" width="42" height="14" aria-hidden="true">
+            ${marcaPonta(j.pontas[0], 6, 11, j.cor)}
+            <path d="M8 11q16 -14 32 0" fill="none" stroke="${j.cor}" stroke-width="3"/>
+            ${marcaPonta(j.pontas[1], 42, 11, j.cor)}
+          </svg>${j.nome}</button>`).join("")}
       </div>
       <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:8px">
         ${CORES_FIO.map((c) => `<button class="cor-fio" data-cor="${c}" aria-label="cor do fio"
           style="width:20px;height:20px;border-radius:2px;cursor:pointer;background:${c};border:2px solid ${c === corAtiva ? "var(--fosforo)" : "var(--linha)"}"></button>`).join("")}
       </div>
-      <p style="color:var(--poeira);font-size:11px;margin:8px 0 0">Escolha o jumper, clique no primeiro contato e depois no segundo. Esc cancela.</p>
+      <p style="color:var(--poeira);font-size:11px;margin:8px 0 0">Escolha o jumper, clique no primeiro contato e depois no segundo. <b>Tab</b> ou botao direito inverte a ponta da vez. <b>Esc</b> cancela.</p>
     </div>
   </details>`;
 }
 
 function ligarEventos() {
+  // A paleta funciona como paleta de verdade: voce segura a peca e
+  // arrasta ate a bancada. Clicar tambem funciona, para quem prefere.
   alvo.querySelectorAll("[data-peca]").forEach((b) => {
-    b.addEventListener("click", () => { SOM.pegar(); aoEscolherPeca(b.dataset.peca); });
+    b.addEventListener("pointerdown", (ev) => {
+      ev.preventDefault();
+      aoEscolherPeca(b.dataset.peca, ev);
+    });
   });
   alvo.querySelectorAll("[data-fio]").forEach((b) => {
     b.addEventListener("click", () => {

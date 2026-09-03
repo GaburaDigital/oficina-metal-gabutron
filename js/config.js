@@ -17,6 +17,8 @@ export const PADRAO = {
   tempoInfinito: false,
   dificuldade: "novato",
   autoSalvar: true,
+  falaAutomatica: false,  // a voz so sai no botao Falar, por padrao
+  corBancada: "carvao",
   vozEscolhida: "",     // nome da voz do sistema
 };
 
@@ -44,12 +46,13 @@ export function salvarAjustes() {
 
 export function definir(chave, valor) {
   ajustes[chave] = valor;
-  if (chave === "modo") aplicarModo();
+  if (chave === "modo" || chave === "corBancada") aplicarModo();
   salvarAjustes();
 }
 
 export function aplicarModo() {
   document.documentElement.dataset.modo = ajustes.modo;
+  document.documentElement.dataset.bancada = ajustes.corBancada || "carvao";
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.content = ajustes.modo === "claro" ? "#FFFFFF" : "#05060A";
 }

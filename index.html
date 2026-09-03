@@ -24,10 +24,6 @@
 <!-- ============ partida do sistema ============ -->
 <div id="boot">
   <div class="estrelas"></div>
-  <div class="cabecalho">
-    <span class="selo"></span>
-    <div><b>OFICINA DO METAL GABUTRON</b><br><small>terminal de bancada — deck de engenharia</small></div>
-  </div>
   <pre id="boot-linhas"></pre>
   <div class="rodape-boot">
     <span>toque em qualquer lugar para pular</span>
@@ -44,6 +40,11 @@
       <div><b>Oficina do Metal GabuTRON</b><br><span>bancada de eletronica — fase 1</span></div>
     </div>
 
+    <div class="modos" role="group" aria-label="Modo de uso">
+      <button class="btn" id="m-livre" aria-pressed="true">Montagem livre</button>
+      <button class="btn" id="m-missoes" aria-pressed="false">Missoes</button>
+    </div>
+
     <div class="painel-estado">
       <span class="leitura oculta-min">tempo <b id="relogio">15:00</b></span>
       <span class="leitura oculta-min">pontos <b id="pontos">0</b></span>
@@ -55,7 +56,6 @@
   </header>
 
   <aside id="painel-pecas" aria-label="Pecas da oficina">
-    <div id="missao-caixa" hidden></div>
     <div class="busca-pecas">
       <input type="text" id="busca" placeholder="procurar peca" aria-label="Procurar peca">
     </div>
@@ -69,8 +69,8 @@
       <button class="btn btn-verde" id="b-energia">Energizar bancada</button>
       <button class="btn" id="b-raiox" title="Ver as tiras internas da protoboard">Raio-X</button>
       <button class="btn" id="b-organizar" title="Arrumar o tracado dos fios">Organizar fios</button>
-      <button class="btn" id="b-missoes" title="Escolher missao">Missoes</button>
       <button class="btn" id="b-firmware" title="Definir o estado dos pinos da placa">Firmware</button>
+      <button class="btn btn-perigo" id="b-limpar" title="Esvaziar a bancada">Limpar mesa</button>
       <button class="btn btn-icone" id="b-girar" aria-label="Girar peca" title="Girar (tecla R)"></button>
       <button class="btn btn-icone" id="b-png" aria-label="Exportar imagem" title="Exportar PNG"></button>
       <button class="btn btn-icone" id="b-json" aria-label="Salvar projeto" title="Salvar projeto em JSON"></button>
@@ -84,6 +84,7 @@
     </div>
 
     <div id="lixeira" aria-label="Lixeira"></div>
+    <div id="props" hidden></div>
     <p class="dica-canto" id="dica">Arraste uma peca da gaveta. Clique num pino para saber o que ele e.</p>
   </main>
 
@@ -92,10 +93,11 @@
     <div class="fala">
       <div class="fala-topo">
         <span>metal-gabutron@nave</span>
-        <button class="btn btn-icone" id="b-falar" aria-label="Falar em voz alta" title="Falar"></button>
+        <button class="btn" id="b-falar" aria-label="Ler em voz alta" title="Ler em voz alta"><span class="ico"></span>Falar</button>
       </div>
       <div class="fala-texto" id="fala" tabindex="0"></div>
     </div>
+    <div id="missao-caixa" hidden></div>
     <div class="abas-info">
       <button class="btn" id="b-curio" disabled>Curiosidades</button>
       <button class="btn" id="b-uso" disabled>Onde e usado</button>

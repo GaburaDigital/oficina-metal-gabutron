@@ -6,25 +6,62 @@
   "minutos": 10,
   "pontos": 60,
   "creditos": 60,
-
   "briefing": "Assistente, antes de mexer em drone ou braco robotico voce vai acender um LED. Parece pouco? E o circuito mais importante da sua vida, porque nele mora tudo: uma fonte, um caminho de ida, uma carga e um caminho de volta. Use a protoboard, pegue o cinco volts da GaburINO, coloque um resistor de 220 ohms em serie e feche o circuito no GND. Se voce ligar o LED direto no cinco volts, ele acende. Uma vez.",
-
   "objetivos": [
-    { "id": "tem-proto", "texto": "Protoboard na bancada", "regra": { "tipo": "existe", "componente": "protoboard" } },
-    { "id": "tem-led", "texto": "LED montado na protoboard", "regra": { "tipo": "existe", "componente": "led" } },
-    { "id": "tem-resistor", "texto": "Resistor em serie com o LED", "regra": { "tipo": "existe", "componente": "resistor" } },
-    { "id": "acende", "texto": "LED aceso", "regra": { "tipo": "aceso", "componente": "led", "n": 1 } },
-    { "id": "sem-dano", "texto": "Nenhum limite estourado", "regra": { "tipo": "semCriticos" } }
+    {
+      "id": "tem-proto",
+      "texto": "Protoboard na bancada",
+      "regra": {
+        "tipo": "existe",
+        "componente": "protoboard"
+      }
+    },
+    {
+      "id": "tem-led",
+      "texto": "LED montado na protoboard",
+      "regra": {
+        "tipo": "existe",
+        "componente": "led"
+      }
+    },
+    {
+      "id": "tem-resistor",
+      "texto": "Resistor realmente em serie com o LED",
+      "regra": {
+        "tipo": "emSerie",
+        "a": "resistor",
+        "b": "led"
+      }
+    },
+    {
+      "id": "acende",
+      "texto": "LED aceso",
+      "regra": {
+        "tipo": "aceso",
+        "componente": "led",
+        "n": 1
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
   ],
-
   "dicas": [
     "Comece pela protoboard. Depois arraste a GaburINO e ligue o pino 5V num trilho vermelho e o GND num trilho azul.",
     "Lembre da regra da protoboard: cinco furos de uma fileira sao o mesmo ponto. Se o resistor e o LED estiverem na MESMA fileira, eles estao em curto, nao em serie.",
     "A perna A do LED e o anodo, o lado que recebe o positivo. A perna K vai para o GND.",
     "Resistor de 220 ohms com cinco volts da uns 14 miliamperes. E exatamente o que o LED gosta."
   ],
-
   "erroComum": "Colocar resistor e LED na mesma fileira de cinco furos. Eletricamente eles viram o mesmo ponto, o resistor deixa de existir e o LED recebe os cinco volts inteiros.",
   "sucesso": "Acendeu. E acendeu do jeito certo, com resistor. Voce acabou de fazer o que todo engenheiro faz na primeira aula.",
-  "componentesLiberados": ["protoboard", "gaburino", "led", "resistor"]
+  "componentesLiberados": [
+    "protoboard",
+    "gaburino",
+    "led",
+    "resistor"
+  ]
 }

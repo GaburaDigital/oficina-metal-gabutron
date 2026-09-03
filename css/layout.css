@@ -70,7 +70,7 @@
 
 .gaveta-conteudo {
   display: grid; gap: 5px;
-  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(86px, 1fr));
   padding: var(--e2);
 }
 
@@ -80,16 +80,70 @@
   background: transparent;
   border: var(--borda); border-radius: var(--raio);
   color: var(--grafite); font: inherit; font-size: 10px;
-  text-align: center; cursor: grab;
+  text-align: center; cursor: grab; touch-action: none;
   transition: border-color var(--rapido), color var(--rapido);
 }
 .peca:hover { border-color: var(--fosforo); color: var(--luz); }
-.peca svg { width: 40px; height: 30px; }
+.peca svg { width: 52px; height: 40px; pointer-events: none; }
 .peca span { line-height: 1.2; }
 
 /* --- area de trabalho (centro) --------------------------------- */
 
 #obra { grid-area: obra; position: relative; background: var(--bancada); min-height: 0; }
+
+/* Paineis laterais bem separados da bancada: eles sao "movel" e
+   "colega de bancada", nao continuacao da mesa. */
+#painel-pecas { border-right: 3px solid var(--linha-viva); box-shadow: 4px 0 14px rgba(0,0,0,.28); }
+#painel-robo  { border-left: 3px solid var(--linha-viva); box-shadow: -4px 0 14px rgba(0,0,0,.28); }
+
+/* dica de pino */
+#dica-pino {
+  position: absolute; z-index: 8; pointer-events: none;
+  max-width: 260px; padding: 7px 10px;
+  background: var(--casco); border: 1px solid var(--fosforo);
+  border-radius: var(--raio); font-size: var(--t-min); line-height: 1.45;
+}
+#dica-pino b { display: block; color: var(--fosforo); }
+#dica-pino span { display: block; color: var(--luz); }
+#dica-pino em { display: block; color: var(--poeira); font-style: normal; font-size: var(--t-micro); margin-top: 3px; }
+
+/* etiqueta que segue o cursor quando ha um jumper na mao */
+#ponta-cursor {
+  position: absolute; z-index: 8; pointer-events: none;
+  padding: 4px 8px; background: var(--casco);
+  border: 1px solid var(--linha-viva); border-radius: var(--raio);
+  font-size: var(--t-micro); color: var(--luz);
+}
+#ponta-cursor em { color: var(--poeira); font-style: normal; }
+
+/* fios: acender ao passar o mouse, destacar quando selecionado */
+.fio .alma { transition: stroke-width var(--rapido); }
+.fio:hover { cursor: pointer; }
+.fio:hover .alma { stroke-width: 8; }
+.fio:hover .sombra { stroke: #FFFFFF; opacity: .5; }
+.fio.sel .alma { stroke-width: 8; }
+.fio.sel .sombra { stroke: var(--fosforo); opacity: 1; stroke-width: 12; }
+
+.comp .alvo { cursor: pointer; }
+.comp .alvo:hover { fill: rgba(92,224,122,.35); }
+
+/* modos de uso no topo */
+.modos { display: flex; gap: 4px; margin-left: var(--e4); }
+.modos .btn { border-color: var(--linha-viva); }
+.modos .btn[aria-pressed="true"] {
+  background: var(--fosforo-op); border-color: var(--fosforo); color: var(--fosforo);
+}
+
+/* propriedades da peca selecionada */
+#props {
+  position: absolute; left: var(--e2); bottom: 42px; z-index: 6;
+  display: flex; align-items: center; gap: var(--e2); flex-wrap: wrap;
+  max-width: calc(100% - 24px);
+  padding: 6px var(--e2);
+  background: var(--casco); border: var(--borda); border-radius: var(--raio);
+  font-size: var(--t-micro); color: var(--grafite);
+}
+#props b { color: var(--luz); font-weight: 500; }
 
 #bancada { width: 100%; height: 100%; display: block; touch-action: none; cursor: default; }
 

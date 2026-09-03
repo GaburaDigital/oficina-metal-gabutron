@@ -10,7 +10,6 @@
   --vacuo:      #05060A;   /* fundo, espaco profundo */
   --casco:      #0E1014;   /* paineis e barras */
   --casco-alto: #161A21;   /* cartoes, campos, hover */
-  --bancada:    #0A0C11;   /* area de trabalho */
 
   /* traco e texto */
   --luz:        #E8E8E4;   /* texto principal */
@@ -45,6 +44,10 @@
   --painel-l: 268px;
   --painel-r: 320px;
 
+  /* cor da bancada — independente do modo claro/escuro */
+  --bancada: #0A0C11;
+  --grade-cor: #262B33;
+
   /* movimento */
   --rapido: 120ms;
   --normal: 240ms;
@@ -56,7 +59,6 @@
   --vacuo:      #FFFFFF;
   --casco:      #F4F4F1;
   --casco-alto: #E7E7E2;
-  --bancada:    #FAFAF7;
   --luz:        #101216;
   --grafite:    #555B64;
   --poeira:     #7C828C;
@@ -72,3 +74,11 @@
 @media (prefers-reduced-motion: reduce) {
   :root { --rapido: 0ms; --normal: 0ms; }
 }
+
+/* Cores de bancada escolhidas nos ajustes. Ficam fora do modo claro
+   de proposito: o professor pediu para poder trabalhar com fundo
+   verde-claro mesmo no tema escuro, e vice-versa. */
+:root[data-bancada="carvao"]  { --bancada: #0A0C11; --grade-cor: #262B33; }
+:root[data-bancada="musgo"]   { --bancada: #DCE5DC; --grade-cor: #A9BCA9; }
+:root[data-bancada="papel"]   { --bancada: #F2F1EA; --grade-cor: #CFCDC2; }
+:root[data-bancada="ardosia"] { --bancada: #232830; --grade-cor: #3A414D; }

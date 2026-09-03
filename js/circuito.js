@@ -94,7 +94,11 @@ export function calcular(comps, fios, energizado = true) {
   const tensao = new Map();
   const terra = new Set();
   const fontesDoNo = new Map();
-  const ativa = (c, d) => !c.queimado && (d.fonte === true || d.alimentada === true);
+  // Uma placa so vira fonte se estiver realmente alimentada: pelo USB
+  // (o aluno escolhe isso clicando nela) ou pelo VIN, com tensao
+  // suficiente vinda de fora. E assim na bancada real.
+  const porUsb = (c, d) => d.alimentada === true && d.usb && c.usbLigado !== false;
+  const ativa = (c, d) => !c.queimado && (d.fonte === true || porUsb(c, d) || c.__vinOk === true);
 
   const registrarFonte = (r, comp, def, pino, v, limite, duty = 1) => {
     tensao.set(r, Math.max(tensao.get(r) ?? 0, v));
@@ -104,6 +108,7 @@ export function calcular(comps, fios, energizado = true) {
 
   // Bancada desenergizada nao tem fonte nenhuma: nada acende, nada
   // queima, e o aluno pode montar em paz antes de ligar a chave.
+  const registrarPlacaEFontes = () => {
   for (const c of energizado ? comps : []) {
     const d = PORID[c.tipo];
     if (!d || !ativa(c, d)) continue;
@@ -126,6 +131,23 @@ export function calcular(comps, fios, energizado = true) {
         registrarFonte(r, c, d, p, d.tensaoLogica, d.limitePino ?? 40, duty);
       }
     }
+  }
+  };
+
+  comps.forEach((c) => { delete c.__vinOk; });
+  registrarPlacaEFontes();
+  if (energizado) {
+    let mudou = false;
+    for (const c of comps) {
+      const d = PORID[c.tipo];
+      if (!d || !d.alimentada || porUsb(c, d) || c.__vinOk) continue;
+      const vin = d.pinos.find((p) => p.n === "VIN");
+      const cinco = d.pinos.find((p) => p.n === "5V" && p.v);
+      const vVin = vin ? tensao.get(no(c.id, vin.id)) ?? 0 : 0;
+      const vCinco = cinco ? tensao.get(no(c.id, cinco.id)) ?? 0 : 0;
+      if (vVin >= (d.vinMin ?? 5) || vCinco >= 4.5) { c.__vinOk = true; mudou = true; }
+    }
+    if (mudou) { tensao.clear(); terra.clear(); fontesDoNo.clear(); registrarPlacaEFontes(); }
   }
 
   /* ---- 3. corrente ---- */

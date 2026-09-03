@@ -5,7 +5,6 @@
    destrava um recado escondido.
    ============================================================ */
 
-import { selo } from "./icones.js";
 import { SOM } from "./som.js";
 import { ajustes } from "./config.js";
 
@@ -29,7 +28,6 @@ const LINHAS = [
 export function tocar(aoTerminar) {
   const caixa = document.getElementById("boot");
   const linhas = document.getElementById("boot-linhas");
-  caixa.querySelector(".selo").innerHTML = selo(34);
   estrelas(caixa.querySelector(".estrelas"));
 
   let i = 0, pulado = false, teclado = "";

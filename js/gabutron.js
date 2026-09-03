@@ -70,9 +70,14 @@ export function dizer(texto, opcoes = {}) {
   clearInterval(digitando);
   if (!alvoTexto) return;
 
+  // A voz NAO dispara sozinha. Ela e sempre um gesto do usuario, pelo
+  // botao Falar — a nao ser que ele ligue a leitura automatica nos
+  // ajustes. Robo tagarela cansa e atrapalha a sala.
+  const podeFalar = opcoes.falar === true || (ajustes.falaAutomatica && opcoes.falar !== false);
+
   if (!ajustes.digitacao) {
     alvoTexto.textContent = texto;
-    if (opcoes.falar !== false) falar(texto);
+    if (podeFalar) falar(texto);
     return;
   }
 
@@ -90,7 +95,7 @@ export function dizer(texto, opcoes = {}) {
     }
   }, 16);
 
-  if (opcoes.falar !== false) falar(texto);
+  if (podeFalar) falar(texto);
 }
 
 export function completarTexto() {

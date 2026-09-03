@@ -18,6 +18,7 @@ import * as projeto from "./projeto.js";
 import * as missoes from "./missoes.js";
 import * as firmware from "./firmware.js";
 import * as museu from "./museu.js";
+import { NOME_CONTATO } from "./biblioteca.js";
 import * as danos from "./danos.js";
 import { carregarCatalogo, textoDe } from "./conteudo.js";
 import { registrarPwa, prepararInstalacao } from "./pwa.js";
@@ -25,6 +26,8 @@ import { registrarPwa, prepararInstalacao } from "./pwa.js";
 const q = (s) => document.querySelector(s);
 let compSelecionado = null;
 let restam = 0, cronometro = null;
+let modo = "livre";
+let treinoEmCurso = false;
 
 /* ---------- partida ------------------------------------------- */
 
@@ -51,12 +54,14 @@ function preencherIcones() {
     "#b-ajustes": "ajustes", "#b-instalar": "salvar", "#b-girar": "girar",
     "#b-png": "imagem", "#b-json": "exportar", "#b-abrir": "importar",
     "#b-mais": "mais", "#b-menos": "menos", "#b-enquadrar": "enquadrar",
-    "#lixeira": "lixo", "#b-falar": "falar", "#b-museu": "lixo",
+    "#lixeira": "lixo", "#b-museu": "lixo",
   };
   Object.entries(par).forEach(([sel, nome]) => {
     const el = q(sel);
     if (el) el.innerHTML = ico(nome, sel === "#lixeira" ? 22 : 16) + (sel === "#lixeira" ? "<span>lixeira</span>" : "");
   });
+  const f = q("#b-falar .ico");
+  if (f) f.innerHTML = ico("falar", 16);
 }
 
 /* ---------- interface ----------------------------------------- */
@@ -73,6 +78,15 @@ function iniciarInterface() {
     },
     aoEnergizar,
     aoMudar: aoMudarBancada,
+    aoSelecionarFio: (f) => {
+      q("#dica").textContent = f
+        ? `Fio selecionado. Delete remove. Botao direito tambem.`
+        : "Arraste uma peca da paleta. Passe o mouse num pino para ver o que ele e.";
+    },
+    aoEncaixar: (comp, n) => {
+      robo.dizer(`${PORID[comp.tipo].nome} encaixado em ${n} furo${n > 1 ? "s" : ""}. Os furos ocupados ficam amarelos.`, { expressao: "satisfeito" });
+    },
+    aoInverter: (ponta) => robo.dizer(`Ponta da vez: ${ponta}. ${NOME_CONTATO[ponta]}.`, { expressao: "pensando" }),
     aoArrastar: (x, y) => q("#lixeira").classList.toggle("mirada", sobreLixeira(x, y)),
     aoSoltarPeca: (id, x, y) => {
       const dentro = sobreLixeira(x, y);
@@ -83,15 +97,18 @@ function iniciarInterface() {
   });
 
   gavetas.iniciar(q("#moveis"), {
-    aoEscolherPeca: (tipo) => {
+    aoEscolherPeca: (tipo, ev) => {
       if (!liberado(tipo)) {
         robo.dizer(`Nesta missao ${PORID[tipo].nome} nao esta na lista de material. Trabalhe com o que a nave liberou.`, { expressao: "alarmado" });
         SOM.erro();
         return;
       }
-      const c = bancada.adicionar(tipo);
       const d = PORID[tipo];
-      if (c) robo.dizer(`${d.nome} na bancada. ${primeiraDica(d)}`, { expressao: "neutro", falar: false });
+      const dentro = ev && ev.clientX > q("#obra").getBoundingClientRect().left;
+      const c = dentro
+        ? bancada.pegarDaPaleta(tipo, ev.clientX, ev.clientY, ev.pointerId)
+        : bancada.adicionar(tipo);
+      if (c) robo.dizer(`${d.nome} na bancada. ${primeiraDica(d)}`, { expressao: "neutro" });
     },
     aoEscolherFio: (jumper, cor) => {
       bancada.escolherFio(jumper, cor);
@@ -149,10 +166,13 @@ function ligarFerramentas() {
     firmware.abrir(bancada.estado.comps, () => bancada.recalcular());
   });
 
-  q("#b-missoes").addEventListener("click", () => {
-    SOM.clique();
+  q("#m-livre").addEventListener("click", () => trocarModo("livre"));
+  q("#m-missoes").addEventListener("click", () => {
+    trocarModo("missoes");
     missoes.abrirSeletor(escolherMissao);
   });
+
+  q("#b-limpar").addEventListener("click", confirmarLimpeza);
 
   q("#b-museu").addEventListener("click", () => { SOM.clique(); museu.abrir(); });
 
@@ -179,6 +199,17 @@ function ligarFerramentas() {
   });
 
   q("#b-falar").addEventListener("click", () => { destravarAudio(); robo.repetir(); });
+  q("#props").addEventListener("change", (ev) => {
+    const alvo = ev.target;
+    const comp = bancada.estado.comps.find((c) => c.id === alvo.dataset.comp);
+    if (!comp) return;
+    if (alvo.dataset.campo === "usb") comp.usbLigado = alvo.checked;
+    if (alvo.dataset.campo === "valor") comp.valor = alvo.value;
+    if (alvo.dataset.campo === "variante") comp.variante = alvo.value;
+    if (alvo.dataset.campo === "tensao") comp.tensaoSaida = Number(alvo.value);
+    SOM.clique();
+    bancada.recalcular();
+  });
   q("#fala").addEventListener("click", () => robo.completarTexto());
 }
 
@@ -265,29 +296,56 @@ function liberado(tipo) {
   return m.componentesLiberados.includes(tipo);
 }
 
-function escolherMissao(missao, erro) {
+async function escolherMissao(missao, erro, filtrosTreino) {
   if (erro) { robo.dizer(erro, { expressao: "alarmado" }); return; }
 
+  if (filtrosTreino) {
+    ajustes.minutos = filtrosTreino.minutos;
+    ajustes.tempoInfinito = false;
+    treinoEmCurso = true;
+    iniciarCronometro();
+  }
+
   if (!missao) {
+    treinoEmCurso = false;
+    missoes.encerrarTreino();
     missoes.encerrarMissao();
+    document.body.classList.remove("pausado");
     missoes.pintarPainel(q("#missao-caixa"), bancada.estado.comps);
     robo.dizer("Montagem livre. Faca a bagunca que quiser, eu so olho.", { expressao: "neutro" });
     return;
   }
 
+  trocarModo("missoes");
   missoes.iniciarMissao(missao);
   danos.limparMemoria();
+  document.body.classList.remove("pausado");
   bancada.limparBancada();
   bancada.desligar();
   sincronizarBotaoEnergia(false);
-  if (missao.minutos) { ajustes.minutos = missao.minutos; iniciarCronometro(); }
+  if (missao.montagem) bancada.carregar(missao.montagem);
+  // No treino sorteado o cronometro e um so para a sessao inteira.
+  if (!treinoEmCurso && missao.minutos) { ajustes.minutos = missao.minutos; iniciarCronometro(); }
   missoes.pintarPainel(q("#missao-caixa"), bancada.estado.comps);
   robo.dizer(missao.briefing || missao.resumo || missao.titulo, { expressao: "neutro" });
 }
 
 function ligarMissao() {
   q("#missao-caixa").addEventListener("click", (e) => {
-    if (e.target.closest("#mis-sair")) { escolherMissao(null); return; }
+    if (e.target.closest("#mis-sair")) { escolherMissao(null); trocarModo("livre"); return; }
+    if (e.target.closest("#mis-pausa")) {
+      const pausada = missoes.alternarPausa();
+      if (pausada) clearInterval(cronometro); else iniciarCronometro(restam);
+      SOM.clique();
+      missoes.pintarPainel(q("#missao-caixa"), bancada.estado.comps);
+      robo.dizer(pausada ? "Missao pausada. O cronometro parou e a bancada te espera." : "Retomando. De onde paramos.", { expressao: "neutro" });
+      return;
+    }
+    if (e.target.closest("#mis-reiniciar")) {
+      const m = missoes.sessao.missao;
+      if (m) escolherMissao(m);
+      return;
+    }
     if (e.target.closest("#mis-dica")) {
       const m = missoes.sessao.missao;
       if (!m || !m.dicas || !m.dicas.length) return;
@@ -310,7 +368,24 @@ function aoMudarBancada(est) {
       atualizarProgresso();
       const m = missoes.sessao.missao;
       robo.dizer(`${m.sucesso || robo.FALAS.tudoCerto} Voce ganhou ${resultado.pontos} pontos. Patente atual: ${patenteDe(resultado.progresso.pontos)}.`, { expressao: "satisfeito" });
+      if (treinoEmCurso) setTimeout(emendarTreino, 2600);
     }
+  }
+}
+
+async function emendarTreino() {
+  if (!treinoEmCurso || restam <= 0) return;
+  const entrada = missoes.proximaDoTreino();
+  if (!entrada) {
+    treinoEmCurso = false;
+    robo.dizer("Acabaram as missoes do sorteio. Voce limpou a fila inteira dentro do tempo.", { expressao: "satisfeito" });
+    return;
+  }
+  try {
+    const dados = await import("./conteudo.js").then((m) => m.carregarMissao(entrada));
+    escolherMissao({ ...entrada, ...dados });
+  } catch (e) {
+    robo.dizer("Tropecei ao abrir a proxima missao do treino.", { expressao: "alarmado" });
   }
 }
 
@@ -319,15 +394,81 @@ function aoMudarBancada(est) {
 function aoSelecionarComponente(comp) {
   compSelecionado = comp;
   const temTexto = comp && textoDe(comp.tipo, "curiosidade");
-  ["#b-curio", "#b-uso", "#b-tec"].forEach((s) => { q(s).disabled = !temTexto; });
+  ["#b-curio", "#b-uso", "#b-tec"].forEach((sel) => { q(sel).disabled = !temTexto; });
+  pintarPropriedades(comp);
   if (comp) {
     const d = PORID[comp.tipo];
     const est = bancada.estado.ultimoCircuito && bancada.estado.ultimoCircuito.estados.get(comp.id);
     const medida = est && est.corrente > 0.5 ? ` — ${est.corrente.toFixed(0)} mA` : "";
     q("#dica").textContent = `${d.nome}${medida}. R gira, Delete joga fora.`;
   } else {
-    q("#dica").textContent = "Arraste uma peca da gaveta. Clique num pino para saber o que ele e.";
+    q("#dica").textContent = "Arraste uma peca da paleta. Passe o mouse num pino para ver o que ele e.";
   }
+}
+
+/* Propriedades da peca selecionada. E aqui que o aluno decide se a
+   placa esta ligada no USB ou se vai depender de alimentacao externa —
+   a mesma escolha que ele faz na bancada de verdade. */
+function pintarPropriedades(comp) {
+  const caixa = q("#props");
+  if (!comp) { caixa.hidden = true; caixa.innerHTML = ""; return; }
+  const d = PORID[comp.tipo];
+  const partes = [`<b>${d.nome}</b>`];
+
+  if (d.usb) partes.push(`<label><input type="checkbox" data-comp="${comp.id}" data-campo="usb" ${comp.usbLigado !== false ? "checked" : ""}> alimentar pelo cabo USB</label>`);
+  if (d.usb) partes.push(comp.usbLigado !== false
+    ? `<span style="color:var(--fosforo)">energia pelo USB</span>`
+    : `<span style="color:var(--ambar)">depende do VIN (${d.vinMin} a ${d.vinMax} V)</span>`);
+  if (d.valores) partes.push(`<label>valor <select data-comp="${comp.id}" data-campo="valor">${d.valores.map((v) => `<option ${v === comp.valor ? "selected" : ""}>${v}</option>`).join("")}</select></label>`);
+  if (d.variantes) partes.push(`<label>cor <select data-comp="${comp.id}" data-campo="variante">${d.variantes.map((v) => `<option ${v.nome === comp.variante ? "selected" : ""}>${v.nome}</option>`).join("")}</select></label>`);
+  if (d.ajustavel) partes.push(`<label>saida <select data-comp="${comp.id}" data-campo="tensao">${d.ajustavel.map((v) => `<option ${v === comp.tensaoSaida ? "selected" : ""}>${v}</option>`).join("")}</select> V</label>`);
+  if ((comp.encaixes || []).length) partes.push(`<span style="color:var(--ambar)">${comp.encaixes.length} pino(s) na protoboard</span>`);
+
+  caixa.hidden = partes.length < 2;
+  caixa.innerHTML = partes.join(" ");
+}
+
+function trocarModo(novo) {
+  modo = novo;
+  SOM.clique();
+  q("#m-livre").setAttribute("aria-pressed", String(novo === "livre"));
+  q("#m-missoes").setAttribute("aria-pressed", String(novo === "missoes"));
+  if (novo === "livre" && missoes.sessao.missao) escolherMissao(null);
+}
+
+function confirmarLimpeza() {
+  const emManutencao = missoes.sessao.missao && missoes.sessao.missao.tipo === "manutencao";
+  const texto = emManutencao
+    ? "Isto devolve a montagem da missao ao estado original. Tudo que voce mexeu se perde. Confirmar?"
+    : "Isto apaga todas as pecas e fios da bancada. Confirmar?";
+  const veu = document.createElement("div");
+  veu.className = "veu";
+  veu.innerHTML = `<div class="janela" style="width:min(400px,100%)">
+    <div class="janela-topo">${ico("lixo", 18)}<h2>Limpar mesa</h2></div>
+    <div class="janela-corpo"><p>${texto}</p></div>
+    <div class="janela-base">
+      <button class="btn btn-perigo" id="lm-sim">Limpar</button>
+      <button class="btn" id="lm-nao">Cancelar</button>
+    </div></div>`;
+  document.body.appendChild(veu);
+  const fecha = () => veu.remove();
+  veu.querySelector("#lm-nao").addEventListener("click", fecha);
+  veu.addEventListener("click", (e) => { if (e.target === veu) fecha(); });
+  veu.querySelector("#lm-sim").addEventListener("click", () => {
+    fecha();
+    SOM.lixo();
+    if (emManutencao) restaurarMissao();
+    else { bancada.limparBancada(); bancada.desligar(); sincronizarBotaoEnergia(false); }
+    robo.dizer(emManutencao ? "Montagem devolvida ao estado original. Comece de novo." : "Mesa limpa. Recomecar tambem faz parte.", { expressao: "neutro" });
+  });
+}
+
+function restaurarMissao() {
+  const m = missoes.sessao.missao;
+  bancada.limparBancada();
+  bancada.desligar();
+  sincronizarBotaoEnergia(false);
+  if (m && m.montagem) bancada.carregar(m.montagem);
 }
 
 function ligarInfo() {
@@ -376,11 +517,11 @@ function atualizarProgresso() {
   if (b) b.title = `Museu dos Desastres — ${m.total || 0} peca(s)`;
 }
 
-function iniciarCronometro() {
+function iniciarCronometro(retomarDe) {
   clearInterval(cronometro);
   const painel = q("#relogio");
   if (ajustes.tempoInfinito) { painel.textContent = "livre"; return; }
-  restam = ajustes.minutos * 60;
+  restam = retomarDe != null ? retomarDe : ajustes.minutos * 60;
   const pinta = () => {
     const m = String(Math.floor(restam / 60)).padStart(2, "0");
     const s = String(restam % 60).padStart(2, "0");

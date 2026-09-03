@@ -6,25 +6,64 @@
   "minutos": 12,
   "pontos": 90,
   "creditos": 70,
-
   "briefing": "O corredor tres ficou sem sinalizacao. Monte um farol que a placa consiga acionar: o LED nao pode vir do trilho de cinco volts, tem que vir de um PINO da GaburINO. Depois abra o painel Firmware e coloque esse pino em nivel alto. E assim que a placa liga qualquer coisa no mundo real: ela nao tem interruptor, ela tem pino.",
-
   "objetivos": [
-    { "id": "tem-placa", "texto": "GaburINO na bancada", "regra": { "tipo": "existe", "componente": "gaburino" } },
-    { "id": "tem-resistor", "texto": "Resistor em serie", "regra": { "tipo": "existe", "componente": "resistor" } },
-    { "id": "pino-alto", "texto": "Um pino configurado em nivel alto no Firmware", "regra": { "tipo": "firmware", "componente": "gaburino", "modo": "alto", "n": 1 } },
-    { "id": "acende", "texto": "LED aceso pelo pino", "regra": { "tipo": "aceso", "componente": "led", "n": 1 } },
-    { "id": "sem-dano", "texto": "Nenhum limite estourado", "regra": { "tipo": "semCriticos" } }
+    {
+      "id": "tem-placa",
+      "texto": "GaburINO na bancada",
+      "regra": {
+        "tipo": "existe",
+        "componente": "gaburino"
+      }
+    },
+    {
+      "id": "tem-resistor",
+      "texto": "Resistor em serie com o LED",
+      "regra": {
+        "tipo": "emSerie",
+        "a": "resistor",
+        "b": "led"
+      }
+    },
+    {
+      "id": "pino-alto",
+      "texto": "Um pino configurado em nivel alto no Firmware",
+      "regra": {
+        "tipo": "firmware",
+        "componente": "gaburino",
+        "modo": "alto",
+        "n": 1
+      }
+    },
+    {
+      "id": "acende",
+      "texto": "LED aceso pelo pino",
+      "regra": {
+        "tipo": "aceso",
+        "componente": "led",
+        "n": 1
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
   ],
-
   "dicas": [
     "Monte o circuito igual ao da primeira luz, mas em vez do pino 5V use um pino digital, o 8 por exemplo.",
     "O pino digital sozinho nao faz nada. Abra o painel Firmware, ache o pino que voce usou e mude para nivel alto.",
     "O GND continua obrigatorio: ele fecha o caminho de volta ate a placa.",
     "Cada pino da GaburINO entrega no maximo 40 miliamperes. Um LED com resistor cabe folgado."
   ],
-
   "erroComum": "Esquecer de configurar o pino no Firmware e concluir que o circuito esta errado.",
   "sucesso": "Agora sim: a placa manda, o LED obedece. Esse e o gesto que vira semaforo, alarme e robo.",
-  "componentesLiberados": ["protoboard", "gaburino", "led", "resistor"]
+  "componentesLiberados": [
+    "protoboard",
+    "gaburino",
+    "led",
+    "resistor"
+  ]
 }
