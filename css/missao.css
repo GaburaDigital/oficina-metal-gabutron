@@ -145,3 +145,41 @@
   background: rgba(5,6,10,.82); color: var(--fosforo);
   font-size: var(--t-alto); letter-spacing: .1em;
 }
+
+/* ---------- multimetro ---------- */
+#multimetro {
+  position: fixed; right: var(--e3); bottom: 66px; z-index: 30;
+  width: 250px;
+  background: var(--casco);
+  border: 2px solid var(--linha-viva); border-radius: var(--raio);
+  box-shadow: 0 8px 24px rgba(0,0,0,.45);
+}
+.mm-topo {
+  display: flex; align-items: center; gap: var(--e2);
+  padding: 6px var(--e2); border-bottom: var(--borda);
+  background: var(--casco-alto); font-size: var(--t-min);
+}
+.mm-topo b { flex: 1; font-weight: 500; }
+.mm-visor {
+  margin: var(--e2);
+  padding: 10px var(--e2);
+  background: #0F1A12; border: 1px solid var(--linha);
+  border-radius: var(--raio);
+  text-align: right;
+  font-size: 22px; letter-spacing: .04em; color: #7CFF9B;
+}
+.mm-seletor { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 0 var(--e2); }
+.mm-seletor .btn { justify-content: flex-start; font-size: 11px; padding: 5px 6px; }
+.mm-simbolo { color: var(--fosforo); min-width: 22px; }
+.mm-pontas {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  padding: var(--e2); font-size: var(--t-micro);
+}
+.mm-ponta { display: inline-flex; align-items: center; gap: 4px; color: var(--poeira); }
+.mm-ponta i { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
+.mm-ponta.vez { color: var(--fosforo); }
+.mm-recado {
+  margin: 0; padding: 0 var(--e2) var(--e2);
+  color: var(--poeira); font-size: var(--t-micro); line-height: 1.5;
+}
+@media (max-width: 900px) { #multimetro { right: 6px; bottom: 82px; width: 220px; } }

@@ -5,7 +5,7 @@
    pegar a versao nova.
    ============================================================ */
 
-const VERSAO = "gabutron-v4";
+const VERSAO = "gabutron-v5";
 
 const ARQUIVOS = [
   "./",
@@ -38,6 +38,8 @@ const ARQUIVOS = [
   "js/missoes.js",
   "js/firmware.js",
   "js/museu.js",
+  "js/multimetro.js",
+  "js/solda.js",
   "assets/favicon.svg",
   "assets/favicon-16.svg",
   "assets/icone-pwa.svg",
@@ -48,6 +50,11 @@ const ARQUIVOS = [
   "ATIVIDADES/CONSTRUCAO/sirene-da-nave.json",
   "ATIVIDADES/CONSTRUCAO/dimmer-do-painel.json",
   "ATIVIDADES/CONSTRUCAO/braco-do-robo.json",
+  "ATIVIDADES/MANUTENCAO/buzzer-mudo.json",
+  "ATIVIDADES/MANUTENCAO/sabotagem-noturna.json",
+  "ATIVIDADES/MANUTENCAO/farol-fraco.json",
+  "ATIVIDADES/MANUTENCAO/drone-motor-queimado.json",
+  "ATIVIDADES/CONSTRUCAO/seguidor-de-linha.json",
 ];
 
 self.addEventListener("install", (ev) => {

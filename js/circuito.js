@@ -72,8 +72,9 @@ export function calcular(comps, fios, energizado = true) {
     (d.ligacoes || []).forEach(([a, b]) => u.juntar(chave(c.id, a), chave(c.id, b)));
     if (c.pressionado) (d.ligacoesFechado || []).forEach(([a, b]) => u.juntar(chave(c.id, a), chave(c.id, b)));
   }
+  const fiosRompidos = [];
   for (const f of fios) {
-    if (f.rompido) continue;
+    if (f.rompido) { fiosRompidos.push(f.id); continue; }
     u.juntar(chave(f.a.comp, f.a.pino), chave(f.b.comp, f.b.pino));
   }
 
@@ -388,7 +389,7 @@ export function calcular(comps, fios, energizado = true) {
     diagnosticos: diag,
     avisos: diag.filter((x) => x.nivel !== "info"),
     tensao, terra, noDe: no, vDe, gndDe, pinosDoNo,
-    correnteFonte, correnteAresta, arestas,
+    correnteFonte, correnteAresta, arestas, fiosRompidos,
     curto: curtos.length > 0,
   };
 }

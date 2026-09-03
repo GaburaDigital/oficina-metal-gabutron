@@ -28,7 +28,9 @@ A aplicação roda inteira no navegador. Não tem servidor, não tem banco de da
 | Corrente real, limite por pino, curto-circuito e fumaça | Fase 2 |
 | Museu dos Desastres e sistema de patentes | Fase 2 |
 | Orçamento de créditos por missão | Fase 2 |
-| Missões de manutenção, multímetro e solda | Fase 3 |
+| Multímetro com quatro modos e pontas de prova | Fase 3 |
+| Ferro de solda para uniões permanentes | Fase 3 |
+| Missões de manutenção com defeitos escondidos | Fase 3 |
 | Biblioteca completa de componentes e projetos avançados | Fase 4 |
 
 ---
@@ -253,6 +255,23 @@ Os outros campos da missão: `briefing` e `sucesso` são falas do GabuTRON; `dic
 
 ---
 
+## O multímetro
+
+Quatro modos, os mesmos do aparelho da bancada. Ele abre num painel no canto, o aluno escolhe o modo e vai encostando as pontas nos contatos: a vermelha primeiro, a preta depois.
+
+| Modo | O que responde | Exige |
+|---|---|---|
+| Continuidade | existe caminho entre estes dois pontos? apita se sim | bancada desligada |
+| Tensão DC | quanta tensão há entre a ponta vermelha e a preta | bancada ligada |
+| Resistência | quantos ohms há no caminho entre as pontas | bancada desligada |
+| Corrente | quanta corrente passa pela peça entre as pontas | pontas nos dois terminais da mesma peça |
+
+A regra de bancada é cobrada: medir continuidade ou resistência com o circuito energizado dá `ERR` e o GabuTRON explica que, na vida real, essa distração queima o aparelho. Medir corrente exige as duas pontas na mesma peça, porque o multímetro entra em série.
+
+## O ferro de solda
+
+Solda une dois contatos que estejam encostados, sem perguntar se a ponta é macho ou fêmea — estanho derretido não respeita formato. É o que resolve as ligações que jumper nenhum resolve. A união é permanente até o aluno clicar de novo na junta para dessoldar, e não se solda com o circuito ligado.
+
 ## Missões prontas
 
 | Missão | Dificuldade | O que ensina |
@@ -264,6 +283,16 @@ Os outros campos da missão: `briefing` e `sucesso` são falas do GabuTRON; `dic
 | O bracinho que eu perdi | intermediário | alimentação externa, GND comum e sinal em PWM |
 
 As três primeiras formam uma sequência: acender, acionar, medir o limite. A quarta e a quinta se completam de propósito — o buzzer cabe no pino, o servo não. A diferença entre os dois é a lição inteira da bancada.
+
+### Manutenção
+
+| Missão | Dificuldade | O defeito | O que ensina |
+|---|---|---|---|
+| O buzzer que ficou mudo | novato | polaridade invertida | peça boa e circuito certo? olhe o lado |
+| Sabotagem noturna | fácil | fio partido por dentro | só a continuidade acusa o invisível |
+| O farol que mal acende | intermediário | resistor de 10 k no lugar de 220 | medir corrente responde o que olhar não responde |
+
+Cada missão de manutenção chega com a bancada já montada e o defeito plantado. O botão **Limpar mesa** nesse modo não esvazia a bancada: devolve a montagem ao estado original, para o aluno recomeçar a investigação.
 
 ---
 

@@ -1,0 +1,128 @@
+{
+  "id": "buzzer-mudo",
+  "titulo": "O buzzer que ficou mudo",
+  "tipo": "manutencao",
+  "dificuldade": "novato",
+  "minutos": 10,
+  "pontos": 90,
+  "fase": 3,
+  "briefing": "O aviso da comporta parou de tocar. Ja testei o buzzer na minha bancada e ele funciona. O pino da placa esta em nivel alto, conferi no firmware. Entao o problema esta na montagem. Dica de velho: quando a peca e boa e o circuito parece certo, olhe a polaridade. Buzzer nao e resistor, ele tem lado.",
+  "montagem": {
+    "formato": "gabutron-bancada",
+    "versao": 3,
+    "comps": [
+      {
+        "id": "pb",
+        "tipo": "protoboard",
+        "x": 0,
+        "y": 0,
+        "rot": 0,
+        "encaixes": []
+      },
+      {
+        "id": "pl",
+        "tipo": "gaburino",
+        "x": 0,
+        "y": 620,
+        "rot": 0,
+        "usbLigado": true,
+        "firmware": {
+          "t8": {
+            "modo": "alto"
+          }
+        },
+        "encaixes": []
+      },
+      {
+        "id": "bz",
+        "tipo": "buzzer",
+        "x": 72,
+        "y": 24,
+        "rot": 0,
+        "encaixes": [
+          {
+            "pino": "p",
+            "comp": "pb",
+            "pinoAlvo": "C4"
+          },
+          {
+            "pino": "n",
+            "comp": "pb",
+            "pinoAlvo": "C5"
+          }
+        ]
+      }
+    ],
+    "fios": [
+      {
+        "id": "f1",
+        "tipo": "mm",
+        "cor": "#E9C542",
+        "pontas": [
+          "macho",
+          "macho"
+        ],
+        "a": {
+          "comp": "pl",
+          "pino": "t8"
+        },
+        "b": {
+          "comp": "pb",
+          "pino": "A5"
+        }
+      },
+      {
+        "id": "f2",
+        "tipo": "mm",
+        "cor": "#2A2E36",
+        "pontas": [
+          "macho",
+          "macho"
+        ],
+        "a": {
+          "comp": "pl",
+          "pino": "bGND4"
+        },
+        "b": {
+          "comp": "pb",
+          "pino": "A4"
+        }
+      }
+    ],
+    "vista": {
+      "x": 40,
+      "y": 30,
+      "k": 0.34
+    }
+  },
+  "objetivos": [
+    {
+      "id": "toca",
+      "texto": "Buzzer energizado e apitando",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "buzzer"
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "Passe o mouse nos dois pinos do buzzer e leia o que aparece. Um deles e o positivo.",
+    "Agora veja onde cada fio esta ligado: um vem do pino em nivel alto, outro vem do GND.",
+    "Estao trocados. Apague os dois fios com Delete e refaca ao contrario.",
+    "Com a bancada ligada, o multimetro em Tensao DC entre os dois pinos mostra o sinal invertido."
+  ],
+  "erroComum": "Jogar o buzzer fora achando que queimou. Buzzer invertido nao queima, so fica calado.",
+  "sucesso": "Polaridade. So isso. Guarde a lista de pecas que tem lado: LED, buzzer, capacitor eletrolitico, diodo, modulo. Metade dos defeitos de bancada mora nessa lista.",
+  "componentesLiberados": [
+    "protoboard",
+    "gaburino",
+    "buzzer"
+  ]
+}

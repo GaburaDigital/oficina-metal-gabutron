@@ -11,7 +11,7 @@ let ctx = null;
 
 function contexto() {
   if (!ctx) {
-    const AC = window.AudioContext || window.webkitAudioContext;
+    const AC = globalThis.AudioContext || globalThis.webkitAudioContext;
     if (!AC) return null;
     ctx = new AC();
   }
@@ -76,5 +76,6 @@ export const SOM = {
   bip:      () => tom({ f: 1400, dur: 0.025, vol: 0.02 }),
   bipLongo: () => tom({ f: 900, dur: 0.35, tipo: "sine", vol: 0.05 }),
   boot:     () => { tom({ f: 110, dur: 0.5, tipo: "sine", vol: 0.05 }); tom({ f: 220, dur: 0.5, tipo: "sine", vol: 0.03, atraso: 0.05 }); },
+  solda:    () => { ruido({ dur: 0.5, vol: 0.06, corte: 3400 }); tom({ f: 60, dur: 0.2, vol: 0.03 }); },
   tecla:    () => tom({ f: 1600 + Math.random() * 500, dur: 0.012, vol: 0.012 }),
 };

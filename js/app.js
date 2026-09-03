@@ -21,6 +21,8 @@ import * as firmware from "./firmware.js";
 import * as museu from "./museu.js";
 import { NOME_CONTATO } from "./biblioteca.js";
 import * as danos from "./danos.js";
+import * as multimetro from "./multimetro.js";
+import * as solda from "./solda.js";
 import { carregarCatalogo, textoDe } from "./conteudo.js";
 import { registrarPwa, prepararInstalacao } from "./pwa.js";
 
@@ -88,6 +90,8 @@ function iniciarInterface() {
       robo.dizer(`${PORID[comp.tipo].nome} encaixado em ${n} furo${n > 1 ? "s" : ""}. Os furos ocupados ficam amarelos.`, { expressao: "satisfeito" });
     },
     aoInverter: (ponta) => robo.dizer(`Ponta da vez: ${ponta}. ${NOME_CONTATO[ponta]}.`, { expressao: "pensando" }),
+    aoUsarFerramenta: usarFerramenta,
+    svgFerramenta: () => (multimetro.estado.ativo ? multimetro.svgPontas(bancada) : "") + (solda.estado.ativo ? solda.svgFerro(bancada) : ""),
     aoArrastar: (x, y) => q("#lixeira").classList.toggle("mirada", sobreLixeira(x, y)),
     aoSoltarPeca: (id, x, y) => {
       const dentro = sobreLixeira(x, y);
@@ -169,6 +173,29 @@ function ligarFerramentas() {
   });
 
   q("#b-limpar").addEventListener("click", confirmarLimpeza);
+
+  q("#b-multimetro").addEventListener("click", (e) => {
+    if (multimetro.estado.ativo) { multimetro.fechar(bancada); e.currentTarget.classList.remove("ativo"); return; }
+    if (solda.estado.ativo) { solda.desligar(bancada); q("#b-solda").classList.remove("ativo"); }
+    bancada.escolherFio(null);
+    gavetas.largarFio();
+    multimetro.abrir(bancada, {
+      aoFechar: () => q("#b-multimetro").classList.remove("ativo"),
+      aoMedir: (r) => { if (r.aviso) robo.dizer(r.aviso, { expressao: "pensando" }); },
+    });
+    e.currentTarget.classList.add("ativo");
+    robo.dizer("Multimetro na mao. Escolha o modo, encoste a ponta vermelha num contato e depois a preta. Continuidade e resistencia so com a bancada desligada.", { expressao: "pensando" });
+  });
+
+  q("#b-solda").addEventListener("click", (e) => {
+    if (solda.estado.ativo) { solda.desligar(bancada); e.currentTarget.classList.remove("ativo"); return; }
+    if (multimetro.estado.ativo) { multimetro.fechar(bancada); q("#b-multimetro").classList.remove("ativo"); }
+    bancada.escolherFio(null);
+    gavetas.largarFio();
+    solda.ligar(bancada);
+    e.currentTarget.classList.add("ativo");
+    robo.dizer("Ferro quente. Encoste em dois contatos que estejam perto um do outro e eles viram um so. Clicar numa junta pronta dessolda.", { expressao: "pensando" });
+  });
 
   q("#b-museu").addEventListener("click", () => { SOM.clique(); museu.abrir(); });
 
@@ -258,6 +285,23 @@ function arrastarDaPaleta(tipo, ev) {
   SOM.pegar();
 }
 
+/* Encaminha o clique num contato para a ferramenta que esta na mao. */
+function usarFerramenta(qual, compId, pinoId) {
+  if (qual === "multimetro") {
+    multimetro.encostar(compId, pinoId, bancada);
+    missoes.sessao.ferramentas.add(multimetro.estado.modo);
+    missoes.sessao.ferramentas.add("multimetro");
+    return;
+  }
+  if (qual === "solda") {
+    const r = solda.usar(compId, pinoId, bancada);
+    if (r.acao === "soldou") missoes.sessao.ferramentas.add("solda");
+    robo.dizer(r.motivo, { expressao: r.ok ? "neutro" : "alarmado" });
+    if (!r.ok) SOM.erro();
+    bancada.redesenhar();
+  }
+}
+
 function sobreLixeira(x, y) {
   const r = q("#lixeira").getBoundingClientRect();
   return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
@@ -281,6 +325,7 @@ function aoEnergizar(ligado, circ) {
     return;
   }
 
+  if (multimetro.estado.ativo) multimetro.atualizar(bancada);
   const veredito = danos.aplicar(bancada.estado.comps, circ);
 
   if (veredito.desligar) {

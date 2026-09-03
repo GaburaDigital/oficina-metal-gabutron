@@ -1,6 +1,6 @@
 {
   "projeto": "Oficina do Metal GabuTRON",
-  "versao": 2,
+  "versao": 3,
   "atualizado": "2026-09-02",
   "comoUsar": "Este arquivo e o indice do conteudo. Para adicionar material: 1) coloque o .json na pasta certa dentro de ATIVIDADES; 2) escreva uma linha aqui apontando para ele. O campo fase diz a partir de qual fase do projeto a missao pode ser jogada. O site le so este arquivo ao abrir e busca a missao inteira quando o aluno clica nela, por isso o menu carrega rapido mesmo com centenas de exercicios.",
   "conteudos": {
@@ -122,21 +122,68 @@
     ],
     "manutencao": [
       {
+        "id": "buzzer-mudo",
+        "titulo": "O buzzer que ficou mudo",
+        "arquivo": "ATIVIDADES/MANUTENCAO/buzzer-mudo.json",
+        "tipo": "manutencao",
+        "dificuldade": "novato",
+        "minutos": 10,
+        "pontos": 90,
+        "resumo": "Peca boa, circuito certo, som nenhum. Olhe a polaridade.",
+        "componentes": [
+          "gaburino",
+          "buzzer"
+        ],
+        "fase": 3
+      },
+      {
+        "id": "sabotagem-noturna",
+        "titulo": "Sabotagem noturna",
+        "arquivo": "ATIVIDADES/MANUTENCAO/sabotagem-noturna.json",
+        "tipo": "manutencao",
+        "dificuldade": "facil",
+        "minutos": 15,
+        "pontos": 140,
+        "resumo": "Um fio partido por dentro. So o teste de continuidade acusa.",
+        "componentes": [
+          "gaburino",
+          "led",
+          "resistor"
+        ],
+        "fase": 3
+      },
+      {
+        "id": "farol-fraco",
+        "titulo": "O farol que mal acende",
+        "arquivo": "ATIVIDADES/MANUTENCAO/farol-fraco.json",
+        "tipo": "manutencao",
+        "dificuldade": "intermediario",
+        "minutos": 15,
+        "pontos": 150,
+        "resumo": "Acende, mas quase nao da para ver. Meca a corrente antes de acusar o LED.",
+        "componentes": [
+          "gaburino",
+          "led",
+          "resistor"
+        ],
+        "fase": 3
+      },
+      {
         "id": "drone-motor-queimado",
         "titulo": "O drone que so gira para um lado",
         "arquivo": "ATIVIDADES/MANUTENCAO/drone-motor-queimado.json",
+        "tipo": "manutencao",
         "dificuldade": "facil",
         "minutos": 12,
         "pontos": 90,
-        "resumo": "Um dos motores nao responde. Descobrir se e fio, motor ou alimentacao.",
+        "resumo": "Um motor nao responde. Fio, motor ou alimentacao?",
         "componentes": [
           "bura32",
           "motordc",
           "ponteh",
           "suporteaa"
         ],
-        "fase": 3,
-        "tipo": "manutencao"
+        "fase": 4
       }
     ]
   }

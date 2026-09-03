@@ -21,6 +21,7 @@ import { desenhar, tirasProtoboard } from "./desenhos.js";
 import { caminho, podeConectar, motivoRecusa } from "./fios.js";
 import { calcular } from "./circuito.js";
 import { svgQueimado, svgFumaca } from "./danos.js";
+import { svgJunta } from "./solda.js";
 import { SOM } from "./som.js";
 import { salvarBancada } from "./config.js";
 
@@ -36,6 +37,7 @@ export const estado = {
   raiox: false,
   organizado: false,
   ferramentaFio: null,
+  modoFerramenta: null,   // null | "multimetro" | "solda"
   pendente: null,
   vista: { x: 60, y: 40, k: 0.42 },
   seq: 1,
@@ -63,6 +65,12 @@ export function mundoDe(clientX, clientY) { return telaParaMundo(clientX, client
 export function sobreBancada(clientX, clientY) {
   const r = svg.getBoundingClientRect();
   return clientX >= r.left && clientX <= r.right && clientY >= r.top && clientY <= r.bottom;
+}
+
+/* Posicao de um pino a partir dos ids, para as ferramentas. */
+export function posicaoDePino(compId, pinoId) {
+  const alvo = pinoDe(compId, pinoId);
+  return alvo ? posicaoPino(alvo.comp, alvo.pino) : null;
 }
 
 export function posicaoPino(comp, pino) {
@@ -181,9 +189,12 @@ function svgUmPino(comp, d, p, ocupados) {
   if (p.n && !p.furo) {
     const lado = p.lado || "baixo";
     const cor = morto ? "#E24B4A" : "#C9CDD3";
-    // Rotulo curto cabe deitado. Rotulo longo (RESET, IOREF, TRIG)
-    // fica em pe: assim cabem lado a lado sem um cobrir o outro.
-    const emPe = p.n.length > 3 && (lado === "cima" || lado === "baixo");
+    // Quanto cabe deitado: com fonte 13 e passo de 24 unidades, dois
+    // caracteres ocupam 16 e sobra folga; tres ja ocupam o passo
+    // inteiro e colam no vizinho. Por isso o corte e em tres.
+    // O til nao conta, porque ele e estreito e fica sobre o furo.
+    const largura = p.n.replace(/^~/, "").length;
+    const emPe = (p.vertical || largura >= 3) && (lado === "cima" || lado === "baixo");
 
     if (emPe) {
       const dy = lado === "baixo" ? 16 : -16;
@@ -268,7 +279,9 @@ function svgFio(f) {
   const a = pinoDe(f.a.comp, f.a.pino), b = pinoDe(f.b.comp, f.b.pino);
   if (!a || !b) return "";
   const pa = posicaoPino(a.comp, a.pino), pb = posicaoPino(b.comp, b.pino);
-  const dpath = caminho(pa, pb, estado.organizado ? "reto" : "solto");
+  const dpath = f.tipo === "solda"
+    ? `M${pa.x} ${pa.y}L${pb.x} ${pb.y}`
+    : caminho(pa, pb, estado.organizado ? "reto" : "solto");
   const sel = estado.fioSelecionado === f.id;
   const pontas = f.pontas || ["macho", "macho"];
   const viva = estado.energizado && estado.ultimoCircuito &&
@@ -279,8 +292,9 @@ function svgFio(f) {
   <path class="sombra" d="${dpath}" fill="none" stroke="#05060A" stroke-width="8" stroke-linecap="round" opacity=".45"/>
   <path class="alma" d="${dpath}" fill="none" stroke="${f.cor}" stroke-width="5" stroke-linecap="round"/>
   ${viva ? `<path d="${dpath}" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" opacity=".35" pointer-events="none"/>` : ""}
-  ${(MARCA_PONTA[pontas[0]] || MARCA_PONTA.macho)(pa.x, pa.y, f.cor)}
-  ${(MARCA_PONTA[pontas[1]] || MARCA_PONTA.macho)(pb.x, pb.y, f.cor)}
+  ${f.tipo === "solda" ? svgJunta(pa.x, pa.y) + svgJunta(pb.x, pb.y)
+    : (MARCA_PONTA[pontas[0]] || MARCA_PONTA.macho)(pa.x, pa.y, f.cor) +
+      (MARCA_PONTA[pontas[1]] || MARCA_PONTA.macho)(pb.x, pb.y, f.cor)}
 </g>`;
 }
 
@@ -297,12 +311,13 @@ function redesenharFios() {
 }
 
 function desenharTopo() {
-  if (!estado.pendente) { camadaTopo.innerHTML = ""; return; }
+  const extra = ganchos.svgFerramenta ? ganchos.svgFerramenta() : "";
+  if (!estado.pendente) { camadaTopo.innerHTML = extra; return; }
   const a = pinoDe(estado.pendente.comp, estado.pendente.pino);
   if (!a) return;
   const pa = posicaoPino(a.comp, a.pino);
   const pb = estado.pendente.cursor || pa;
-  camadaTopo.innerHTML = `<path d="${caminho(pa, pb, "solto")}" fill="none" stroke="${estado.pendente.cor}" stroke-width="4" stroke-dasharray="10 8" opacity=".9" pointer-events="none"/>
+  camadaTopo.innerHTML = extra + `<path d="${caminho(pa, pb, "solto")}" fill="none" stroke="${estado.pendente.cor}" stroke-width="4" stroke-dasharray="10 8" opacity=".9" pointer-events="none"/>
 <circle cx="${pa.x}" cy="${pa.y}" r="12" fill="none" stroke="${estado.pendente.cor}" stroke-width="3" pointer-events="none"/>`;
 }
 
@@ -728,6 +743,12 @@ function esconderDica() { if (dica) dica.hidden = true; }
 function clicarPino(compId, pinoId) {
   const alvo = pinoDe(compId, pinoId);
   if (!alvo) return;
+
+  // Com uma ferramenta na mao, o clique pertence a ela.
+  if (estado.modoFerramenta) {
+    if (ganchos.aoUsarFerramenta) ganchos.aoUsarFerramenta(estado.modoFerramenta, compId, pinoId);
+    return;
+  }
 
   if (!estado.ferramentaFio) {
     selecionar(compId);

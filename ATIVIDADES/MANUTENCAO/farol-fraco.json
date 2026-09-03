@@ -1,0 +1,181 @@
+{
+  "id": "farol-fraco",
+  "titulo": "O farol que mal acende",
+  "tipo": "manutencao",
+  "dificuldade": "intermediario",
+  "minutos": 15,
+  "pontos": 150,
+  "fase": 3,
+  "briefing": "Esse farol de sinalizacao acende, mas tao fraco que ninguem enxerga do outro lado do corredor. O circuito esta fechado, o LED e bom, a placa entrega os cinco volts. Entao sobra uma suspeita: alguem montou com o resistor errado. Mede a corrente que passa pelo LED e compara com o que ele pede. Um LED de sinalizacao trabalha por volta de vinte miliamperes. Para medir corrente, o multimetro entra em serie: encosta as duas pontas nos dois terminais da mesma peca.",
+  "montagem": {
+    "formato": "gabutron-bancada",
+    "versao": 3,
+    "comps": [
+      {
+        "id": "pb",
+        "tipo": "protoboard",
+        "x": 0,
+        "y": 0,
+        "rot": 0,
+        "encaixes": []
+      },
+      {
+        "id": "pl",
+        "tipo": "gaburino",
+        "x": 0,
+        "y": 620,
+        "rot": 0,
+        "usbLigado": true,
+        "encaixes": []
+      },
+      {
+        "id": "r",
+        "tipo": "resistor",
+        "x": 48,
+        "y": 120,
+        "rot": 0,
+        "encaixes": [
+          {
+            "pino": "a",
+            "comp": "pb",
+            "pinoAlvo": "C2"
+          },
+          {
+            "pino": "b",
+            "comp": "pb",
+            "pinoAlvo": "C7"
+          }
+        ],
+        "valor": "10k"
+      },
+      {
+        "id": "d",
+        "tipo": "led",
+        "x": 168,
+        "y": 48,
+        "rot": 0,
+        "encaixes": [
+          {
+            "pino": "a",
+            "comp": "pb",
+            "pinoAlvo": "D7"
+          },
+          {
+            "pino": "k",
+            "comp": "pb",
+            "pinoAlvo": "D8"
+          }
+        ],
+        "variante": "vermelho"
+      }
+    ],
+    "fios": [
+      {
+        "id": "f1",
+        "tipo": "mm",
+        "cor": "#E24B4A",
+        "pontas": [
+          "macho",
+          "macho"
+        ],
+        "a": {
+          "comp": "pl",
+          "pino": "b5V3"
+        },
+        "b": {
+          "comp": "pb",
+          "pino": "A2"
+        }
+      },
+      {
+        "id": "f2",
+        "tipo": "mm",
+        "cor": "#2A2E36",
+        "pontas": [
+          "macho",
+          "macho"
+        ],
+        "a": {
+          "comp": "pl",
+          "pino": "bGND4"
+        },
+        "b": {
+          "comp": "pb",
+          "pino": "A20"
+        }
+      },
+      {
+        "id": "f3",
+        "tipo": "mm",
+        "cor": "#7DD3FC",
+        "pontas": [
+          "macho",
+          "macho"
+        ],
+        "a": {
+          "comp": "pb",
+          "pino": "E8"
+        },
+        "b": {
+          "comp": "pb",
+          "pino": "A20"
+        }
+      }
+    ],
+    "vista": {
+      "x": 40,
+      "y": 30,
+      "k": 0.34
+    }
+  },
+  "objetivos": [
+    {
+      "id": "mediu",
+      "texto": "Medir a corrente do LED",
+      "regra": {
+        "tipo": "usouFerramenta",
+        "modo": "corrente"
+      }
+    },
+    {
+      "id": "corrente-boa",
+      "texto": "Corrente do LED entre 10 e 30 mA",
+      "regra": {
+        "tipo": "correnteEm",
+        "componente": "led",
+        "min": 10,
+        "max": 30
+      }
+    },
+    {
+      "id": "acende",
+      "texto": "LED aceso com brilho normal",
+      "regra": {
+        "tipo": "aceso",
+        "componente": "led",
+        "n": 1
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "Energize a bancada e ponha o multimetro em Corrente. Encoste as duas pontas nos dois terminais do LED.",
+    "Deu menos de um miliampere? Entao a resistencia do caminho e alta demais.",
+    "Selecione o resistor e olhe a faixa de propriedades no canto: da para trocar o valor ali mesmo.",
+    "Lei de Ohm: cinco volts menos os dois do LED, divididos por 220 ohms, dao os 14 miliamperes que ele quer. Com 10k voce divide por dez mil."
+  ],
+  "erroComum": "Concluir que o LED esta com defeito. LED fraco quase sempre e resistor grande demais, nao LED ruim.",
+  "sucesso": "Era o resistor. Trinta e um centesimos de miliampere nao acendem nada. Agora voce sabe que medir corrente responde o que olhar nunca responderia.",
+  "componentesLiberados": [
+    "protoboard",
+    "gaburino",
+    "led",
+    "resistor"
+  ]
+}

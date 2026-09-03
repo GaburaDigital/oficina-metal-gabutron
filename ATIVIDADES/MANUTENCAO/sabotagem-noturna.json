@@ -1,0 +1,196 @@
+{
+  "id": "sabotagem-noturna",
+  "titulo": "Sabotagem noturna",
+  "tipo": "manutencao",
+  "dificuldade": "facil",
+  "minutos": 15,
+  "pontos": 140,
+  "fase": 3,
+  "briefing": "Alguem mexeu na bancada durante o turno da noite. Deixei esse circuito aceso ontem e hoje ele esta morto. Olhei tudo: as pecas estao no lugar, os fios parecem inteiros, a placa liga. Parecem. Um deles esta partido POR DENTRO do isolamento, e nenhum olho no universo enxerga isso. Pega o multimetro, poe no modo continuidade e vai testando fio por fio. O que nao apitar e o culpado. E antes que voce pergunte: desliga a bancada primeiro. Continuidade com circuito ligado da leitura errada e queima o aparelho.",
+  "montagem": {
+    "formato": "gabutron-bancada",
+    "versao": 3,
+    "comps": [
+      {
+        "id": "pb",
+        "tipo": "protoboard",
+        "x": 0,
+        "y": 0,
+        "rot": 0,
+        "encaixes": []
+      },
+      {
+        "id": "pl",
+        "tipo": "gaburino",
+        "x": 0,
+        "y": 620,
+        "rot": 0,
+        "usbLigado": true,
+        "encaixes": []
+      },
+      {
+        "id": "r",
+        "tipo": "resistor",
+        "x": 48,
+        "y": 120,
+        "rot": 0,
+        "encaixes": [
+          {
+            "pino": "a",
+            "comp": "pb",
+            "pinoAlvo": "C2"
+          },
+          {
+            "pino": "b",
+            "comp": "pb",
+            "pinoAlvo": "C7"
+          }
+        ],
+        "valor": "220"
+      },
+      {
+        "id": "d",
+        "tipo": "led",
+        "x": 168,
+        "y": 48,
+        "rot": 0,
+        "encaixes": [
+          {
+            "pino": "a",
+            "comp": "pb",
+            "pinoAlvo": "D7"
+          },
+          {
+            "pino": "k",
+            "comp": "pb",
+            "pinoAlvo": "D8"
+          }
+        ],
+        "variante": "vermelho"
+      }
+    ],
+    "fios": [
+      {
+        "id": "f1",
+        "tipo": "mm",
+        "cor": "#E24B4A",
+        "pontas": [
+          "macho",
+          "macho"
+        ],
+        "a": {
+          "comp": "pl",
+          "pino": "b5V3"
+        },
+        "b": {
+          "comp": "pb",
+          "pino": "A2"
+        }
+      },
+      {
+        "id": "f2",
+        "tipo": "mm",
+        "cor": "#2A2E36",
+        "pontas": [
+          "macho",
+          "macho"
+        ],
+        "a": {
+          "comp": "pl",
+          "pino": "bGND4"
+        },
+        "b": {
+          "comp": "pb",
+          "pino": "A20"
+        }
+      },
+      {
+        "id": "f3",
+        "tipo": "mm",
+        "cor": "#5CE07A",
+        "pontas": [
+          "macho",
+          "macho"
+        ],
+        "a": {
+          "comp": "pb",
+          "pino": "E12"
+        },
+        "b": {
+          "comp": "pb",
+          "pino": "A20"
+        }
+      },
+      {
+        "id": "f4",
+        "tipo": "mm",
+        "cor": "#7DD3FC",
+        "pontas": [
+          "macho",
+          "macho"
+        ],
+        "a": {
+          "comp": "pb",
+          "pino": "E8"
+        },
+        "b": {
+          "comp": "pb",
+          "pino": "A20"
+        },
+        "rompido": true
+      }
+    ],
+    "vista": {
+      "x": 40,
+      "y": 30,
+      "k": 0.34
+    }
+  },
+  "objetivos": [
+    {
+      "id": "mediu",
+      "texto": "Testar continuidade com o multimetro",
+      "regra": {
+        "tipo": "usouFerramenta",
+        "modo": "continuidade"
+      }
+    },
+    {
+      "id": "sem-rompido",
+      "texto": "Remover o fio partido da bancada",
+      "regra": {
+        "tipo": "semRompidos"
+      }
+    },
+    {
+      "id": "acende",
+      "texto": "LED aceso de novo",
+      "regra": {
+        "tipo": "aceso",
+        "componente": "led",
+        "n": 1
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "Desligue a bancada. Continuidade se mede com o circuito frio.",
+    "Clique no botao Multimetro, escolha Continuidade, encoste a ponta vermelha numa extremidade do fio e a preta na outra.",
+    "Se apitar, o fio esta bom. Se aparecer aberto, achou o culpado.",
+    "Para trocar: clique no fio ruim e aperte Delete, depois pegue um jumper novo na sacola e refaca a mesma ligacao."
+  ],
+  "erroComum": "Trocar o LED e a placa antes de medir. Peca boa vai para o lixo e o defeito continua ali.",
+  "sucesso": "Fio partido por dentro. O defeito mais covarde que existe, e voce achou sem trocar peca boa. Isso separa tecnico de trocador de peca.",
+  "componentesLiberados": [
+    "protoboard",
+    "gaburino",
+    "led",
+    "resistor"
+  ]
+}

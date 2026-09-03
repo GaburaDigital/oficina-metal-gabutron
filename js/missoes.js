@@ -31,6 +31,7 @@ export const sessao = {
   feitos: new Set(),
   dicasUsadas: 0,
   queimadas: 0,
+  ferramentas: new Set(),
   concluida: false,
   inicio: 0,
 };
@@ -121,6 +122,22 @@ export function verificar(regra, comps, circ) {
       return false;
     }
 
+    case "correnteEm": {
+      const alvos = comps.filter((c) => c.tipo === regra.componente);
+      return alvos.some((c) => {
+        const e = circ.estados.get(c.id) || {};
+        const i = e.corrente || 0;
+        return i >= (regra.min ?? 0) && i <= (regra.max ?? 1e9);
+      });
+    }
+
+    case "usouFerramenta":
+      return sessao.ferramentas.has(regra.modo || regra.ferramenta);
+
+    case "semRompidos":
+      // nenhum fio partido por dentro continuou no circuito
+      return !(circ.fiosRompidos || []).length;
+
     case "semCriticos":
       return !circ.diagnosticos.some((d) => d.nivel === "critico");
 
@@ -176,7 +193,7 @@ export const treino = { ativo: false, fila: [], feitas: 0, filtros: null };
 
 export function montarTreino(filtros) {
   const todas = [...(catalogo.construcao || []), ...(catalogo.manutencao || [])]
-    .filter((m) => (m.fase || 2) <= 2)
+    .filter((m) => (m.fase || 2) <= 3)
     .filter((m) => (filtros.tipos.length ? filtros.tipos.includes(m.tipo) : true))
     .filter((m) => (filtros.dificuldades.length ? filtros.dificuldades.includes(m.dificuldade) : true));
   const embaralhada = todas.map((m) => [Math.random(), m]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
@@ -203,9 +220,9 @@ let veu = null;
 
 export function abrirSeletor(aoEscolher) {
   const lista = [...(catalogo.construcao || []), ...(catalogo.manutencao || [])]
-    .filter((m) => (m.fase || 2) <= 2);
+    .filter((m) => (m.fase || 2) <= 3);
   const futuras = [...(catalogo.construcao || []), ...(catalogo.manutencao || [])]
-    .filter((m) => (m.fase || 2) > 2);
+    .filter((m) => (m.fase || 2) > 3);
 
   veu = document.createElement("div");
   veu.className = "veu";
@@ -219,7 +236,7 @@ export function abrirSeletor(aoEscolher) {
       : `<p style="color:var(--poeira)">Nenhuma missao no catalogo ainda.</p>`}
     ${futuras.length ? `<div class="grupo" style="margin-top:18px"><h3>Chegam nas proximas fases</h3>
       <ul style="color:var(--poeira);font-size:12px;padding-left:18px">
-        ${futuras.map((m) => `<li>${m.titulo} — precisa do multimetro e da solda</li>`).join("")}
+        ${futuras.map((m) => `<li>${m.titulo} — precisa da ponte H com saidas ativas</li>`).join("")}
       </ul></div>` : ""}
   </div>
   <div class="janela-base" style="flex-direction:column;align-items:stretch;gap:10px">
@@ -302,6 +319,7 @@ export function iniciarMissao(missao) {
   sessao.feitos = new Set();
   sessao.dicasUsadas = 0;
   sessao.queimadas = 0;
+  sessao.ferramentas = new Set();
   sessao.concluida = false;
   sessao.pausada = false;
   sessao.inicio = Date.now();
