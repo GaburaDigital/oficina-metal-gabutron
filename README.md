@@ -182,11 +182,29 @@ O que ele deliberadamente **não** faz: análise nodal completa, transistor como
 | 5 V chegando num pino de placa de 3,3 V | a entrada morre |
 | Alimentação caindo direto no GND | curto-circuito |
 | Alimentação externa sem GND comum com a placa | aviso explicando por que o sinal não funciona |
+| Tensão abaixo do mínimo numa entrada de energia | aviso: o regulador não consegue trabalhar |
+| Tensão acima do máximo numa entrada de energia | o regulador queima |
 | Sinal de servo fora de pino PWM | aviso |
 
 ### A regra do primeiro aviso
 
 O aluno sempre tem **um aviso antes**. Ao energizar com um erro grave, a bancada desliga sozinha, o GabuTRON explica o que ia acontecer e nada queima. Se ele energizar de novo com o mesmo erro, aí a peça se perde e vai para o Museu dos Desastres. Errar tem preço, mas não um preço que faz desistir.
+
+---
+
+## Como a placa é alimentada
+
+Clicando numa placa aparece a faixa de propriedades, e nela a chave do cabo USB. Isso reproduz a escolha real da bancada: durante o teste a placa vive pendurada no computador, mas um projeto que anda precisa de energia própria.
+
+| Placa | Formas de alimentar | Faixa aceita |
+|---|---|---|
+| GaburINO | cabo USB, plugue redondo, pino VIN | 7 a 12 V nas entradas externas |
+| Bura32 | cabo USB, pino VIN | 5 V |
+| MicroBURA | cabo USB, conector de bateria no topo | 3 a 3,3 V |
+
+Com o USB desligado, o circuito só funciona se a alimentação externa estiver correta — e é aí que o aluno descobre que quatro pilhas AA não ligam um GaburINO pelo plugue, porque 6 V não bastam para o regulador produzir 5 V.
+
+Ao energizar, um cabo USB aparece desenhado ao lado da placa quando ela está sendo alimentada por ele, e um raio aparece sobre a fonte quando a energia vem de fora.
 
 ---
 

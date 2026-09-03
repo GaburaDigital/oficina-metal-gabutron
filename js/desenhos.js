@@ -33,8 +33,9 @@ function placaGaburino(d, i) {
 <rect width="672" height="432" rx="14" fill="#1D6C8C" stroke="#0E4257" stroke-width="3"/>
 <rect x="6" y="48" width="76" height="86" rx="4" fill="#B9BEC6" stroke="#7C828C" stroke-width="2"/>
 ${txt("USB", 44, 98, 13, "#31363E")}
-<rect x="6" y="300" width="86" height="76" rx="6" fill="#101318"/>
-${txt("VIN", 49, 344, 12, "#8A8F98")}
+<rect x="0" y="288" width="76" height="100" rx="8" fill="#101318" stroke="#05060A" stroke-width="2"/>
+<circle cx="38" cy="338" r="22" fill="#05060A"/><circle cx="38" cy="338" r="8" fill="#6C727B"/>
+${txt("PLUGUE 7-12V", 38, 402, 11, "#CFE4EE")}
 <rect x="232" y="150" width="200" height="132" rx="6" fill="#101318"/>
 ${txt("GaburINO", 332, 208, 30, "#E8E8E4")}
 ${txt("UNO", 332, 244, 17, "#8A8F98")}
@@ -74,6 +75,10 @@ ${matriz}
 <rect x="36" y="150" width="60" height="60" rx="8" fill="#1B1F26"/>${txt("A", 66, 192, 20, "#E8E8E4")}
 <rect x="384" y="150" width="60" height="60" rx="8" fill="#1B1F26"/>${txt("B", 414, 192, 20, "#E8E8E4")}
 ${ledAlim(432, 72, on)}
+<rect x="168" y="6" width="144" height="36" rx="5" fill="#F2F2EE" stroke="#8A8F98" stroke-width="2"/>
+<rect x="180" y="14" width="24" height="20" rx="2" fill="#E24B4A"/>
+<rect x="276" y="14" width="24" height="20" rx="2" fill="#2A2E36"/>
+${txt("BATERIA 3V", 240, 60, 12, "#9FD8C6")}
 ${txt("so os cinco aneis vem liberados", 240, 320, 12, "#7FC0AC")}`;
 }
 

@@ -56,6 +56,15 @@ function girarPonto(px, py, cx, cy, g) {
   return { x: cx + dx * c - dy * s, y: cy + dx * s + dy * c };
 }
 
+/* Converte um ponto da tela em ponto da bancada. Quem arrasta da
+   paleta precisa disso para largar a peca exatamente onde soltou. */
+export function mundoDe(clientX, clientY) { return telaParaMundo(clientX, clientY); }
+
+export function sobreBancada(clientX, clientY) {
+  const r = svg.getBoundingClientRect();
+  return clientX >= r.left && clientX <= r.right && clientY >= r.top && clientY <= r.bottom;
+}
+
 export function posicaoPino(comp, pino) {
   const d = PORID[comp.tipo];
   const p = girarPonto(pino.x, pino.y, d.w / 2, d.h / 2, comp.rot || 0);
@@ -171,10 +180,23 @@ function svgUmPino(comp, d, p, ocupados) {
   let etiqueta = "";
   if (p.n && !p.furo) {
     const lado = p.lado || "baixo";
-    const desloc = { cima: [0, -20, "middle"], baixo: [0, 28, "middle"], e: [-16, 5, "end"], d: [16, 5, "start"] }[lado];
-    etiqueta = `<g transform="rotate(${-rot} ${p.x} ${p.y})">
-      <text x="${p.x + desloc[0]}" y="${p.y + desloc[1]}" font-family="monospace" font-size="13"
-        fill="${morto ? "#E24B4A" : "#C9CDD3"}" text-anchor="${desloc[2]}">${p.n}</text></g>`;
+    const cor = morto ? "#E24B4A" : "#C9CDD3";
+    // Rotulo curto cabe deitado. Rotulo longo (RESET, IOREF, TRIG)
+    // fica em pe: assim cabem lado a lado sem um cobrir o outro.
+    const emPe = p.n.length > 3 && (lado === "cima" || lado === "baixo");
+
+    if (emPe) {
+      const dy = lado === "baixo" ? 16 : -16;
+      const anc = lado === "baixo" ? "end" : "start";
+      etiqueta = `<g transform="rotate(${-rot} ${p.x} ${p.y})">
+        <text x="${p.x}" y="${p.y + dy}" font-family="monospace" font-size="13" fill="${cor}"
+          text-anchor="${anc}" transform="rotate(-90 ${p.x} ${p.y + dy})" dominant-baseline="middle">${p.n}</text></g>`;
+    } else {
+      const desloc = { cima: [0, -20, "middle"], baixo: [0, 28, "middle"], e: [-16, 5, "end"], d: [16, 5, "start"] }[lado];
+      etiqueta = `<g transform="rotate(${-rot} ${p.x} ${p.y})">
+        <text x="${p.x + desloc[0]}" y="${p.y + desloc[1]}" font-family="monospace" font-size="13"
+          fill="${cor}" text-anchor="${desloc[2]}">${p.n}</text></g>`;
+    }
   }
   const cruz = morto ? `<path d="M${p.x - 9} ${p.y - 9}l18 18M${p.x + 9} ${p.y - 9}l-18 18" stroke="#E24B4A" stroke-width="3"/>` : "";
 

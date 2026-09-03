@@ -134,18 +134,26 @@ export function calcular(comps, fios, energizado = true) {
   }
   };
 
-  comps.forEach((c) => { delete c.__vinOk; });
+  comps.forEach((c) => { delete c.__vinOk; delete c.__entradaFraca; delete c.__entradaAlta; });
   registrarPlacaEFontes();
   if (energizado) {
     let mudou = false;
     for (const c of comps) {
       const d = PORID[c.tipo];
       if (!d || !d.alimentada || porUsb(c, d) || c.__vinOk) continue;
-      const vin = d.pinos.find((p) => p.n === "VIN");
+      // Qualquer entrada de energia serve: VIN, plugue redondo,
+      // conector de bateria. Cada uma com a sua faixa de tensao.
+      const entradas = d.pinos.filter((p) => p.entrada);
       const cinco = d.pinos.find((p) => p.n === "5V" && p.v);
-      const vVin = vin ? tensao.get(no(c.id, vin.id)) ?? 0 : 0;
+      let alimentou = false;
+      for (const p of entradas) {
+        const v = tensao.get(no(c.id, p.id)) ?? 0;
+        if (v >= (p.vmin ?? 5)) alimentou = true;
+        else if (v > 0.5) c.__entradaFraca = { pino: p.n, v, min: p.vmin };
+        if (p.vmax && v > p.vmax + 0.5) c.__entradaAlta = { pino: p.n, v, max: p.vmax };
+      }
       const vCinco = cinco ? tensao.get(no(c.id, cinco.id)) ?? 0 : 0;
-      if (vVin >= (d.vinMin ?? 5) || vCinco >= 4.5) { c.__vinOk = true; mudou = true; }
+      if (alimentou || vCinco >= 4.5) { c.__vinOk = true; mudou = true; }
     }
     if (mudou) { tensao.clear(); terra.clear(); fontesDoNo.clear(); registrarPlacaEFontes(); }
   }
@@ -328,11 +336,19 @@ export function calcular(comps, fios, energizado = true) {
             `O pino ${p.n} da ${d.nome} esta entregando ${i.toFixed(0)} miliamperes e o limite dele e ${limite}. Carga pesada pede alimentacao externa.`,
             { tipo: "pino", pino: p.id });
         const v = vDe(c.id, p.id);
-        if (d.tensaoMaxPino && p.v == null && v > d.tensaoMaxPino + 0.05)
+        // Pino de ENTRADA de energia nao segue o limite da logica:
+        // o VIN e o plugue existem justamente para receber mais tensao.
+        // Quem cuida da faixa deles e a checagem de entrada externa.
+        if (d.tensaoMaxPino && p.v == null && !p.entrada && v > d.tensaoMaxPino + 0.05)
           avisar("critico", c.id,
             `Chegou ${v.toFixed(1)} volts no pino ${p.n} de uma placa de ${d.tensaoLogica} volts. Isso mata a entrada: use divisor de tensao ou conversor de nivel.`,
             { tipo: "pino", pino: p.id });
       }
+      if (c.__entradaFraca && !e.ligado)
+        avisar("aviso", c.id, `Chegou ${c.__entradaFraca.v.toFixed(1)} volts no ${c.__entradaFraca.pino} da ${d.nome}, e ele precisa de pelo menos ${c.__entradaFraca.min}. O regulador nao consegue trabalhar com tao pouco.`);
+      if (c.__entradaAlta)
+        avisar("critico", c.id, `Chegou ${c.__entradaAlta.v.toFixed(1)} volts no ${c.__entradaAlta.pino} da ${d.nome}, acima do limite de ${c.__entradaAlta.max}. O regulador vira aquecedor e depois vira lixo.`, { tipo: "placa" });
+
       e.correnteTotal = total;
       if (total > (d.limiteTotal ?? 800))
         avisar("critico", c.id, `A ${d.nome} inteira esta puxando ${total.toFixed(0)} miliamperes. O regulador dela desiste antes disso.`, { tipo: "placa" });

@@ -279,3 +279,16 @@
 @media (max-width: 560px) {
   .leitura.oculta-min { display: none; }
 }
+
+/* peca sendo arrastada da paleta ate a bancada */
+#fantasma {
+  position: fixed; z-index: 70; pointer-events: none;
+  transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 6px 8px;
+  background: var(--casco);
+  border: 1px dashed var(--linha-viva); border-radius: var(--raio);
+  color: var(--grafite); font-size: var(--t-micro);
+  opacity: .9;
+}
+#fantasma.valido { border: 1px solid var(--fosforo); color: var(--fosforo); }

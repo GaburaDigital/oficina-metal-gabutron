@@ -66,11 +66,20 @@ function pinosGaburino() {
     ["5V", "v+", 5, "Saida de 5 volts — vem do USB ou do regulador"],
     ["GND", "gnd", null, "Terra"],
     ["GND", "gnd", null, "Terra"],
-    ["VIN", "v+", null, "Entrada de alimentacao externa, de 7 a 12 volts"],
+    ["VIN", "v+", null, "Entrada de alimentacao externa — precisa de 7 a 12 volts para o regulador trabalhar"],
   ];
   baixo.forEach(([n, papel, v, rotulo], i) => {
-    p.push({ id: "b" + n + i, n, rotulo, x: 96 + i * P, y: 408, r: "femea", papel, v: v || undefined, lado: "cima" });
+    p.push({
+      id: "b" + n + i, n, rotulo, x: 96 + i * P, y: 408, r: "femea", papel,
+      v: v || undefined, lado: "cima",
+      ...(n === "VIN" ? { entrada: true, vmin: 7, vmax: 12 } : {}),
+    });
   });
+
+  // Plugue de energia, igual ao conector redondo do Arduino. E por aqui
+  // que entra a bateria de 9 volts quando a placa sai do computador.
+  p.push({ id: "jackP", n: "PWR+", rotulo: "Plugue de energia, pino central positivo — de 7 a 12 volts", x: 24, y: 312, r: "borne", papel: "v+", entrada: true, vmin: 7, vmax: 12, lado: "e" });
+  p.push({ id: "jackN", n: "PWR-", rotulo: "Plugue de energia, anel externo — terra", x: 24, y: 360, r: "borne", papel: "gnd", lado: "e" });
 
   for (let i = 0; i < 6; i++) {
     p.push({
@@ -121,7 +130,10 @@ function pinosBura32() {
   esq.forEach(([n, papel, v, rotulo], i) =>
     p.push({ id: "e" + i, n, rotulo, x: 24, y: 72 + i * P, r: "femea", papel, v, lado: "d" }));
   dir.forEach(([n, papel, v, rotulo], i) =>
-    p.push({ id: "d" + i, n, rotulo, x: 264, y: 72 + i * P, r: "femea", papel, v, lado: "e" }));
+    p.push({
+      id: "d" + i, n, rotulo, x: 264, y: 72 + i * P, r: "femea", papel, v, lado: "e",
+      ...(n === "VIN" ? { entrada: true, vmin: 4.7, vmax: 5.5 } : {}),
+    }));
   return p;
 }
 
@@ -135,9 +147,14 @@ function pinosMicrobura() {
     ["3V", "v+", 3.3, "Anel de 3,3 volts — so para carga pequena"],
     ["GND", "gnd", null, "Anel de terra"],
   ];
-  return aneis.map(([n, papel, v, rotulo], i) => ({
+  const p = aneis.map(([n, papel, v, rotulo], i) => ({
     id: "anel" + i, n, rotulo, x: 72 + i * 96, y: 360, r: "pad", papel, v, grande: true, lado: "cima",
   }));
+  // Conector de bateria no topo, igual ao da micro:bit real. Aceita de
+  // 3 a 3,3 volts: e por aqui que o projeto sai do cabo e anda sozinho.
+  p.push({ id: "batP", n: "BAT+", rotulo: "Conector de bateria, positivo — de 3 a 3,3 volts", x: 192, y: 24, r: "borne", papel: "v+", entrada: true, vmin: 2.9, vmax: 3.4, lado: "baixo" });
+  p.push({ id: "batN", n: "BAT-", rotulo: "Conector de bateria, negativo — terra", x: 288, y: 24, r: "borne", papel: "gnd", lado: "baixo" });
+  return p;
 }
 
 function pinosExpansaoMicrobura() {

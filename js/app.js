@@ -9,6 +9,7 @@ import { ajustes, carregarAjustes, lerBancada, lerProgresso, lerMuseu, patenteDe
 import { destravarAudio, SOM } from "./som.js";
 import { ico, selo } from "./icones.js";
 import { PORID } from "./biblioteca.js";
+import { miniatura } from "./desenhos.js";
 import * as boot from "./boot.js";
 import * as bancada from "./bancada.js";
 import * as gavetas from "./gavetas.js";
@@ -103,12 +104,7 @@ function iniciarInterface() {
         SOM.erro();
         return;
       }
-      const d = PORID[tipo];
-      const dentro = ev && ev.clientX > q("#obra").getBoundingClientRect().left;
-      const c = dentro
-        ? bancada.pegarDaPaleta(tipo, ev.clientX, ev.clientY, ev.pointerId)
-        : bancada.adicionar(tipo);
-      if (c) robo.dizer(`${d.nome} na bancada. ${primeiraDica(d)}`, { expressao: "neutro" });
+      arrastarDaPaleta(tipo, ev);
     },
     aoEscolherFio: (jumper, cor) => {
       bancada.escolherFio(jumper, cor);
@@ -211,6 +207,55 @@ function ligarFerramentas() {
     bancada.recalcular();
   });
   q("#fala").addEventListener("click", () => robo.completarTexto());
+}
+
+/* Pegar da paleta e largar na bancada.
+   Um fantasma acompanha o dedo ou o mouse desde a caixa ate a mesa.
+   Se a pessoa so tocar e soltar sem arrastar, a peca vai para o centro
+   da tela: e o atalho que funciona bem no celular. */
+function arrastarDaPaleta(tipo, ev) {
+  const d = PORID[tipo];
+  if (!d) return;
+  const origem = ev.currentTarget || ev.target;
+
+  const fantasma = document.createElement("div");
+  fantasma.id = "fantasma";
+  fantasma.innerHTML = miniatura(d, 78, 60) + `<span>${d.nome}</span>`;
+  document.body.appendChild(fantasma);
+  const mover = (x, y) => { fantasma.style.left = x + "px"; fantasma.style.top = y + "px"; };
+  mover(ev.clientX, ev.clientY);
+
+  let arrastou = false;
+  const inicio = { x: ev.clientX, y: ev.clientY };
+
+  const aoMover = (e) => {
+    if (Math.hypot(e.clientX - inicio.x, e.clientY - inicio.y) > 6) arrastou = true;
+    mover(e.clientX, e.clientY);
+    fantasma.classList.toggle("valido", bancada.sobreBancada(e.clientX, e.clientY));
+  };
+
+  const aoSoltar = (e) => {
+    window.removeEventListener("pointermove", aoMover);
+    window.removeEventListener("pointerup", aoSoltar);
+    window.removeEventListener("pointercancel", aoSoltar);
+    fantasma.remove();
+    try { origem.releasePointerCapture(ev.pointerId); } catch (err) {}
+
+    let comp = null;
+    if (arrastou && bancada.sobreBancada(e.clientX, e.clientY)) {
+      const m = bancada.mundoDe(e.clientX, e.clientY);
+      comp = bancada.adicionar(tipo, { x: m.x - d.w / 2, y: m.y - d.h / 2 });
+    } else if (!arrastou) {
+      comp = bancada.adicionar(tipo);
+    }
+    if (comp) robo.dizer(`${d.nome} na bancada. ${primeiraDica(d)}`, { expressao: "neutro" });
+  };
+
+  try { origem.setPointerCapture(ev.pointerId); } catch (err) {}
+  window.addEventListener("pointermove", aoMover);
+  window.addEventListener("pointerup", aoSoltar);
+  window.addEventListener("pointercancel", aoSoltar);
+  SOM.pegar();
 }
 
 function sobreLixeira(x, y) {
@@ -520,6 +565,8 @@ function atualizarProgresso() {
 function iniciarCronometro(retomarDe) {
   clearInterval(cronometro);
   const painel = q("#relogio");
+  // Montagem livre nao tem prazo. Explorar a bancada nao e prova.
+  if (!missoes.sessao.missao && !treinoEmCurso) { painel.textContent = "livre"; return; }
   if (ajustes.tempoInfinito) { painel.textContent = "livre"; return; }
   restam = retomarDe != null ? retomarDe : ajustes.minutos * 60;
   const pinta = () => {

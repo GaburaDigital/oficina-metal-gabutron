@@ -1,116 +1,96 @@
 {
   "titulo": "Componentes basicos",
   "observacao": "Cada chave e o id do componente em js/biblioteca.js. Os tres textos aparecem nos botoes Curiosidades, Onde e usado e Detalhes tecnicos. Escreva como se o GabuTRON estivesse falando: ele e velho, direto e um pouco sarcastico.",
-
   "componentes": {
-
     "protoboard": {
       "curiosidade": "Protoboard quer dizer placa de prototipo. Antes dela, testar um circuito significava soldar tudo e depois dessoldar tudo chorando. Por dentro sao tiras de metal com molinhas que agarram a perna do componente.",
       "uso": "Toda bancada de aula, todo laboratorio, todo canal de robotica na internet. Se o circuito ainda pode mudar de ideia, ele mora na protoboard.",
       "tecnico": "Cada fileira de cinco furos e um unico no eletrico. O canal do meio separa os dois lados, e e por isso que um circuito integrado se encaixa montado no vao. As duas linhas compridas nas bordas sao os trilhos de alimentacao. Aguenta bem ate uns 500 miliamperes; acima disso o contato esquenta e afrouxa."
     },
-
     "gaburino": {
       "curiosidade": "A GaburINO nasceu para quem estava comecando e nao queria decorar registrador de microcontrolador. O formato dos pinos e desalinhado de proposito: foi um erro de fabricacao que virou padrao e ninguem teve coragem de consertar.",
       "uso": "Primeiro robo, primeiro semaforo, primeira estufa. Ela e a placa que perdoa erro de iniciante.",
-      "tecnico": "Logica de 5 volts. Cada pino entrega no maximo cerca de 40 miliamperes, e a placa inteira nao passa de 200. Pinos com til tem PWM. A4 e A5 acumulam a funcao de I2C. Motor nao se liga direto nela: vai driver no meio."
+      "tecnico": "Logica de 5 volts. Cada pino entrega no maximo cerca de 40 miliamperes, e a placa inteira nao passa de 800. Tres jeitos de alimentar: cabo USB, plugue redondo e pino VIN. O plugue e o VIN passam pelo regulador e por isso pedem de 7 a 12 volts: com 6 volts o regulador nao consegue produzir os 5. Pinos com til tem PWM. A4 e A5 acumulam a funcao de I2C. Motor nao se liga direto nela: vai driver no meio."
     },
-
     "bura32": {
       "curiosidade": "A Bura32 tem dois nucleos e wi-fi embutido. Ela e tao rapida que consegue errar o seu circuito muito mais depressa que a GaburINO.",
       "uso": "Projetos com internet, sensores por radio, painel de controle que voce abre pelo celular.",
       "tecnico": "Logica de 3,3 volts, e isso e a pegadinha: ligar 5 volts num pino dela pode matar a entrada. Cada pino entrega uns 12 miliamperes. Os GPIO 34, 35, 36 e 39 so leem, nao acionam nada. Tem DAC de verdade nos pinos 25 e 26."
     },
-
     "microbura": {
       "curiosidade": "Os cinco pads grandes existem para caber garra jacare. Foi pensado para crianca montar circuito sem ferro de solda e sem furar o dedo.",
       "uso": "Sala de aula, primeiro contato com programacao em blocos, projetos rapidos com sensor de movimento.",
-      "tecnico": "Logica de 3,3 volts. Os pads grandes P0, P1 e P2 sao entrada, saida e PWM. Corrente maxima por pino em torno de 5 miliamperes, entao motor exige driver externo sempre. O anel do 3V alimenta so coisa pequena."
+      "tecnico": "Logica de 3,3 volts. Os aneis grandes P0, P1 e P2 sao entrada, saida e PWM. Corrente maxima por pino em torno de 5 miliamperes, entao motor exige driver externo sempre. Alem do USB, ela tem o conector de bateria no topo, que aceita de 3 a 3,3 volts. Passar disso mata a placa: nada de ligar 5 volts ali. Os outros pinos so aparecem com o adaptador de expansao encaixado embaixo."
     },
-
     "led": {
       "curiosidade": "LED significa diodo emissor de luz. Ele nao tem filamento para queimar, mas tem paciencia curta com corrente demais: passa do limite e apaga para sempre em menos de um segundo.",
       "uso": "Indicador de qualquer coisa ligada, semaforo, painel, olho de robo, iluminacao inteira de casa hoje em dia.",
       "tecnico": "Tem polaridade: a perna comprida e o anodo, o positivo. A queda de tensao muda com a cor, de 1,8 volt no vermelho ate 3,1 no branco. Corrente de trabalho por volta de 20 miliamperes. O resistor em serie nao e enfeite: e ele que segura a corrente."
     },
-
     "resistor": {
       "curiosidade": "As faixas coloridas viraram padrao porque componente pequeno nao tinha espaco para numero legivel. Marrom, preto, vermelho e dourado: isso e mil ohms com dez por cento de tolerancia.",
       "uso": "Limitar corrente de LED, dividir tensao para um sensor, puxar um pino para o nivel alto ou baixo.",
       "tecnico": "Nao tem polaridade, entra em qualquer sentido. Em serie os valores somam. Para LED em 5 volts, 220 ohms e a escolha classica. A potencia comum e um quarto de watt: acima disso ele vira aquecedor."
     },
-
     "servo180": {
       "curiosidade": "Dentro do servo tem motor, caixa de reducao e um potenciometro que conta onde o eixo esta. Ele nao gira: ele mira e segura a posicao, mesmo empurrado.",
       "uso": "Braco robotico, garra, leme de aviao, cabeca de animatronico, portao de cofre eletronico.",
       "tecnico": "Tres fios: marrom ou preto e GND, vermelho e alimentacao de 4,8 a 6 volts, laranja ou amarelo e sinal. O sinal e PWM com pulso de 1 a 2 milissegundos. No pico ele puxa mais de 500 miliamperes, ou seja: alimentacao externa, nunca pendurado no pino da placa."
     },
-
     "motordc": {
       "curiosidade": "Inverta os dois fios e ele gira ao contrario. E o componente mais honesto da bancada: nao tem software, nao tem desculpa, so tem forca.",
       "uso": "Carrinho, ventilador, bomba, esteira, qualquer coisa que precise girar sem parar.",
       "tecnico": "Puxa muita corrente, principalmente no arranque e quando trava. Precisa de driver ou ponte H entre ele e o microcontrolador. Convem um diodo em paralelo: ao desligar, a bobina devolve um pico de tensao que estraga transistor."
     },
-
     "ponteh": {
       "curiosidade": "Chama ponte H porque o desenho dos quatro transistores em volta do motor lembra a letra H. Girar para tras e so trocar qual par esta ligado.",
       "uso": "Todo carrinho com duas rodas motorizadas, esteira de robo, mini tanque.",
       "tecnico": "Alimentacao do motor entra no borne de 12 volts, GND e compartilhado com a placa de controle, e isso e obrigatorio. ENA e ENB controlam velocidade por PWM; IN1 a IN4 definem o sentido. O regulador interno pode alimentar a placa com 5 volts, mas so ate 12 volts de entrada."
     },
-
     "ultrassonico": {
       "curiosidade": "Ele mede distancia como morcego: solta um estalo que voce nao escuta e cronometra o eco. Superficie macia, como cortina, engole o som e engana o sensor.",
       "uso": "Robo que desvia de parede, radar de estacionamento, medidor de nivel de caixa d'agua.",
       "tecnico": "Alimentacao de 5 volts. Um pulso de 10 microssegundos em TRIG dispara a medida, e a largura do pulso em ECHO diz a distancia. Alcance util de 2 centimetros a 4 metros. Em placa de 3,3 volts, o ECHO precisa de divisor de tensao."
     },
-
     "rele": {
       "curiosidade": "O rele e um interruptor com eletroima. O clique que voce ouve e uma pecinha de metal sendo puxada. E a ponte entre o mundo dos 5 volts e o mundo da tomada.",
       "uso": "Ligar lampada, bomba d'agua e ventilador de verdade a partir de um circuito pequeno.",
       "tecnico": "A bobina consome de 60 a 90 miliamperes, mais do que muitos pinos aguentam sozinhos. Os contatos NA, NF e COM ficam isolados do lado de controle. Modulo com optoacoplador protege a placa do coice da bobina."
     },
-
     "buzzer": {
       "curiosidade": "O buzzer ativo ja vem com o apito de fabrica: ligou, apitou. O passivo e mudo ate voce mandar a frequencia, e por isso ele consegue tocar musica.",
       "uso": "Alarme, aviso de fim de tarefa, robo que reclama, cofre que grita quando erram a senha.",
       "tecnico": "Tem polaridade, o lado marcado e o positivo. O ativo trabalha em 3,3 ou 5 volts e puxa por volta de 30 miliamperes. O passivo precisa de onda quadrada, e ai a frequencia define a nota."
     },
-
     "neopixel": {
       "curiosidade": "Cada LED desse tem um chip minusculo dentro e passa a mensagem para o vizinho. Por isso um unico fio de dados controla centenas de cores.",
       "uso": "Painel de nave, letreiro, iluminacao de teclado, olho de robo que muda de humor.",
       "tecnico": "Alimentacao de 5 volts, dados entram em IN e saem em OUT para o proximo modulo. No branco total, cada LED chega a 60 miliamperes: dezesseis deles passam de 900 miliamperes. Fonte externa, sempre, com GND comum."
     },
-
     "lcdi2c": {
       "curiosidade": "A versao original desse display tinha dezesseis fios. Alguem colocou um chip nas costas dele e reduziu para quatro. Foi o dia mais feliz da historia da robotica escolar.",
       "uso": "Mostrar temperatura, contagem, menu de maquina, mensagem de erro que ninguem le.",
       "tecnico": "Alimentacao de 5 volts e comunicacao I2C por SDA e SCL. Cada modulo tem um endereco, normalmente 0x27 ou 0x3F. O potenciometro azul atras ajusta o contraste: tela apagada quase sempre e ele, nao o codigo."
     },
-
     "potenciometro": {
       "curiosidade": "E um resistor com um cursor deslizante por dentro. O botao de volume de todo radio antigo era exatamente isso.",
       "uso": "Ajustar brilho, volume, velocidade, contraste de display, ou simplesmente virar entrada analogica de teste.",
       "tecnico": "Tres pinos: os das pontas vao para alimentacao e GND, e o do meio devolve a tensao proporcional ao giro. Ligado a uma entrada analogica, entrega valores de 0 ao maximo do conversor."
     },
-
     "botao": {
       "curiosidade": "O botao de quatro pinos confunde todo mundo: os pinos ja sao ligados dois a dois de fabrica. Se voce montar no sentido errado, ele fica permanentemente apertado.",
       "uso": "Ligar, resetar, escolher opcao, disparar tiro no controle de video game.",
       "tecnico": "Os pinos opostos fecham quando apertados. Precisa de resistor de pull-up ou pull-down para o pino nao ficar solto lendo lixo. O contato treme por alguns milissegundos ao fechar, e isso se resolve no codigo ou com um capacitor."
     },
-
     "bateria9v": {
       "curiosidade": "Por dentro da bateria de 9 volts existem seis pilhas pequenininhas em serie. Abrir uma e um dos ritos de passagem da eletronica, mas nao faca isso na sala.",
       "uso": "Alimentar circuito pequeno, multimetro, projeto que precisa andar sozinho por pouco tempo.",
       "tecnico": "Entrega 9 volts mas com pouca corrente e cai rapido sob carga. Serve para logica, nao para motor. Para 5 volts, precisa de regulador no meio, e o regulador transforma a diferenca em calor."
     },
-
     "ldr": {
       "curiosidade": "LDR quer dizer resistor dependente de luz. No escuro ele resiste como um adolescente de manha; na luz forte quase vira fio.",
       "uso": "Abajur que acende sozinho, seguidor de linha caseiro, despertador solar, cofre que percebe quando abriram a tampa.",
       "tecnico": "Nao tem polaridade. Vai em divisor de tensao com um resistor de 10k para virar leitura analogica. No escuro passa de 200 mil ohms; sob luz forte cai para algumas centenas."
     }
-
   }
 }
