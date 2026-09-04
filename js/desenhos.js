@@ -35,16 +35,16 @@ function placaGaburino(d, i) {
 ${txt("USB", 44, 98, 13, "#31363E")}
 <rect x="0" y="288" width="76" height="100" rx="8" fill="#101318" stroke="#05060A" stroke-width="2"/>
 <circle cx="38" cy="338" r="22" fill="#05060A"/><circle cx="38" cy="338" r="8" fill="#6C727B"/>
-${txt("PLUGUE 7-12V", 38, 402, 11, "#CFE4EE")}
+${txt("7-12V", 38, 272, 11, "#CFE4EE")}
 <rect x="232" y="150" width="200" height="132" rx="6" fill="#101318"/>
 ${txt("GaburINO", 332, 208, 30, "#E8E8E4")}
 ${txt("UNO", 332, 244, 17, "#8A8F98")}
 ${ledAlim(470, 330, on)}${txt("ON", 470, 362, 12, "#CFE4EE")}
 <circle cx="520" cy="330" r="6" fill="${on ? "#5CE07A" : "#1E3A24"}"/>${txt("L", 520, 362, 12, "#CFE4EE")}
 <circle cx="120" cy="70" r="9" fill="#0E4257"/><circle cx="620" cy="380" r="9" fill="#0E4257"/>
-${txt("DIGITAL  (~ = PWM)", 470, 66, 13, "#CFE4EE")}
-${txt("POWER", 168, 388, 13, "#CFE4EE")}
-${txt("ANALOG IN", 372, 388, 13, "#CFE4EE")}`;
+${txt("DIGITAL  (~ = PWM)", 470, 106, 13, "#CFE4EE")}
+${txt("POWER", 168, 330, 13, "#CFE4EE")}
+${txt("ANALOG IN", 372, 330, 13, "#CFE4EE")}`;
 }
 
 function placaBura32(d, i) {
@@ -65,21 +65,22 @@ function placaMicrobura(d, i) {
   const on = i.ligado;
   let matriz = "";
   for (let k = 0; k < 25; k++)
-    matriz += `<circle cx="${168 + (k % 5) * 36}" cy="${132 + Math.floor(k / 5) * 30}" r="7" fill="${on ? "#E24B4A" : "#3A1F1F"}"/>`;
+    matriz += `<circle cx="${168 + (k % 5) * 36}" cy="${228 + Math.floor(k / 5) * 30}" r="7" fill="${on ? "#E24B4A" : "#3A1F1F"}"/>`;
   return `
-<path d="M12 0h456a12 12 0 0112 12v320H0V12A12 12 0 0112 0z" fill="#0F5A46" stroke="#073024" stroke-width="3"/>
-<path d="M0 332h480v40a12 12 0 01-12 12H12a12 12 0 01-12-12z" fill="#0B4536"/>
-${txt("MicroBURA", 240, 72, 26, "#E8E8E4")}
-${txt("v2 — logica de 3,3 V", 240, 98, 14, "#9FD8C6")}
+<path d="M168 60h144v22H168z" fill="#2A2E36"/>
+<rect x="168" y="24" width="144" height="40" rx="6" fill="#F2F2EE" stroke="#8A8F98" stroke-width="2"/>
+<rect x="180" y="32" width="24" height="24" rx="3" fill="#E24B4A"/>
+<rect x="276" y="32" width="24" height="24" rx="3" fill="#2A2E36"/>
+${txt("conector de bateria 3V", 240, 14, 12, "#9FD8C6")}
+<path d="M12 96h456a12 12 0 0112 12v320H0V108a12 12 0 0112-12z" fill="#0F5A46" stroke="#073024" stroke-width="3"/>
+<path d="M0 428h480v40a12 12 0 01-12 12H12a12 12 0 01-12-12z" fill="#0B4536"/>
+${txt("MicroBURA", 240, 168, 26, "#E8E8E4")}
+${txt("v2 — logica de 3,3 V", 240, 194, 14, "#9FD8C6")}
 ${matriz}
-<rect x="36" y="150" width="60" height="60" rx="8" fill="#1B1F26"/>${txt("A", 66, 192, 20, "#E8E8E4")}
-<rect x="384" y="150" width="60" height="60" rx="8" fill="#1B1F26"/>${txt("B", 414, 192, 20, "#E8E8E4")}
-${ledAlim(432, 72, on)}
-<rect x="168" y="6" width="144" height="36" rx="5" fill="#F2F2EE" stroke="#8A8F98" stroke-width="2"/>
-<rect x="180" y="14" width="24" height="20" rx="2" fill="#E24B4A"/>
-<rect x="276" y="14" width="24" height="20" rx="2" fill="#2A2E36"/>
-${txt("BATERIA 3V", 240, 60, 12, "#9FD8C6")}
-${txt("so os cinco aneis vem liberados", 240, 320, 12, "#7FC0AC")}`;
+<rect x="36" y="246" width="60" height="60" rx="8" fill="#1B1F26"/>${txt("A", 66, 288, 20, "#E8E8E4")}
+<rect x="384" y="246" width="60" height="60" rx="8" fill="#1B1F26"/>${txt("B", 414, 288, 20, "#E8E8E4")}
+${ledAlim(432, 168, on)}
+${txt("so os cinco aneis vem liberados", 240, 416, 12, "#7FC0AC")}`;
 }
 
 function expansao(d, i) {
@@ -220,15 +221,15 @@ ${on ? `<circle cx="48" cy="56" r="${52 + b * 20}" fill="${v.cor}" opacity="${0.
 function ledRgb(d, i) {
   const on = i.ligado;
   return `
-<rect width="168" height="192" rx="7" fill="#12151C" stroke="#05060A" stroke-width="2"/>
+<rect width="168" height="216" rx="7" fill="#12151C" stroke="#05060A" stroke-width="2"/>
 ${on ? `<circle cx="84" cy="76" r="62" fill="#F2F2EE" opacity=".22"/>` : ""}
 <path d="M44 84a40 40 0 0180 0v26H44z" fill="#F2F2EE" opacity="${on ? 0.95 : 0.55}"/>
 <rect x="38" y="106" width="92" height="12" rx="3" fill="#E8E8E4" opacity=".8"/>
 <circle cx="66" cy="72" r="9" fill="${on ? "#E24B4A" : "#5A2A2A"}"/>
 <circle cx="84" cy="62" r="9" fill="${on ? "#4ED17A" : "#255036"}"/>
 <circle cx="102" cy="72" r="9" fill="${on ? "#5B9BE8" : "#243B58"}"/>
-${txt("LED RGB", 84, 148, 15, "#F2F2EE")}
-${txt("catodo comum", 84, 166, 11, "#8A8F98")}`;
+${txt("LED RGB", 84, 146, 15, "#F2F2EE")}
+${txt("catodo comum", 84, 164, 11, "#8A8F98")}`;
 }
 
 function neopixel(d, i) {
@@ -275,6 +276,16 @@ function botao(d, i) {
 <circle cx="60" cy="60" r="${p ? 22 : 27}" fill="${p ? "#5A2320" : "#8A2C28"}"/>
 <path d="M18 18h10M92 18h10M18 102h10M92 102h10" stroke="#B9BEC6" stroke-width="4"/>
 ${txt("1-3 e 2-4 ja ligados", 60, 116, 10, "#8A8F98")}`;
+}
+
+function chave(d, i) {
+  const on = i.pressionado;
+  return `
+<rect x="12" y="12" width="96" height="96" rx="8" fill="#1B1F26" stroke="#05060A" stroke-width="2"/>
+<rect x="26" y="26" width="68" height="68" rx="5" fill="#31363E"/>
+<path d="M26 ${on ? 26 : 60}h68v34H26z" fill="${on ? "#4ED17A" : "#8A2C28"}" opacity=".85"/>
+${txt(on ? "LIGADA" : "DESLIG", 60, 68, 12, "#F2F2EE")}
+<path d="M24 108v14M72 108v14" stroke="#B9BEC6" stroke-width="4"/>`;
 }
 
 function potenciometro(d, i) {
@@ -402,7 +413,7 @@ const MAPA = {
   expansao, protoboard, modulo, "ponte-h": ponteH,
   axial, radial, disco, to92,
   led, "led-rgb": ledRgb, neopixel, lcd, buzzer,
-  botao, potenciometro, ldr, ultrassonico, "ir-obstaculo": irObstaculo,
+  botao, chave, potenciometro, ldr, ultrassonico, "ir-obstaculo": irObstaculo,
   servo, motor, bateria, "suporte-aa": suporteAA, "fonte-pb": fontePb,
 };
 

@@ -148,12 +148,12 @@ function pinosMicrobura() {
     ["GND", "gnd", null, "Anel de terra"],
   ];
   const p = aneis.map(([n, papel, v, rotulo], i) => ({
-    id: "anel" + i, n, rotulo, x: 72 + i * 96, y: 360, r: "pad", papel, v, grande: true, lado: "cima",
+    id: "anel" + i, n, rotulo, x: 72 + i * 96, y: 456, r: "pad", papel, v, grande: true, lado: "cima",
   }));
   // Conector de bateria no topo, igual ao da micro:bit real. Aceita de
   // 3 a 3,3 volts: e por aqui que o projeto sai do cabo e anda sozinho.
-  p.push({ id: "batP", n: "BAT+", rotulo: "Conector de bateria, positivo — de 3 a 3,3 volts", x: 192, y: 24, r: "borne", papel: "v+", entrada: true, vmin: 2.9, vmax: 3.4, lado: "baixo" });
-  p.push({ id: "batN", n: "BAT-", rotulo: "Conector de bateria, negativo — terra", x: 288, y: 24, r: "borne", papel: "gnd", lado: "baixo" });
+  p.push({ id: "batP", n: "BAT+", rotulo: "Conector de bateria, positivo — de 3 a 3,3 volts", x: 192, y: 48, r: "borne", papel: "v+", entrada: true, vmin: 2.9, vmax: 3.4, lado: "cima" });
+  p.push({ id: "batN", n: "BAT-", rotulo: "Conector de bateria, negativo — terra", x: 288, y: 48, r: "borne", papel: "gnd", lado: "cima" });
   return p;
 }
 
@@ -229,7 +229,7 @@ add({
 });
 add({
   id: "microbura", nome: "MicroBURA", caixa: "placas", arte: "placa-microbura",
-  w: 480, h: 384, cor: "#0F5A46", alimentada: true, custo: 60,
+  w: 480, h: 480, cor: "#0F5A46", alimentada: true, custo: 60,
   pinos: pinosMicrobura(),
   tensaoLogica: 3.3, tensaoMaxPino: 3.6,
   limitePino: 5, limiteAlim: 90, limiteTotal: 120,
@@ -240,7 +240,8 @@ add({
   id: "expansao-microbura", nome: "Expansao MicroBURA", caixa: "placas", arte: "expansao",
   w: 480, h: 216, cor: "#2A2E36", custo: 25,
   pinos: pinosExpansaoMicrobura(),
-  expansaoDe: "microbura",
+  acoplaEm: "microbura",
+  mapa: { esp0: "anel0", esp1: "anel1", esp2: "anel2", esp3: "anel3", esp4: "anel4" },
 });
 add({
   id: "protoboard", nome: "Protoboard 400", caixa: "placas", arte: "protoboard",
@@ -361,18 +362,18 @@ add({
     { nome: "branco", cor: "#F2F2EE", vf: 3.1 },
   ],
   pinos: [
-    { id: "a", n: "A", rotulo: "Anodo — perna comprida, recebe o positivo", x: 24, y: 144, r: "macho", papel: "terminal", lado: "baixo" },
-    { id: "k", n: "K", rotulo: "Catodo — perna curta, vai para o GND", x: 48, y: 144, r: "macho", papel: "terminal", lado: "baixo" },
+    { id: "a", n: "+", rotulo: "Anodo, o positivo — perna comprida e dobrada", x: 24, y: 144, r: "macho", papel: "terminal", lado: "baixo" },
+    { id: "k", n: "-", rotulo: "Catodo, o negativo — perna curta, vai para o GND", x: 48, y: 144, r: "macho", papel: "terminal", lado: "baixo" },
   ],
 });
 add({
-  id: "ledrgb", nome: "LED RGB", caixa: "leds", arte: "led-rgb", w: 168, h: 192,
+  id: "ledrgb", nome: "LED RGB", caixa: "leds", arte: "led-rgb", w: 168, h: 216,
   cor: "#12151C", alimenta: 0, custo: 8,
   pinos: [
-    { id: "r", n: "R", rotulo: "Canal vermelho — aceita PWM", x: 24, y: 168, r: "macho", papel: "pwm", lado: "baixo" },
-    { id: "g", n: "G", rotulo: "Canal verde — aceita PWM", x: 48, y: 168, r: "macho", papel: "pwm", lado: "baixo" },
-    { id: "b", n: "B", rotulo: "Canal azul — aceita PWM", x: 72, y: 168, r: "macho", papel: "pwm", lado: "baixo" },
-    { id: "gnd", n: "GND", rotulo: "Catodo comum — vai para o terra", x: 96, y: 168, r: "macho", papel: "gnd", lado: "baixo" },
+    { id: "r", n: "R", rotulo: "Canal vermelho — aceita PWM", x: 24, y: 192, r: "macho", papel: "pwm", lado: "baixo" },
+    { id: "g", n: "G", rotulo: "Canal verde — aceita PWM", x: 48, y: 192, r: "macho", papel: "pwm", lado: "baixo" },
+    { id: "b", n: "B", rotulo: "Canal azul — aceita PWM", x: 72, y: 192, r: "macho", papel: "pwm", lado: "baixo" },
+    { id: "gnd", n: "GND", rotulo: "Catodo comum — vai para o terra", x: 96, y: 192, r: "macho", papel: "gnd", lado: "baixo" },
   ],
 });
 add({
@@ -409,7 +410,7 @@ add({
 /* entradas */
 add({
   id: "botao", nome: "Botao (push)", caixa: "entradas", arte: "botao", w: 120, h: 120,
-  cor: "#1B1F26", pressionavel: true, custo: 2,
+  cor: "#1B1F26", pressionavel: true, custo: 2, zonaAcao: { x: 60, y: 60, r: 36, acao: "pressionar" },
   ligacoes: [["1a", "1b"], ["2a", "2b"]],
   ligacoesFechado: [["1a", "2a"]],
   pinos: [
@@ -420,8 +421,18 @@ add({
   ],
 });
 add({
+  id: "interruptor", nome: "Chave gangorra", caixa: "entradas", arte: "chave", w: 120, h: 144,
+  cor: "#1B1F26", custo: 3, chaveavel: true,
+  zonaAcao: { x: 60, y: 48, r: 40, acao: "chavear" },
+  ligacoesFechado: [["a", "b"]],
+  pinos: [
+    { id: "a", n: "1", rotulo: "Terminal da chave — fecha o circuito quando ligada", x: 24, y: 120, r: "macho", papel: "terminal", lado: "baixo" },
+    { id: "b", n: "2", rotulo: "Terminal da chave — fecha o circuito quando ligada", x: 72, y: 120, r: "macho", papel: "terminal", lado: "baixo" },
+  ],
+});
+add({
   id: "potenciometro", nome: "Potenciometro 10k", caixa: "entradas", arte: "potenciometro",
-  w: 168, h: 192, cor: "#1B1F26", ajuste: true, custo: 5,
+  w: 168, h: 192, cor: "#1B1F26", ajuste: true, custo: 5, zonaAcao: { x: 84, y: 62, r: 46, acao: "girar" },
   pinos: [
     { id: "a", n: "1", rotulo: "Extremo — costuma ir na alimentacao", x: 48, y: 168, r: "macho", papel: "terminal", lado: "baixo" },
     { id: "w", n: "W", rotulo: "Cursor — devolve a tensao proporcional ao giro", x: 72, y: 168, r: "macho", papel: "analog", lado: "baixo" },

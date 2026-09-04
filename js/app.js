@@ -91,6 +91,7 @@ function iniciarInterface() {
     },
     aoInverter: (ponta) => robo.dizer(`Ponta da vez: ${ponta}. ${NOME_CONTATO[ponta]}.`, { expressao: "pensando" }),
     aoUsarFerramenta: usarFerramenta,
+    aoMudarPonta: pintarChipDaPonta,
     svgFerramenta: () => (multimetro.estado.ativo ? multimetro.svgPontas(bancada) : "") + (solda.estado.ativo ? solda.svgFerro(bancada) : ""),
     aoArrastar: (x, y) => q("#lixeira").classList.toggle("mirada", sobreLixeira(x, y)),
     aoSoltarPeca: (id, x, y) => {
@@ -174,11 +175,29 @@ function ligarFerramentas() {
 
   q("#b-limpar").addEventListener("click", confirmarLimpeza);
 
+  // Mesmas acoes das teclas, agora como botao: no celular nao ha
+  // Delete, nem Tab, nem Esc.
+  q("#t-girar").addEventListener("click", () => {
+    if (bancada.estado.selecionado) bancada.girar(bancada.estado.selecionado);
+    else robo.dizer("Toque numa peca antes de girar.", { falar: false });
+  });
+  q("#t-apagar").addEventListener("click", () => {
+    const oque = bancada.apagarSelecionado();
+    robo.dizer(oque === "fio" ? "Fio removido." : oque === "peca" ? "Peca removida." : "Toque num fio ou numa peca para escolher o que apagar.", { falar: false });
+  });
+  q("#t-cancelar").addEventListener("click", () => { bancada.cancelar(); robo.dizer("Fio cancelado.", { falar: false }); });
+  q("#t-inverter").addEventListener("click", () => {
+    const nova = bancada.inverterPontas();
+    if (!nova) robo.dizer("Pegue um jumper na sacola primeiro.", { falar: false });
+  });
+  q("#ponta-chip").addEventListener("click", () => bancada.inverterPontas());
+
   q("#b-multimetro").addEventListener("click", (e) => {
     if (multimetro.estado.ativo) { multimetro.fechar(bancada); e.currentTarget.classList.remove("ativo"); return; }
     if (solda.estado.ativo) { solda.desligar(bancada); q("#b-solda").classList.remove("ativo"); }
     bancada.escolherFio(null);
     gavetas.largarFio();
+    pintarChipDaPonta(null);
     multimetro.abrir(bancada, {
       aoFechar: () => q("#b-multimetro").classList.remove("ativo"),
       aoMedir: (r) => { if (r.aviso) robo.dizer(r.aviso, { expressao: "pensando" }); },
@@ -192,6 +211,7 @@ function ligarFerramentas() {
     if (multimetro.estado.ativo) { multimetro.fechar(bancada); q("#b-multimetro").classList.remove("ativo"); }
     bancada.escolherFio(null);
     gavetas.largarFio();
+    pintarChipDaPonta(null);
     solda.ligar(bancada);
     e.currentTarget.classList.add("ativo");
     robo.dizer("Ferro quente. Encoste em dois contatos que estejam perto um do outro e eles viram um so. Clicar numa junta pronta dessolda.", { expressao: "pensando" });
@@ -300,6 +320,20 @@ function usarFerramenta(qual, compId, pinoId) {
     if (!r.ok) SOM.erro();
     bancada.redesenhar();
   }
+}
+
+/* Chip fixo com a ponta da vez. No computador o cursor ja mostra,
+   mas no celular nao ha cursor: sem isto o aluno nao sabe se esta
+   segurando a ponta macho ou a femea. */
+const FORMA_PONTA = { macho: "&#9632;", femea: "&#9679;", jacare: "&#9644;" };
+
+function pintarChipDaPonta(info) {
+  const chip = q("#ponta-chip");
+  if (!chip) return;
+  if (!info) { chip.hidden = true; return; }
+  chip.hidden = false;
+  chip.innerHTML = `<span class="forma" style="color:${info.cor}">${FORMA_PONTA[info.ponta] || ""}</span>
+    ${info.indice}a ponta: <b>${info.ponta}</b> <em>toque para inverter</em>`;
 }
 
 function sobreLixeira(x, y) {
@@ -589,6 +623,10 @@ function explicarPapel(p) {
 }
 
 function primeiraDica(d) {
+  if (d.zonaAcao && d.zonaAcao.acao === "pressionar") return "Da para apertar de verdade: segure o botao com o dedo ou o mouse.";
+  if (d.zonaAcao && d.zonaAcao.acao === "chavear") return "Clique na chave para ligar e desligar. Ela fica no estado que voce deixar.";
+  if (d.zonaAcao && d.zonaAcao.acao === "girar") return "Arraste o botao redondo para girar o cursor.";
+  if (d.acoplaEm) return "Solte ela logo abaixo da MicroBURA para acoplar e liberar os outros pinos.";
   if (d.arte === "protoboard") return "Ligue o Raio-X se ainda tiver duvida de quais furos se conversam.";
   if (d.alimentada) return "Abra o painel Firmware para escolher o estado de cada pino dela.";
   if (d.id === "led") return "Nunca sozinho: LED pede resistor em serie, senao vira fumaca.";

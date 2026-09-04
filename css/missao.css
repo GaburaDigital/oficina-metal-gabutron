@@ -147,13 +147,19 @@
 }
 
 /* ---------- multimetro ---------- */
+#ferramenta-caixa { margin: 0 var(--e3) var(--e2); }
+
 #multimetro {
-  position: fixed; right: var(--e3); bottom: 66px; z-index: 30;
-  width: 250px;
   background: var(--casco);
   border: 2px solid var(--linha-viva); border-radius: var(--raio);
-  box-shadow: 0 8px 24px rgba(0,0,0,.45);
 }
+
+/* Com o multimetro aberto o retrato encolhe e a fala fica baixinha:
+   o aparelho e que precisa de espaco na hora de medir. */
+#painel-robo.com-ferramenta #retrato { display: none; }
+#painel-robo.com-ferramenta .fala { max-height: 120px; }
+#painel-robo.com-ferramenta .abas-info { display: none; }
+#painel-robo.com-ferramenta #missao-caixa { max-height: 26%; }
 .mm-topo {
   display: flex; align-items: center; gap: var(--e2);
   padding: 6px var(--e2); border-bottom: var(--borda);
@@ -182,4 +188,4 @@
   margin: 0; padding: 0 var(--e2) var(--e2);
   color: var(--poeira); font-size: var(--t-micro); line-height: 1.5;
 }
-@media (max-width: 900px) { #multimetro { right: 6px; bottom: 82px; width: 220px; } }
+

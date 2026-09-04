@@ -292,3 +292,41 @@
   opacity: .9;
 }
 #fantasma.valido { border: 1px solid var(--fosforo); color: var(--fosforo); }
+
+/* ---------- barra de acoes por toque ----------
+   Tudo que no computador e tecla (Delete, R, Tab, Esc) precisa ter
+   botao, senao no celular o aluno fica preso. */
+#acoes-toque {
+  position: absolute; left: var(--e2); bottom: var(--e2); z-index: 6;
+  display: flex; gap: 5px; flex-wrap: wrap;
+  max-width: calc(100% - 16px);
+}
+#acoes-toque .btn { background: var(--casco); font-size: var(--t-micro); }
+
+/* chip da ponta da vez: no celular nao existe cursor para acompanhar,
+   entao a informacao mora fixa na tela */
+#ponta-chip {
+  position: absolute; left: var(--e2); top: 46px; z-index: 6;
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 9px;
+  background: var(--casco); border: 1px solid var(--fosforo);
+  border-radius: var(--raio); font-size: var(--t-micro); color: var(--luz);
+  cursor: pointer;
+}
+#ponta-chip .forma { font-size: 15px; }
+#ponta-chip em { color: var(--poeira); font-style: normal; }
+
+/* com ferramenta na mao, o fio deixa de interceptar o clique */
+#bancada.com-ferramenta #camada-fios { pointer-events: none; }
+.comp .acao { cursor: pointer; }
+
+@media (max-width: 900px) {
+  .dica-canto { display: none; }
+  #acoes-toque { bottom: 6px; }
+  #acoes-toque .btn { min-height: 38px; padding: 6px 10px; }
+  .ferramentas .btn { min-height: 36px; }
+  #lixeira { bottom: 58px; }
+}
+@media (min-width: 901px) {
+  #acoes-toque { opacity: .85; }
+}

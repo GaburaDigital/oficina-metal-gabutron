@@ -164,9 +164,14 @@ export function abrir(bancada, ganchos) {
   estado.ativo = true;
   bancada.estado.modoFerramenta = "multimetro";
 
+  // O aparelho fica no painel do GabuTRON, nao flutuando sobre a
+  // bancada: janela solta cobre justamente o que voce quer medir.
+  const casa = document.getElementById("ferramenta-caixa");
   painel = document.createElement("div");
   painel.id = "multimetro";
-  document.body.appendChild(painel);
+  casa.appendChild(painel);
+  casa.hidden = false;
+  document.getElementById("painel-robo").classList.add("com-ferramenta");
   pintar(bancada);
   atualizar(bancada);
 }
@@ -177,6 +182,9 @@ export function fechar(bancada) {
   limparPontas(bancada);
   if (painel) painel.remove();
   painel = null;
+  const casa = document.getElementById("ferramenta-caixa");
+  if (casa) casa.hidden = true;
+  document.getElementById("painel-robo").classList.remove("com-ferramenta");
   if (aoMudar && aoMudar.aoFechar) aoMudar.aoFechar();
 }
 

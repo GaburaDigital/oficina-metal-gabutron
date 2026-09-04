@@ -75,12 +75,12 @@
     "potenciometro": {
       "curiosidade": "E um resistor com um cursor deslizante por dentro. O botao de volume de todo radio antigo era exatamente isso.",
       "uso": "Ajustar brilho, volume, velocidade, contraste de display, ou simplesmente virar entrada analogica de teste.",
-      "tecnico": "Tres pinos: os das pontas vao para alimentacao e GND, e o do meio devolve a tensao proporcional ao giro. Ligado a uma entrada analogica, entrega valores de 0 ao maximo do conversor."
+      "tecnico": "Tres pinos: os das pontas vao para alimentacao e GND, e o do meio devolve a tensao proporcional ao giro. Ligado a uma entrada analogica, entrega valores de 0 ao maximo do conversor. Arraste o botao redondo para girar o cursor e veja a corrente mudar no multimetro."
     },
     "botao": {
       "curiosidade": "O botao de quatro pinos confunde todo mundo: os pinos ja sao ligados dois a dois de fabrica. Se voce montar no sentido errado, ele fica permanentemente apertado.",
       "uso": "Ligar, resetar, escolher opcao, disparar tiro no controle de video game.",
-      "tecnico": "Os pinos opostos fecham quando apertados. Precisa de resistor de pull-up ou pull-down para o pino nao ficar solto lendo lixo. O contato treme por alguns milissegundos ao fechar, e isso se resolve no codigo ou com um capacitor."
+      "tecnico": "Os pinos opostos fecham quando apertados. Precisa de resistor de pull-up ou pull-down para o pino nao ficar solto lendo lixo. O contato treme por alguns milissegundos ao fechar, e isso se resolve no codigo ou com um capacitor. Aqui na bancada da para apertar de verdade: segure o botao com o dedo ou o mouse e ele fecha enquanto estiver pressionado, como no mundo real."
     },
     "bateria9v": {
       "curiosidade": "Por dentro da bateria de 9 volts existem seis pilhas pequenininhas em serie. Abrir uma e um dos ritos de passagem da eletronica, mas nao faca isso na sala.",
@@ -91,6 +91,16 @@
       "curiosidade": "LDR quer dizer resistor dependente de luz. No escuro ele resiste como um adolescente de manha; na luz forte quase vira fio.",
       "uso": "Abajur que acende sozinho, seguidor de linha caseiro, despertador solar, cofre que percebe quando abriram a tampa.",
       "tecnico": "Nao tem polaridade. Vai em divisor de tensao com um resistor de 10k para virar leitura analogica. No escuro passa de 200 mil ohms; sob luz forte cai para algumas centenas."
+    },
+    "interruptor": {
+      "curiosidade": "Chave gangorra e o mesmo interruptor da parede da sua casa, so que pequeno. Aquele estalo que ela da e uma molinha passando do ponto: e por isso que ela fica onde voce deixou, diferente do botao.",
+      "uso": "Ligar e desligar o projeto inteiro, cortar a bateria de um carrinho, dar um interruptor geral para a maquete.",
+      "tecnico": "Dois terminais, sem polaridade. Ligada, ela e um pedaco de fio; desligada, e um circuito aberto. Repare que ela entra em SERIE com o que voce quer controlar, nunca em paralelo: em paralelo ela vira curto."
+    },
+    "expansao-microbura": {
+      "curiosidade": "A MicroBURA nasceu com cinco aneis grandes justamente para caber garra jacare de crianca. O preco disso e que os outros vinte pinos ficam num conector minusculo que dedo nenhum alcanca. O adaptador existe so para resolver esse detalhe.",
+      "uso": "Qualquer projeto que precise de mais de tres entradas e saidas: robo com varios sensores, painel de LEDs, teclado.",
+      "tecnico": "Encaixa por baixo da placa e repete os aneis em pinos machos, alem de liberar P3 ate P20. Com ele a MicroBURA passa a caber na protoboard. A logica continua sendo de 3,3 volts e os limites de corrente continuam os mesmos: o adaptador nao fortalece nada, so da acesso."
     }
   }
 }

@@ -255,6 +255,18 @@ Os outros campos da missão: `briefing` e `sucesso` são falas do GabuTRON; `dic
 
 ---
 
+## Peças que se mexem
+
+Três componentes respondem ao toque, e isso permite montar circuito sem nenhuma placa de controle — só bateria, fios e peça:
+
+| Peça | Como interagir | Comportamento |
+|---|---|---|
+| Botão | segure com o dedo ou o mouse | fecha enquanto pressionado, como no mundo real |
+| Chave gangorra | clique | fica no estado que você deixou |
+| Potenciômetro | arraste o botão redondo | o cursor gira e a corrente muda de verdade |
+
+Uma bateria de 9 V, uma chave, um resistor e um LED já formam um circuito completo e funcional. É a montagem mais simples possível, e agora ela existe na bancada.
+
 ## O multímetro
 
 Quatro modos, os mesmos do aparelho da bancada. Ele abre num painel no canto, o aluno escolhe o modo e vai encostando as pontas nos contatos: a vermelha primeiro, a preta depois.

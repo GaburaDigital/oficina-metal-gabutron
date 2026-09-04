@@ -258,11 +258,17 @@ function svgComponente(comp, ocupados) {
 
   const dano = comp.queimado ? svgQueimado(d.w, d.h) + svgFumaca(d.w / 2, d.h / 2) : "";
 
+  // Area clicavel da peca que se mexe: botao, chave, potenciometro.
+  const z = d.zonaAcao;
+  const acao = z
+    ? `<circle class="acao" data-comp="${comp.id}" data-acao="${z.acao}" cx="${z.x}" cy="${z.y}" r="${z.r}" fill="transparent"/>`
+    : "";
+
   return `<g class="comp${sel ? " sel" : ""}" data-id="${comp.id}" transform="translate(${comp.x} ${comp.y}) rotate(${comp.rot || 0} ${d.w / 2} ${d.h / 2})">
   ${desenhar(d, inst)}
   ${raio}${raioBotao}
   ${d.pinos.map((p) => svgUmPino(comp, d, p, ocupados)).join("")}
-  ${usb}${raioFonte}${dano}
+  ${usb}${raioFonte}${dano}${acao}
   ${sel ? `<rect x="-10" y="-10" width="${d.w + 20}" height="${d.h + 20}" rx="6" fill="none" stroke="#5CE07A" stroke-width="3" stroke-dasharray="10 7" pointer-events="none"/>` : ""}
 </g>`;
 }
@@ -299,6 +305,9 @@ function svgFio(f) {
 }
 
 export function redesenhar() {
+  // Com multimetro ou ferro na mao o clique tem que chegar ao contato,
+  // mesmo que passe um fio por cima dele.
+  if (svg) svg.classList.toggle("com-ferramenta", !!estado.modoFerramenta);
   const ocupados = furosOcupados();
   camadaComp.innerHTML = estado.comps.map((c) => svgComponente(c, ocupados)).join("");
   camadaFios.innerHTML = estado.fios.map(svgFio).join("");
@@ -327,6 +336,24 @@ function tentarEncaixar(comp) {
   const d = PORID[comp.tipo];
   comp.encaixes = [];
   comp.pai = null;
+
+  // 1) acoplamento: a expansao encaixa POR BAIXO da placa mae e passa
+  //    a repetir os aneis dela em pinos machos.
+  if (d.acoplaEm) {
+    for (const mae of estado.comps) {
+      if (mae.id === comp.id || mae.tipo !== d.acoplaEm) continue;
+      const md = PORID[mae.tipo];
+      const alvoX = mae.x, alvoY = mae.y + md.h - 24;
+      if (Math.hypot(comp.x - alvoX, comp.y - alvoY) > 120) continue;
+      comp.x = alvoX;
+      comp.y = alvoY;
+      comp.pai = mae.id;
+      for (const [meu, dela] of Object.entries(d.mapa || {}))
+        comp.encaixes.push({ pino: meu, comp: mae.id, pinoAlvo: dela });
+      return true;
+    }
+  }
+
   const machos = d.pinos.filter((p) => p.r === "macho");
   if (!machos.length) return false;
 
@@ -496,15 +523,35 @@ export function escolherFio(jumper, cor) {
   atualizarPontaCursor();
 }
 
+export function apagarSelecionado() {
+  if (estado.fioSelecionado) { removerFio(estado.fioSelecionado); return "fio"; }
+  if (estado.selecionado) { SOM.lixo(); remover(estado.selecionado); return "peca"; }
+  return null;
+}
+
+export function cancelar() {
+  estado.pendente = null;
+  desenharTopo();
+  atualizarPontaCursor();
+}
+
+export function pontaDaVez() {
+  const f = estado.ferramentaFio;
+  if (!f) return null;
+  return { ponta: f.pontas[estado.pendente ? 1 : 0], indice: estado.pendente ? 2 : 1, cor: f.cor, nome: f.nome };
+}
+
 export function inverterPontas() {
   if (!estado.ferramentaFio || estado.pendente) return null;
   estado.ferramentaFio.pontas.reverse();
   SOM.clique();
   atualizarPontaCursor();
+  if (ganchos.aoMudarPonta) ganchos.aoMudarPonta(pontaDaVez());
   return estado.ferramentaFio.pontas[0];
 }
 
 function atualizarPontaCursor(x, y) {
+  if (ganchos.aoMudarPonta) ganchos.aoMudarPonta(pontaDaVez());
   const f = estado.ferramentaFio;
   if (!f) { pontaCursor.hidden = true; return; }
   const i = estado.pendente ? 1 : 0;
@@ -571,6 +618,30 @@ function aoApertar(ev) {
   const alvo = ev.target.closest(".alvo");
   if (alvo) { ev.preventDefault(); clicarPino(alvo.dataset.comp, alvo.dataset.pino); return; }
 
+  const zona = ev.target.closest(".acao");
+  if (zona && !estado.modoFerramenta && !estado.ferramentaFio) {
+    ev.preventDefault();
+    const comp = achar(zona.dataset.comp);
+    if (!comp) return;
+    selecionar(comp.id);
+    if (zona.dataset.acao === "pressionar") {
+      comp.pressionado = true;
+      recalcular();
+      SOM.clique();
+      arrasto = { acaoBotao: comp.id };
+      svg.setPointerCapture(ev.pointerId);
+    } else if (zona.dataset.acao === "chavear") {
+      comp.pressionado = !comp.pressionado;
+      SOM.encaixe();
+      recalcular();
+    } else if (zona.dataset.acao === "girar") {
+      const d = PORID[comp.tipo];
+      arrasto = { acaoGiro: comp.id, cx: comp.x + d.zonaAcao.x, cy: comp.y + d.zonaAcao.y };
+      svg.setPointerCapture(ev.pointerId);
+    }
+    return;
+  }
+
   const gf = ev.target.closest(".fio");
   if (gf) {
     estado.fioSelecionado = estado.fioSelecionado === gf.dataset.id ? null : gf.dataset.id;
@@ -613,6 +684,17 @@ function aoMover(ev) {
     pinca.d = dd;
     return;
   }
+
+  if (arrasto && arrasto.acaoGiro) {
+    const comp = achar(arrasto.acaoGiro);
+    const m = telaParaMundo(ev.clientX, ev.clientY);
+    let ang = (Math.atan2(m.y - arrasto.cy, m.x - arrasto.cx) * 180) / Math.PI + 90;
+    if (ang < -180) ang += 360;
+    comp.giro = Math.max(0, Math.min(100, Math.round(((ang + 140) / 280) * 100)));
+    recalcular();
+    return;
+  }
+  if (arrasto && arrasto.acaoBotao) return;
 
   if (arrasto) {
     const comp = achar(arrasto.id);
@@ -664,6 +746,14 @@ function posicionarGrupo(comp, filhos) {
 function aoSoltar(ev) {
   ponteiros.delete(ev.pointerId);
   if (ponteiros.size < 2) pinca = null;
+
+  if (arrasto && arrasto.acaoBotao) {
+    const comp = achar(arrasto.acaoBotao);
+    if (comp) { comp.pressionado = false; recalcular(); }
+    arrasto = null;
+    return;
+  }
+  if (arrasto && arrasto.acaoGiro) { arrasto = null; return; }
 
   if (arrasto) {
     const comp = achar(arrasto.id);
