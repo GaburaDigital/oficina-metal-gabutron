@@ -3,36 +3,352 @@
   "titulo": "O drone que so gira para um lado",
   "tipo": "manutencao",
   "dificuldade": "facil",
-  "minutos": 12,
-  "pontos": 90,
-  "fase": 3,
-
-  "briefing": "Trouxeram o drone de inspecao do casco. Ele liga, tenta subir e roda no proprio eixo feito peiao. Um dos motores nao esta respondendo. Pode ser o motor, pode ser o fio, pode ser a saida da ponte H. Descubra antes de trocar peca boa por peca boa.",
-
-  "montagemInicial": "bura32-ponteh-dois-motores",
-
-  "defeito": {
-    "tipo": "fio-rompido",
-    "onde": "ponteh:out2 -> motordc-b:a",
-    "visivel": false,
-    "explicacao": "O fio parece inteiro por fora, mas esta partido dentro do isolamento. So o teste de continuidade acusa."
+  "minutos": 15,
+  "pontos": 160,
+  "fase": 4,
+  "briefing": "Trouxeram o drone de inspecao do casco. Ele liga, tenta subir e roda no proprio eixo feito peiao. Um dos motores nao responde. Ja sei o que voce vai fazer: trocar o motor. Nao. Primeiro descubra ATE ONDE a energia chega. Se ela chega no borne da ponte H mas nao chega no motor, o problema esta entre os dois, e entre os dois so existe fio. Multimetro na mao, bancada desligada, continuidade.",
+  "montagem": {
+    "formato": "gabutron-bancada",
+    "versao": 3,
+    "comps": [
+      {
+        "id": "pl",
+        "tipo": "gaburino",
+        "x": 0,
+        "y": 640,
+        "rot": 0,
+        "usbLigado": true,
+        "encaixes": [],
+        "firmware": {
+          "t9": {
+            "modo": "alto"
+          },
+          "t7": {
+            "modo": "alto"
+          },
+          "t8": {
+            "modo": "baixo"
+          },
+          "t10": {
+            "modo": "alto"
+          },
+          "t5": {
+            "modo": "alto"
+          },
+          "t4": {
+            "modo": "baixo"
+          }
+        }
+      },
+      {
+        "id": "ph",
+        "tipo": "ponteh",
+        "x": 760,
+        "y": 0,
+        "rot": 0,
+        "encaixes": []
+      },
+      {
+        "id": "bat",
+        "tipo": "suporteaa",
+        "x": 760,
+        "y": 400,
+        "rot": 0,
+        "encaixes": []
+      },
+      {
+        "id": "m1",
+        "tipo": "motordc",
+        "x": 1250,
+        "y": -40,
+        "rot": 0,
+        "encaixes": []
+      },
+      {
+        "id": "m2",
+        "tipo": "motordc",
+        "x": 1250,
+        "y": 220,
+        "rot": 0,
+        "encaixes": []
+      }
+    ],
+    "fios": [
+      {
+        "id": "f1",
+        "tipo": "mm",
+        "cor": "#E24B4A",
+        "pontas": [
+          "macho",
+          "macho"
+        ],
+        "a": {
+          "comp": "bat",
+          "pino": "p"
+        },
+        "b": {
+          "comp": "ph",
+          "pino": "v12"
+        }
+      },
+      {
+        "id": "f2",
+        "tipo": "mm",
+        "cor": "#2A2E36",
+        "pontas": [
+          "macho",
+          "macho"
+        ],
+        "a": {
+          "comp": "bat",
+          "pino": "n"
+        },
+        "b": {
+          "comp": "ph",
+          "pino": "gnd"
+        }
+      },
+      {
+        "id": "f3",
+        "tipo": "mm",
+        "cor": "#2A2E36",
+        "pontas": [
+          "macho",
+          "macho"
+        ],
+        "a": {
+          "comp": "ph",
+          "pino": "gnd"
+        },
+        "b": {
+          "comp": "pl",
+          "pino": "bGND4"
+        }
+      },
+      {
+        "id": "f4",
+        "tipo": "mm",
+        "cor": "#E9C542",
+        "pontas": [
+          "macho",
+          "macho"
+        ],
+        "a": {
+          "comp": "pl",
+          "pino": "t9"
+        },
+        "b": {
+          "comp": "ph",
+          "pino": "ena"
+        }
+      },
+      {
+        "id": "f5",
+        "tipo": "mm",
+        "cor": "#5CE07A",
+        "pontas": [
+          "macho",
+          "macho"
+        ],
+        "a": {
+          "comp": "pl",
+          "pino": "t7"
+        },
+        "b": {
+          "comp": "ph",
+          "pino": "in1"
+        }
+      },
+      {
+        "id": "f6",
+        "tipo": "mm",
+        "cor": "#5CE07A",
+        "pontas": [
+          "macho",
+          "macho"
+        ],
+        "a": {
+          "comp": "pl",
+          "pino": "t8"
+        },
+        "b": {
+          "comp": "ph",
+          "pino": "in2"
+        }
+      },
+      {
+        "id": "f7",
+        "tipo": "mm",
+        "cor": "#E9C542",
+        "pontas": [
+          "macho",
+          "macho"
+        ],
+        "a": {
+          "comp": "pl",
+          "pino": "t10"
+        },
+        "b": {
+          "comp": "ph",
+          "pino": "enb"
+        }
+      },
+      {
+        "id": "f8",
+        "tipo": "mm",
+        "cor": "#7DD3FC",
+        "pontas": [
+          "macho",
+          "macho"
+        ],
+        "a": {
+          "comp": "pl",
+          "pino": "t5"
+        },
+        "b": {
+          "comp": "ph",
+          "pino": "in3"
+        }
+      },
+      {
+        "id": "f9",
+        "tipo": "mm",
+        "cor": "#7DD3FC",
+        "pontas": [
+          "macho",
+          "macho"
+        ],
+        "a": {
+          "comp": "pl",
+          "pino": "t4"
+        },
+        "b": {
+          "comp": "ph",
+          "pino": "in4"
+        }
+      },
+      {
+        "id": "f10",
+        "tipo": "mm",
+        "cor": "#E24B4A",
+        "pontas": [
+          "macho",
+          "macho"
+        ],
+        "a": {
+          "comp": "ph",
+          "pino": "out1"
+        },
+        "b": {
+          "comp": "m1",
+          "pino": "a"
+        }
+      },
+      {
+        "id": "f11",
+        "tipo": "mm",
+        "cor": "#2A2E36",
+        "pontas": [
+          "macho",
+          "macho"
+        ],
+        "a": {
+          "comp": "ph",
+          "pino": "out2"
+        },
+        "b": {
+          "comp": "m1",
+          "pino": "b"
+        }
+      },
+      {
+        "id": "f12",
+        "tipo": "mm",
+        "cor": "#E24B4A",
+        "pontas": [
+          "macho",
+          "macho"
+        ],
+        "a": {
+          "comp": "ph",
+          "pino": "out3"
+        },
+        "b": {
+          "comp": "m2",
+          "pino": "a"
+        }
+      },
+      {
+        "id": "f13",
+        "tipo": "mm",
+        "cor": "#2A2E36",
+        "pontas": [
+          "macho",
+          "macho"
+        ],
+        "a": {
+          "comp": "ph",
+          "pino": "out4"
+        },
+        "b": {
+          "comp": "m2",
+          "pino": "b"
+        },
+        "rompido": true
+      }
+    ],
+    "vista": {
+      "x": 30,
+      "y": 20,
+      "k": 0.26
+    }
   },
-
-  "passos": [
-    { "id": "medir-bateria", "texto": "Medir a tensao da bateria com o multimetro" },
-    { "id": "medir-saida", "texto": "Medir a tensao nos bornes OUT do motor parado" },
-    { "id": "continuidade", "texto": "Testar continuidade do fio suspeito" },
-    { "id": "trocar", "texto": "Substituir o fio defeituoso" },
-    { "id": "testar", "texto": "Energizar e confirmar os dois motores girando" }
+  "objetivos": [
+    {
+      "id": "mediu",
+      "texto": "Testar continuidade com o multimetro",
+      "regra": {
+        "tipo": "usouFerramenta",
+        "modo": "continuidade"
+      }
+    },
+    {
+      "id": "sem-rompido",
+      "texto": "Remover o fio partido",
+      "regra": {
+        "tipo": "semRompidos"
+      }
+    },
+    {
+      "id": "motores",
+      "texto": "Os dois motores girando",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "motordc",
+        "n": 2
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
   ],
-
   "dicas": [
-    "Antes de acusar o motor, pergunte se a energia esta chegando ate ele.",
-    "Multimetro no simbolo de onda sonora e o teste de continuidade: se apitar, o caminho existe.",
-    "Se chega tensao no borne mas nao chega no motor, o problema esta entre os dois. Ou seja: no fio."
+    "Compare os dois lados. O motor que funciona e o seu gabarito: meca o mesmo ponto nos dois e veja onde eles deixam de ser iguais.",
+    "Desligue a bancada e teste continuidade entre o borne OUT4 e o terminal do motor parado.",
+    "Se der aberto, o fio esta partido por dentro. Apague ele com Delete e refaca a ligacao com um jumper novo.",
+    "Antes de trocar peca, pergunte sempre: a energia chega ate ela?"
   ],
-
-  "sucesso": "Fio partido por dentro. O defeito mais covarde que existe. Voce achou sem trocar peca boa, e isso separa tecnico de trocador de peca.",
-
-  "componentesLiberados": ["bura32", "ponteh", "motordc", "suporteaa", "multimetro"]
+  "erroComum": "Trocar o motor. Motor bom vai para a gaveta, o drone continua girando e ninguem entende.",
+  "sucesso": "Fio, nao motor. Voce comparou o lado bom com o lado ruim e achou onde eles deixavam de ser iguais. Esse metodo resolve metade dos defeitos de bancada.",
+  "componentesLiberados": [
+    "gaburino",
+    "ponteh",
+    "motordc",
+    "suporteaa",
+    "protoboard"
+  ]
 }

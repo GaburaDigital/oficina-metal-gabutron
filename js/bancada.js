@@ -259,7 +259,7 @@ function svgComponente(comp, ocupados) {
   const dano = comp.queimado ? svgQueimado(d.w, d.h) + svgFumaca(d.w / 2, d.h / 2) : "";
 
   // Area clicavel da peca que se mexe: botao, chave, potenciometro.
-  const z = d.zonaAcao;
+  const z = estado.energizado ? d.zonaAcao : null;
   const acao = z
     ? `<circle class="acao" data-comp="${comp.id}" data-acao="${z.acao}" cx="${z.x}" cy="${z.y}" r="${z.r}" fill="transparent"/>`
     : "";
@@ -337,19 +337,19 @@ function tentarEncaixar(comp) {
   comp.encaixes = [];
   comp.pai = null;
 
-  // 1) acoplamento: a expansao encaixa POR BAIXO da placa mae e passa
-  //    a repetir os aneis dela em pinos machos.
-  if (d.acoplaEm) {
-    for (const mae of estado.comps) {
-      if (mae.id === comp.id || mae.tipo !== d.acoplaEm) continue;
-      const md = PORID[mae.tipo];
-      const alvoX = mae.x, alvoY = mae.y + md.h - 24;
-      if (Math.hypot(comp.x - alvoX, comp.y - alvoY) > 120) continue;
+  // 1) A placa mae solta em cima de uma expansao ja apoiada: ela desce
+  //    para a posicao e passa a andar junto.
+  if (d.encaixaExpansao) {
+    for (const ex of estado.comps) {
+      if (ex.id === comp.id || ex.tipo !== d.encaixaExpansao) continue;
+      const xd = PORID[ex.tipo];
+      const alvoX = ex.x, alvoY = ex.y - d.h + 24;
+      if (Math.hypot(comp.x - alvoX, comp.y - alvoY) > 140) continue;
       comp.x = alvoX;
       comp.y = alvoY;
-      comp.pai = mae.id;
-      for (const [meu, dela] of Object.entries(d.mapa || {}))
-        comp.encaixes.push({ pino: meu, comp: mae.id, pinoAlvo: dela });
+      comp.pai = ex.id;
+      for (const [dela, meu] of Object.entries(xd.mapa || {}))
+        comp.encaixes.push({ pino: meu, comp: ex.id, pinoAlvo: dela });
       return true;
     }
   }
@@ -386,9 +386,51 @@ function tentarEncaixar(comp) {
       });
       if (h) comp.encaixes.push({ pino: p.id, comp: base.id, pinoAlvo: h.id });
     }
-    if (comp.encaixes.length) { comp.pai = base.id; return true; }
+    if (comp.encaixes.length) {
+      comp.pai = base.id;
+      acoplarVizinhos(comp);
+      return true;
+    }
+  }
+
+  // Nao achou protoboard: a expansao ainda pode acoplar embaixo da
+  // placa mae, que e o uso mais comum dela.
+  if (d.acoplaEm) {
+    for (const mae of estado.comps) {
+      if (mae.id === comp.id || mae.tipo !== d.acoplaEm) continue;
+      const md = PORID[mae.tipo];
+      const alvoX = mae.x, alvoY = mae.y + md.h - 24;
+      if (Math.hypot(comp.x - alvoX, comp.y - alvoY) > 140) continue;
+      comp.x = alvoX;
+      comp.y = alvoY;
+      comp.pai = mae.id;
+      for (const [meu, dela] of Object.entries(d.mapa || {}))
+        comp.encaixes.push({ pino: meu, comp: mae.id, pinoAlvo: dela });
+      return true;
+    }
   }
   return false;
+}
+
+/* Depois de assentar na protoboard, a expansao ainda liga os aneis da
+   placa mae que estiver logo acima. E assim que MicroBURA e adaptador
+   trabalham juntos EM CIMA da protoboard, que era o que faltava. */
+function acoplarVizinhos(comp) {
+  const d = PORID[comp.tipo];
+  if (!d.acoplaEm) return;
+  for (const mae of estado.comps) {
+    if (mae.id === comp.id || mae.tipo !== d.acoplaEm) continue;
+    const md = PORID[mae.tipo];
+    const perto = Math.abs(mae.x - comp.x) < 60 && Math.abs(mae.y + md.h - 24 - comp.y) < 90;
+    if (!perto) continue;
+    mae.x = comp.x;
+    mae.y = comp.y - md.h + 24;
+    mae.pai = comp.id;
+    mae.encaixes = [];
+    for (const [meu, dela] of Object.entries(d.mapa || {}))
+      mae.encaixes.push({ pino: dela, comp: comp.id, pinoAlvo: meu });
+    return;
+  }
 }
 
 function filhosDe(id) { return estado.comps.filter((c) => c.pai === id); }
@@ -638,7 +680,10 @@ function aoApertar(ev) {
   const alvo = ev.target.closest(".alvo");
   if (alvo) { ev.preventDefault(); clicarPino(alvo.dataset.comp, alvo.dataset.pino); return; }
 
-  const zona = ev.target.closest(".acao");
+  // Apertar botao, chavear e girar so valem com a bancada energizada.
+  // Com ela desligada esses cliques passam direto para o arraste, que
+  // e o que o aluno quer quando esta montando: mover a peca de lugar.
+  const zona = estado.energizado ? ev.target.closest(".acao") : null;
   if (zona && !estado.modoFerramenta && !estado.ferramentaFio) {
     ev.preventDefault();
     const comp = achar(zona.dataset.comp);

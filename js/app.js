@@ -141,6 +141,9 @@ function ligarFerramentas() {
   q("#b-energia").addEventListener("click", () => {
     const ligado = bancada.alternarEnergia();
     sincronizarBotaoEnergia(ligado);
+    const temInterativo = bancada.estado.comps.some((c) => (PORID[c.tipo] || {}).zonaAcao);
+    if (ligado && temInterativo)
+      robo.dizer("Bancada viva. Agora da para apertar botao e girar potenciometro: com ela desligada esses cliques so arrastam a peca.", { expressao: "satisfeito" });
   });
 
   q("#b-raiox").addEventListener("click", (e) => {
@@ -260,10 +263,35 @@ function ligarFerramentas() {
    Um fantasma acompanha o dedo ou o mouse desde a caixa ate a mesa.
    Se a pessoa so tocar e soltar sem arrastar, a peca vai para o centro
    da tela: e o atalho que funciona bem no celular. */
+const TOQUE = window.matchMedia("(pointer: coarse)").matches;
+const ESPERA_TOQUE = 1000;
+
+function recadoNaBancada(texto, ms = 2000) {
+  const antigo = q("#recado-toque");
+  if (antigo) antigo.remove();
+  const el = document.createElement("div");
+  el.id = "recado-toque";
+  el.textContent = texto;
+  q("#obra").appendChild(el);
+  setTimeout(() => el.remove(), ms);
+}
+
 function arrastarDaPaleta(tipo, ev) {
   const d = PORID[tipo];
   if (!d) return;
   const origem = ev.currentTarget || ev.target;
+
+  // No celular, um toque rapido rolando a lista nao pode largar peca na
+  // bancada. Por isso o dedo precisa segurar um segundo antes de a peca
+  // sair da caixa. No mouse continua imediato.
+  let liberado = !TOQUE;
+  let saiuDaCaixa = false;
+  const relogio = TOQUE ? setTimeout(() => {
+    liberado = true;
+    fantasma.classList.add("pronto");
+    SOM.pegar();
+    if (navigator.vibrate) navigator.vibrate(18);
+  }, ESPERA_TOQUE) : null;
 
   const fantasma = document.createElement("div");
   fantasma.id = "fantasma";
@@ -272,24 +300,41 @@ function arrastarDaPaleta(tipo, ev) {
   const mover = (x, y) => { fantasma.style.left = x + "px"; fantasma.style.top = y + "px"; };
   mover(ev.clientX, ev.clientY);
 
+  if (TOQUE) fantasma.classList.add("esperando");
+
   let arrastou = false;
   const inicio = { x: ev.clientX, y: ev.clientY };
 
   const aoMover = (e) => {
-    if (Math.hypot(e.clientX - inicio.x, e.clientY - inicio.y) > 6) arrastou = true;
+    const dist = Math.hypot(e.clientX - inicio.x, e.clientY - inicio.y);
+    // Dedo que desliza antes de completar o segundo esta rolando a
+    // lista, nao pegando peca: cancelamos sem reclamar.
+    if (TOQUE && !liberado && dist > 14) { cancelar(); return; }
+    if (dist > 6) arrastou = true;
     mover(e.clientX, e.clientY);
-    fantasma.classList.toggle("valido", bancada.sobreBancada(e.clientX, e.clientY));
+    fantasma.classList.toggle("valido", liberado && bancada.sobreBancada(e.clientX, e.clientY));
+  };
+
+  const cancelar = () => {
+    clearTimeout(relogio);
+    window.removeEventListener("pointermove", aoMover);
+    window.removeEventListener("pointerup", aoSoltar);
+    window.removeEventListener("pointercancel", cancelar);
+    fantasma.remove();
+    try { origem.releasePointerCapture(ev.pointerId); } catch (err) {}
   };
 
   const aoSoltar = (e) => {
-    window.removeEventListener("pointermove", aoMover);
-    window.removeEventListener("pointerup", aoSoltar);
-    window.removeEventListener("pointercancel", aoSoltar);
-    fantasma.remove();
-    try { origem.releasePointerCapture(ev.pointerId); } catch (err) {}
+    const podia = liberado;
+    cancelar();
+
+    if (!podia) {
+      recadoNaBancada("Para adicionar, segure a peca por 1 segundo.", 2400);
+      return;
+    }
 
     let comp = null;
-    if (arrastou && bancada.sobreBancada(e.clientX, e.clientY)) {
+    if (bancada.sobreBancada(e.clientX, e.clientY)) {
       const m = bancada.mundoDe(e.clientX, e.clientY);
       comp = bancada.adicionar(tipo, { x: m.x - d.w / 2, y: m.y - d.h / 2 });
     } else if (!arrastou) {
@@ -301,8 +346,8 @@ function arrastarDaPaleta(tipo, ev) {
   try { origem.setPointerCapture(ev.pointerId); } catch (err) {}
   window.addEventListener("pointermove", aoMover);
   window.addEventListener("pointerup", aoSoltar);
-  window.addEventListener("pointercancel", aoSoltar);
-  SOM.pegar();
+  window.addEventListener("pointercancel", cancelar);
+  if (!TOQUE) SOM.pegar();
 }
 
 /* Encaminha o clique num contato para a ferramenta que esta na mao. */

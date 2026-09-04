@@ -1,6 +1,6 @@
 {
   "projeto": "Oficina do Metal GabuTRON",
-  "versao": 3,
+  "versao": 4,
   "atualizado": "2026-09-02",
   "comoUsar": "Este arquivo e o indice do conteudo. Para adicionar material: 1) coloque o .json na pasta certa dentro de ATIVIDADES; 2) escreva uma linha aqui apontando para ele. O campo fase diz a partir de qual fase do projeto a missao pode ser jogada. O site le so este arquivo ao abrir e busca a missao inteira quando o aluno clica nela, por isso o menu carrega rapido mesmo com centenas de exercicios.",
   "conteudos": {
@@ -107,17 +107,17 @@
         "arquivo": "ATIVIDADES/CONSTRUCAO/seguidor-de-linha.json",
         "tipo": "construcao",
         "dificuldade": "intermediario",
-        "minutos": 20,
-        "pontos": 180,
+        "minutos": 25,
+        "pontos": 220,
         "resumo": "Dois sensores IR, ponte H e alimentacao separada.",
         "componentes": [
           "gaburino",
           "ponteh",
-          "irobstaculo",
+          "ir-linha",
           "motordc",
           "suporteaa"
         ],
-        "fase": 3
+        "fase": 4
       }
     ],
     "manutencao": [
@@ -174,13 +174,13 @@
         "arquivo": "ATIVIDADES/MANUTENCAO/drone-motor-queimado.json",
         "tipo": "manutencao",
         "dificuldade": "facil",
-        "minutos": 12,
-        "pontos": 90,
-        "resumo": "Um motor nao responde. Fio, motor ou alimentacao?",
+        "minutos": 15,
+        "pontos": 160,
+        "resumo": "Um motor nao responde. Ate onde a energia chega?",
         "componentes": [
-          "bura32",
-          "motordc",
+          "gaburino",
           "ponteh",
+          "motordc",
           "suporteaa"
         ],
         "fase": 4

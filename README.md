@@ -340,6 +340,31 @@ Cada missão de manutenção chega com a bancada já montada e o defeito plantad
 
 ---
 
+## Assistente de desenho de componentes
+
+`ferramentas/assistente-desenho.html`
+
+Ferramenta **isolada**, que não faz parte da aplicação. Serve para redesenhar as peças com calma e exportar o resultado. Abre com dois cliques, sem servidor: os 78 componentes vêm embutidos no próprio arquivo, porque um HTML local não consegue ler JSON externo.
+
+**Como funciona.** Escolha a peça na lista da esquerda. O desenho atual é aberto e quebrado em formas editáveis. Cada elemento de primeiro nível vira uma forma; grupos entram como bloco, que dá para mover, girar e reordenar, mas não editar por dentro. Foi a troca que fez a ferramenta caber num arquivo só.
+
+| Recurso | O que faz |
+|---|---|
+| Selecionar | escolhe, arrasta, redimensiona pela alça verde, apaga com Delete |
+| Retângulo, círculo, linha | formas básicas soltas na mesa |
+| Caneta | clique fixa um ponto, arrastar no clique curva o segmento; Enter fecha |
+| Rótulo | texto editável, com tamanho e alinhamento |
+| Luz de ligado | marca onde fica o LED indicador da peça |
+| Painel direito | preenchimento, traço, espessura, transparência, rotação, deslocamento |
+| Camadas | ordem de empilhamento, subir, descer, ao topo, ao fundo, ocultar |
+| Pinos | arraste para mover; os machos grudam na grade de 24 |
+
+**Os pinos são protegidos.** Dá para mover e renomear, não dá para apagar — apagar um pino quebraria o modelo elétrico. Pinos machos travam na grade de 24 porque fora dela a peça deixa de encaixar na protoboard.
+
+**Salvar, abrir, exportar.** O progresso é guardado sozinho no navegador e também pode ser baixado como arquivo, para continuar em outro computador. **Exportar tudo** gera um único JSON com os 78 componentes: o corpo em SVG e a posição final dos pinos de cada um. É esse arquivo que volta para a conversa, e é a partir dele que os desenhos entram no projeto.
+
+---
+
 ## Atalhos
 
 | Tecla | Ação |

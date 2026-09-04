@@ -136,7 +136,7 @@
 
 /* propriedades da peca selecionada */
 #props {
-  position: absolute; left: var(--e2); bottom: 42px; z-index: 6;
+  position: absolute; left: var(--e2); right: 62px; bottom: 88px; z-index: 6;
   display: flex; align-items: center; gap: var(--e2); flex-wrap: wrap;
   max-width: calc(100% - 24px);
   padding: 6px var(--e2);
@@ -147,18 +147,33 @@
 
 #bancada { width: 100%; height: 100%; display: block; touch-action: none; cursor: default; }
 
+/* A bancada tem faixas fixas e elas nao se cruzam:
+   topo = ferramentas, direita = zoom, base = ponta + acoes.
+   Foi assim que os botoes pararam de cair um sobre o outro no celular. */
 .ferramentas {
   position: absolute; top: var(--e2); left: var(--e2);
-  display: flex; gap: 5px; flex-wrap: wrap;
-  max-width: calc(100% - var(--e3));
+  right: 62px;                      /* espaco reservado para a coluna do zoom */
+  display: flex; gap: 5px;
+  overflow-x: auto; overflow-y: hidden;
+  padding-bottom: 2px;
+  scrollbar-width: thin;
   z-index: 5;
 }
+.ferramentas::-webkit-scrollbar { height: 5px; }
+.ferramentas .btn { flex: none; white-space: nowrap; }
 .ferramentas .btn { background: var(--casco); }
 
-.ferramentas-zoom { left: auto; right: var(--e2); }
+/* Zoom numa coluna encostada na direita, no meio da altura:
+   nunca encontra a fila de ferramentas nem a barra de baixo. */
+.ferramentas-zoom {
+  top: 50%; left: auto; right: var(--e2);
+  transform: translateY(-50%);
+  flex-direction: column; overflow: visible;
+}
+.ferramentas-zoom .btn { background: var(--casco); }
 
 #lixeira {
-  position: absolute; right: var(--e3); bottom: var(--e3);
+  position: absolute; right: var(--e2); bottom: 92px;
   display: flex; flex-direction: column; align-items: center; gap: 2px;
   padding: var(--e2);
   background: var(--casco);
@@ -292,21 +307,24 @@
   opacity: .9;
 }
 #fantasma.valido { border: 1px solid var(--fosforo); color: var(--fosforo); }
+#fantasma.esperando { opacity: .45; border-style: dotted; }
+#fantasma.pronto { opacity: .95; border-style: solid; }
 
 /* ---------- barra de acoes por toque ----------
    Tudo que no computador e tecla (Delete, R, Tab, Esc) precisa ter
    botao, senao no celular o aluno fica preso. */
 #acoes-toque {
-  position: absolute; left: var(--e2); bottom: var(--e2); z-index: 6;
-  display: flex; gap: 5px; flex-wrap: wrap;
-  max-width: calc(100% - 16px);
+  position: absolute; left: var(--e2); right: 62px; bottom: var(--e2); z-index: 6;
+  display: flex; gap: 5px;
+  overflow-x: auto;
 }
+#acoes-toque .btn { flex: none; white-space: nowrap; }
 #acoes-toque .btn { background: var(--casco); font-size: var(--t-micro); }
 
 /* chip da ponta da vez: no celular nao existe cursor para acompanhar,
    entao a informacao mora fixa na tela */
 #ponta-chip {
-  position: absolute; left: var(--e2); top: 46px; z-index: 6;
+  position: absolute; left: var(--e2); right: 62px; bottom: 50px; z-index: 6;
   display: flex; align-items: center; gap: 6px;
   padding: 5px 9px;
   background: var(--casco); border: 1px solid var(--fosforo);
@@ -322,10 +340,23 @@
 
 @media (max-width: 900px) {
   .dica-canto { display: none; }
-  #acoes-toque { bottom: 6px; }
-  #acoes-toque .btn { min-height: 38px; padding: 6px 10px; }
-  .ferramentas .btn { min-height: 36px; }
-  #lixeira { bottom: 58px; }
+  #acoes-toque .btn { min-height: 40px; padding: 7px 11px; }
+  .ferramentas .btn { min-height: 38px; }
+  .ferramentas-zoom .btn { min-width: 40px; min-height: 40px; }
+  #props { bottom: 96px; font-size: 11px; }
+  #lixeira { bottom: 100px; padding: 5px; }
+  #lixeira svg { width: 18px; height: 18px; }
+  #lixeira span { display: none; }
+}
+
+/* Aviso curto no meio da bancada, para instrucoes de toque. */
+#recado-toque {
+  position: absolute; left: 50%; top: 50%; z-index: 9;
+  transform: translate(-50%, -50%);
+  padding: 10px 16px;
+  background: var(--casco); border: 1px solid var(--fosforo);
+  border-radius: var(--raio); color: var(--luz); font-size: var(--t-min);
+  text-align: center; pointer-events: none;
 }
 @media (min-width: 901px) {
   #acoes-toque { opacity: .85; }

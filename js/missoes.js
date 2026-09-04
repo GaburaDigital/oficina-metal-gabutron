@@ -193,7 +193,7 @@ export const treino = { ativo: false, fila: [], feitas: 0, filtros: null };
 
 export function montarTreino(filtros) {
   const todas = [...(catalogo.construcao || []), ...(catalogo.manutencao || [])]
-    .filter((m) => (m.fase || 2) <= 3)
+    .filter((m) => (m.fase || 2) <= 4)
     .filter((m) => (filtros.tipos.length ? filtros.tipos.includes(m.tipo) : true))
     .filter((m) => (filtros.dificuldades.length ? filtros.dificuldades.includes(m.dificuldade) : true));
   const embaralhada = todas.map((m) => [Math.random(), m]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
@@ -220,9 +220,9 @@ let veu = null;
 
 export function abrirSeletor(aoEscolher) {
   const lista = [...(catalogo.construcao || []), ...(catalogo.manutencao || [])]
-    .filter((m) => (m.fase || 2) <= 3);
+    .filter((m) => (m.fase || 2) <= 4);
   const futuras = [...(catalogo.construcao || []), ...(catalogo.manutencao || [])]
-    .filter((m) => (m.fase || 2) > 3);
+    .filter((m) => (m.fase || 2) > 4);
 
   veu = document.createElement("div");
   veu.className = "veu";
