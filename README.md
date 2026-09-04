@@ -255,6 +255,38 @@ Os outros campos da missão: `briefing` e `sucesso` são falas do GabuTRON; `dic
 
 ---
 
+## O que existe na oficina
+
+79 componentes distribuídos em dez gavetas e caixas, todos com pinagem fiel e encaixe real na protoboard.
+
+| Móvel | Peças | Destaques |
+|---|---|---|
+| Gaveta das placas | 7 | GaburINO, Bura32, MicroBURA + expansão, Arubag Pi 95x, protoboard, placa perfurada |
+| Caixa de LEDs e telas | 8 | LED, LED RGB, Neopixel, laser, LCD I2C, LCD 16 pinos, TFT touch, e-paper |
+| Caixa dos sensores | 10 | ultrassônico, IR de obstáculo e de linha, cor, PIR, DHT, umidade do solo, MPU-6050, LDR, som |
+| Gaveta dos motores | 10 | DC, com redução, de drone, servos 180 e 360, alto torque, motor de passo, bomba, vibração |
+| Caixa da energia | 14 | ponte H, relé, reguladores, stepdown, stepup, fontes, baterias, célula solar, expansão de servos |
+| Caixinha dos componentes | 7 | resistor, capacitores, diodo, zener, indutor, transistor |
+| Caixa de botões e chaves | 8 | botão, arcade, gangorra, chave de 3 pinos, potenciômetro, joystick, teclado 4x4, encoder |
+| Caixa do som | 6 | buzzer ativo e passivo, alto-falante, amplificador, DFPlayer, gravador de voz |
+| Caixa de comunicação | 4 | HC-06, ESP-01, ethernet, rádio NRF24L01 |
+| Gaveta das tranqueiras | 4 | cartão SD, pen drive, caixa bluetooth, clipe de papel |
+
+A **placa perfurada** é a única cuja ilhas são isoladas entre si: nela só a solda liga um ponto ao outro. É o passo seguinte à protoboard.
+
+## A ponte H de verdade
+
+A ponte H agora aciona os motores. Com alimentação no `+12V`, GND comum com a placa de controle e `ENA` em nível alto, `IN1` e `IN2` decidem o sentido: um alto e outro baixo faz a saída inverter, e o motor gira para o outro lado. Iguais entre si é freio. `ENA` em PWM controla a velocidade.
+
+Duas regras estão implementadas porque são as que os alunos erram:
+
+- **Sem GND comum, a ponte não obedece.** Os sinais `IN` não têm referência nenhuma, e é isso que causa motor tremendo ou parado na bancada real.
+- **Motor DC não tem polaridade.** Inverter os dois fios só troca o sentido de giro, e é exatamente isso que a ponte H faz por dentro.
+
+## Pontas soltas
+
+Com um cabo na mão, clicar num ponto vazio da bancada deixa a ponta pendurada ali. Ela vira um ponto de ligação onde outros fios se penduram — garra jacaré, ponta macho e ponta fêmea ao mesmo tempo. É a gambiarra clássica do laboratório, e agora ela cabe no simulador. A ponta some sozinha quando o último fio sai dela.
+
 ## Peças que se mexem
 
 Três componentes respondem ao toque, e isso permite montar circuito sem nenhuma placa de controle — só bateria, fios e peça:

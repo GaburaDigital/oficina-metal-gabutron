@@ -372,6 +372,14 @@ ${on ? `<path d="M256 40a54 54 0 010 88" fill="none" stroke="#5CE07A" stroke-wid
 
 /* ---------- energia ------------------------------------------- */
 
+function pontaSolta(d, i) {
+  return `
+<circle cx="24" cy="48" r="20" fill="none" stroke="#C9CDD3" stroke-width="3" stroke-dasharray="5 4"/>
+<circle cx="24" cy="48" r="9" fill="#C9CDD3" stroke="#7C828C" stroke-width="2"/>
+<path d="M24 48l26 -30" stroke="#8A8F98" stroke-width="4" stroke-linecap="round"/>
+${txt("ponta solta", 30, 20, 11, "#8A8F98", "start")}`;
+}
+
 function bateria(d, i) {
   return `
 <rect x="12" y="0" width="144" height="186" rx="10" fill="#2A2E36" stroke="#101318" stroke-width="3"/>
@@ -404,6 +412,130 @@ ${txt(i.tensaoSaida ? i.tensaoSaida + " V" : "5 V", 144, 84, 20, "#5CE07A")}
 ${ledAlim(252, 40, on)}`;
 }
 
+
+/* ---------- desenhos das pecas novas ---------------------------- */
+
+function arubag(d, i) {
+  const on = i.ligado;
+  return `
+<rect width="456" height="312" rx="10" fill="#1B6B3A" stroke="#0B3D20" stroke-width="3"/>
+<rect x="60" y="30" width="228" height="60" rx="4" fill="#0B3D20"/>
+${txt("barra de 40 pinos", 174, 66, 13, "#9FD8C6")}
+<rect x="150" y="120" width="150" height="110" rx="6" fill="#101318"/>
+${txt("Arubag Pi", 225, 172, 26, "#E8E8E4")}${txt("95x", 225, 202, 16, "#8A8F98")}
+<rect x="330" y="120" width="110" height="46" rx="4" fill="#B9BEC6"/>${txt("USB", 385, 150, 14, "#31363E")}
+<rect x="330" y="180" width="110" height="46" rx="4" fill="#2A2E36"/>${txt("HDMI", 385, 210, 13, "#B9BEC6")}
+<rect x="24" y="132" width="72" height="90" rx="6" fill="#2A2E36"/>${txt("SD", 60, 184, 15, "#B9BEC6")}
+${txt("logica de 3,3 V", 225, 258, 13, "#9FD8C6")}
+${ledAlim(420, 60, on)}`;
+}
+
+function fenolite(d, i) {
+  return `
+<rect width="456" height="288" rx="6" fill="#C9A227" stroke="#8A6B14" stroke-width="3"/>
+<rect x="6" y="6" width="444" height="276" rx="4" fill="#B8912A" opacity=".55"/>
+${txt("cada ilha e isolada — so a solda liga", 228, 278, 12, "#5A4408")}`;
+}
+
+function falante(d, i) {
+  const on = i.ligado;
+  return `
+<circle cx="132" cy="110" r="104" fill="#3A3F47" stroke="#1B1F26" stroke-width="4"/>
+<circle cx="132" cy="110" r="72" fill="#2A2E36"/>
+<circle cx="132" cy="110" r="30" fill="#565C66"/>
+<circle cx="132" cy="110" r="12" fill="#8A8F98"/>
+${[0,90,180,270].map(a=>`<circle cx="${132+Math.round(90*Math.cos(a*Math.PI/180))}" cy="${110+Math.round(90*Math.sin(a*Math.PI/180))}" r="7" fill="#1B1F26"/>`).join("")}
+${on ? `<g fill="none" stroke="#5CE07A" stroke-width="3"><path d="M244 70a58 58 0 010 80"/><path d="M258 50a86 86 0 010 120"/></g>` : ""}
+${txt("8 &#937;", 132, 210, 14, "#B9BEC6")}`;
+}
+
+function arcade(d, i) {
+  const p = i.pressionado;
+  return `
+<circle cx="120" cy="108" r="96" fill="#2A2E36"/>
+<circle cx="120" cy="${p ? 112 : 104}" r="84" fill="#B23A32" stroke="#6E211B" stroke-width="4"/>
+<circle cx="120" cy="${p ? 112 : 104}" r="66" fill="#D14A40"/>
+<path d="M78 ${p ? 86 : 78}a48 48 0 0184 0" fill="#F2F2EE" opacity=".22"/>
+${txt("aperte", 120, 214, 13, "#8A8F98")}`;
+}
+
+function chave3(d, i) {
+  const on = i.pressionado;
+  return `
+<rect x="24" y="24" width="120" height="96" rx="8" fill="#1B1F26" stroke="#05060A" stroke-width="2"/>
+<rect x="40" y="40" width="88" height="52" rx="6" fill="#31363E"/>
+<rect x="${on ? 90 : 46}" y="46" width="38" height="40" rx="5" fill="#C9CDD3"/>
+${txt(on ? "posicao 2" : "posicao 1", 84, 112, 12, "#8A8F98")}`;
+}
+
+function keypad(d, i) {
+  const teclas = ["1","2","3","A","4","5","6","B","7","8","9","C","*","0","#","D"];
+  let g = "";
+  for (let k = 0; k < 16; k++) {
+    const x = 60 + (k % 4) * 72, y = 60 + Math.floor(k / 4) * 60;
+    g += `<rect x="${x - 30}" y="${y - 24}" width="60" height="48" rx="6" fill="#31363E" stroke="#0A0C11"/>`;
+    g += txt(teclas[k], x, y + 7, 18, "#E8E8E4");
+  }
+  return `<rect width="${d.w}" height="${d.h}" rx="7" fill="#1B1F26" stroke="#05060A" stroke-width="2"/>${g}`;
+}
+
+function pir(d, i) {
+  const on = i.ligado;
+  return `
+<rect width="${d.w}" height="${d.h}" rx="7" fill="#1B4E8A" stroke="#05060A" stroke-width="2"/>
+<path d="M${d.w / 2 - 78} 128a78 78 0 01156 0z" fill="#F2F2EE" opacity=".92"/>
+<path d="M${d.w / 2 - 78} 128a78 78 0 01156 0" fill="none" stroke="#B9BEC6" stroke-width="3"/>
+${[-52,-26,0,26,52].map(o=>`<path d="M${d.w/2+o} 128v-${Math.round(70-Math.abs(o)*0.55)}" stroke="#C9CDD3" stroke-width="2"/>`).join("")}
+${txt("PIR", d.w / 2, 168, 15, "#CFE4EE")}
+${ledAlim(d.w - 40, 168, on)}`;
+}
+
+function bomba(d, i) {
+  const on = i.ligado;
+  return `
+<rect x="48" y="72" width="144" height="132" rx="14" fill="#1B4E8A" stroke="#0A2A56" stroke-width="3"/>
+<rect x="96" y="12" width="48" height="66" rx="8" fill="#2A6BB0"/>
+<path d="M120 12v-6" stroke="#8A8F98" stroke-width="6"/>
+<circle cx="120" cy="138" r="42" fill="#2A6BB0"/>
+<g transform="rotate(${on ? 40 : 0} 120 138)"><path d="M120 108v60M90 138h60" stroke="#CFE4EE" stroke-width="6"/></g>
+${on ? `<path d="M120 6q-14 -22 0 -34" fill="none" stroke="#7DD3FC" stroke-width="4"/>` : ""}
+${txt("submersa", 120, 196, 13, "#CFE4EE")}`;
+}
+
+function solar(d, i) {
+  let celulas = "";
+  for (let k = 0; k < 12; k++) {
+    const x = 24 + (k % 4) * 72, y = 24 + Math.floor(k / 4) * 54;
+    celulas += `<rect x="${x}" y="${y}" width="66" height="48" rx="3" fill="#16304F" stroke="#0B1C30" stroke-width="2"/>`;
+    celulas += `<path d="M${x + 33} ${y}v48" stroke="#2E5B8F" stroke-width="2"/>`;
+  }
+  return `<rect width="${d.w}" height="${d.h}" rx="7" fill="#20344F" stroke="#0B1C30" stroke-width="3"/>${celulas}
+${txt("celula solar", 168, 210, 14, "#9FC4E8")}`;
+}
+
+function pendrive(d, i) {
+  return `
+<rect x="72" y="30" width="168" height="84" rx="10" fill="#3A3F47" stroke="#1B1F26" stroke-width="3"/>
+<rect x="6" y="48" width="72" height="48" rx="4" fill="#B9BEC6" stroke="#7C828C" stroke-width="2"/>
+${txt("PEN DRIVE", 156, 78, 15, "#C9CDD3")}`;
+}
+
+function caixaSom(d, i) {
+  return `
+<rect x="24" y="24" width="288" height="192" rx="20" fill="#1B1F26" stroke="#05060A" stroke-width="3"/>
+<circle cx="120" cy="120" r="60" fill="#2A2E36" stroke="#3A3F47" stroke-width="3"/>
+<circle cx="120" cy="120" r="22" fill="#565C66"/>
+<circle cx="228" cy="120" r="36" fill="#2A2E36" stroke="#3A3F47" stroke-width="3"/>
+${txt("bluetooth", 168, 200, 14, "#7DD3FC")}`;
+}
+
+function clipe(d, i) {
+  return `
+<path d="M24 48h108a24 24 0 010 0" fill="none" stroke="#B9BEC6" stroke-width="7" stroke-linecap="round"/>
+<path d="M40 34h92a14 14 0 010 28H52a14 14 0 010-28h74" fill="none" stroke="#C9CDD3" stroke-width="7" stroke-linecap="round"/>
+${txt("clipe", 84, 88, 12, "#8A8F98")}`;
+}
+
 /* ---------- despacho ------------------------------------------ */
 
 const MAPA = {
@@ -414,7 +546,9 @@ const MAPA = {
   axial, radial, disco, to92,
   led, "led-rgb": ledRgb, neopixel, lcd, buzzer,
   botao, chave, potenciometro, ldr, ultrassonico, "ir-obstaculo": irObstaculo,
-  servo, motor, bateria, "suporte-aa": suporteAA, "fonte-pb": fontePb,
+  servo, motor, bateria, "suporte-aa": suporteAA, "fonte-pb": fontePb, "ponta-solta": pontaSolta,
+  arubag, fenolite, falante, arcade, chave3, keypad, pir, bomba, solar,
+  pendrive, "caixa-som": caixaSom, clipe,
 };
 
 export function desenhar(def, inst) {

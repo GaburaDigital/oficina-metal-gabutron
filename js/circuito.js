@@ -133,9 +133,21 @@ export function calcular(comps, fios, energizado = true) {
       }
     }
   }
+
+  // Saidas calculadas por um driver (a ponte H, hoje) entram como
+  // fonte igual a qualquer outra.
+  for (const c of energizado ? comps : []) {
+    if (!c.__saidas) continue;
+    const d = PORID[c.tipo];
+    for (const [pid, val] of Object.entries(c.__saidas)) {
+      const r = no(c.id, pid);
+      if (val === "gnd") terra.add(r);
+      else registrarFonte(r, c, d, d.pinos.find((p) => p.id === pid), val, d.correnteMax ?? 2000);
+    }
+  }
   };
 
-  comps.forEach((c) => { delete c.__vinOk; delete c.__entradaFraca; delete c.__entradaAlta; });
+  comps.forEach((c) => { delete c.__vinOk; delete c.__entradaFraca; delete c.__entradaAlta; delete c.__saidas; });
   registrarPlacaEFontes();
   if (energizado) {
     let mudou = false;
@@ -157,6 +169,44 @@ export function calcular(comps, fios, energizado = true) {
       if (alimentou || vCinco >= 4.5) { c.__vinOk = true; mudou = true; }
     }
     if (mudou) { tensao.clear(); terra.clear(); fontesDoNo.clear(); registrarPlacaEFontes(); }
+
+    // Ponte H: com alimentacao de motor e GND comum, ela copia para as
+    // saidas a tensao de entrada, no sentido que IN1/IN2 mandarem.
+    // Isso e o que faz o motor girar, e girar para o lado certo.
+    let mudouDriver = false;
+    for (const c of comps) {
+      const d = PORID[c.tipo];
+      if (!d || d.id !== "ponteh" || c.queimado) continue;
+      const vmot = tensao.get(no(c.id, "v12")) ?? 0;
+      const terraOk = terra.has(no(c.id, "gnd"));
+      if (vmot < (d.alimenta || 6) || !terraOk) continue;
+      // Sem GND comum com quem manda os sinais, IN e ENA nao tem
+      // referencia nenhuma. Na bancada real isso da motor tremendo ou
+      // parado; aqui a ponte simplesmente nao obedece.
+      const meuTerra = no(c.id, "gnd");
+      let referenciaOk = true;
+      for (const pid of ["ena", "in1", "in2", "in3", "in4", "enb"]) {
+        const lista = pinosDoNo.get(no(c.id, pid)) || [];
+        const placa = lista.find((it) => it.def.alimentada && it.comp.id !== c.id);
+        if (!placa) continue;
+        const terrasDaPlaca = placa.def.pinos.filter((x) => x.papel === "gnd").map((x) => no(placa.comp.id, x.id));
+        referenciaOk = terrasDaPlaca.includes(meuTerra);
+        break;
+      }
+      if (!referenciaOk) continue;
+
+      const alto = (pid) => (tensao.get(no(c.id, pid)) ?? 0) > 2;
+      const saidas = {};
+      const canal = (en, i1, i2, o1, o2) => {
+        if (!alto(en)) return;
+        if (alto(i1) && !alto(i2)) { saidas[o1] = vmot; saidas[o2] = "gnd"; }
+        else if (!alto(i1) && alto(i2)) { saidas[o2] = vmot; saidas[o1] = "gnd"; }
+      };
+      canal("ena", "in1", "in2", "out1", "out2");
+      canal("enb", "in3", "in4", "out3", "out4");
+      if (Object.keys(saidas).length) { c.__saidas = saidas; mudouDriver = true; }
+    }
+    if (mudouDriver) { tensao.clear(); terra.clear(); fontesDoNo.clear(); registrarPlacaEFontes(); }
   }
 
   /* ---- 3. corrente ---- */
@@ -293,8 +343,17 @@ export function calcular(comps, fios, energizado = true) {
     else if (d.alimenta !== undefined) {
       const vplus = d.pinos.find((p) => p.papel === "v+");
       const gp = d.pinos.find((p) => p.papel === "gnd");
-      const v = vplus ? vDe(c.id, vplus.id) : 0;
-      const g = gp ? gndDe(c.id, gp.id) : false;
+      let v = vplus ? vDe(c.id, vplus.id) : 0;
+      let g = gp ? gndDe(c.id, gp.id) : false;
+      if (d.bipolar && vplus && gp) {
+        // Motor nao tem lado. Inverter os dois fios so troca o sentido
+        // de giro, e e exatamente isso que a ponte H faz. Quem tem lado
+        // sao os modulos, e esses continuam na regra normal.
+        const va = vDe(c.id, vplus.id), vb = vDe(c.id, gp.id);
+        v = Math.abs(va - vb);
+        g = gndDe(c.id, vplus.id) || gndDe(c.id, gp.id);
+        e.sentido = va >= vb ? 1 : -1;
+      }
       e.ligado = v >= (d.alimenta || 0) && g;
       e.tensaoRecebida = v;
       if (v > 0 && !g) avisar("aviso", c.id, `${d.nome} recebeu tensao mas o GND nao esta ligado. Corrente e ida e volta: sem retorno, ela nao sai de casa.`);
@@ -353,6 +412,16 @@ export function calcular(comps, fios, energizado = true) {
       e.correnteTotal = total;
       if (total > (d.limiteTotal ?? 800))
         avisar("critico", c.id, `A ${d.nome} inteira esta puxando ${total.toFixed(0)} miliamperes. O regulador dela desiste antes disso.`, { tipo: "placa" });
+    }
+
+    if (d.id === "ponteh" && !c.queimado) {
+      const vmot = vDe(c.id, "v12");
+      const terraOk = gndDe(c.id, "gnd");
+      if (vmot > 0 && !terraOk)
+        avisar("aviso", c.id, "A ponte H tem alimentacao de motor mas o GND dela nao esta ligado no GND da placa de controle. Sem essa referencia comum, os sinais IN nao significam nada para ela.");
+      const enaSolto = !c.__saidas && vmot >= (d.alimenta || 6) && terraOk;
+      if (enaSolto)
+        avisar("aviso", c.id, "A ponte H esta alimentada, mas nenhuma saida ligou. Confira o ENA em nivel alto e IN1 e IN2 em estados diferentes: iguais entre si e o mesmo que freio.");
     }
 
     if (d.precisaPwm && e.ligado) {

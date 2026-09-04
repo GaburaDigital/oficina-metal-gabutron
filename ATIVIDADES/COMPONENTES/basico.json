@@ -101,6 +101,61 @@
       "curiosidade": "A MicroBURA nasceu com cinco aneis grandes justamente para caber garra jacare de crianca. O preco disso e que os outros vinte pinos ficam num conector minusculo que dedo nenhum alcanca. O adaptador existe so para resolver esse detalhe.",
       "uso": "Qualquer projeto que precise de mais de tres entradas e saidas: robo com varios sensores, painel de LEDs, teclado.",
       "tecnico": "Encaixa por baixo da placa e repete os aneis em pinos machos, alem de liberar P3 ate P20. Com ele a MicroBURA passa a caber na protoboard. A logica continua sendo de 3,3 volts e os limites de corrente continuam os mesmos: o adaptador nao fortalece nada, so da acesso."
+    },
+    "pir": {
+      "curiosidade": "PIR quer dizer infravermelho passivo. Ele nao emite nada: fica so escutando o calor do ambiente e percebe quando uma mancha quente do tamanho de gente atravessa o campo de visao. Aquela cupula branca e uma lente que divide a cena em fatias.",
+      "uso": "Luz que acende sozinha no corredor, alarme de mochila, robo que percebe alguem chegando, contador de pessoas.",
+      "tecnico": "Alimentacao de 5 volts, saida digital que sobe para alto ao detectar movimento. Tem dois trimpots: um ajusta a sensibilidade, outro quanto tempo a saida fica alta. Precisa de uns 30 segundos parado para se acostumar com o ambiente depois de ligar, e por isso ele parece maluco no comeco."
+    },
+    "dht": {
+      "curiosidade": "Um fio so para dois dados. Ele responde num protocolo proprio, contando o tempo entre pulsos, e por isso nao adianta ligar num pino analogico esperando ver tensao mudando.",
+      "uso": "Estufa inteligente, estacao meteorologica da sala, controle de ventilador, projeto de plantacao.",
+      "tecnico": "De 3,3 a 5 volts, consome quase nada. Leitura a cada 2 segundos no minimo; pedir mais rapido devolve o mesmo valor. Precisa de resistor de pull-up de 10k no pino de dados, e quase todo modulo pronto ja traz esse resistor embutido."
+    },
+    "mpu6050": {
+      "curiosidade": "Dentro dele existem estruturas de silicio menores que um fio de cabelo que se entortam quando o modulo se mexe. E literalmente uma balanca microscopica medindo a propria inercia.",
+      "uso": "Robo autoequilibrante, controle que responde a inclinacao, drone, deteccao de queda, mao robotica.",
+      "tecnico": "Comunicacao I2C em 3,3 volts, com regulador embutido que aceita 5. AD0 no GND da endereco 0x68; no VCC, 0x69, e e assim que dois deles convivem no mesmo barramento. Devolve tres eixos de aceleracao e tres de giro."
+    },
+    "hc06": {
+      "curiosidade": "O HC-06 so sabe ser escravo: ele espera alguem se conectar, nunca procura ninguem. O primo HC-05 faz os dois papeis, e essa e a unica diferenca importante entre eles.",
+      "uso": "Controlar carrinho pelo celular, mandar dados do sensor para um aplicativo, controle de video game sem fio.",
+      "tecnico": "Alimenta com 5 volts, mas o pino RXD e de 3,3: ligar 5 volts direto nele degrada o modulo. Divisor de tensao com 1k e 2k resolve. TXD do modulo vai no RX da placa e vice-versa — trocar os dois e o erro numero um."
+    },
+    "esp01": {
+      "curiosidade": "Esse modulinho tem mais poder de processamento que os computadores que levaram gente a Lua. Ele custa o preco de um lanche e a maioria das pessoas usa so para acender uma lampada pela internet.",
+      "uso": "Projeto que manda dado para a internet, painel controlado pelo celular, sensor que avisa por mensagem.",
+      "tecnico": "3,3 volts APENAS, na alimentacao e em todos os pinos. CH_PD precisa estar em nivel alto ou ele nem liga, e esse e o motivo de metade dos modulos parecerem queimados. No pico de transmissao puxa 250 mA, bem mais do que o regulador de muitas placas aguenta: alimente por fora."
+    },
+    "stepdown": {
+      "curiosidade": "O regulador comum joga fora a tensao que sobra em forma de calor. O stepdown nao: ele liga e desliga milhares de vezes por segundo e aproveita quase tudo. E por isso que ele fica frio onde o outro esquenta.",
+      "uso": "Tirar 5 volts de uma bateria de 12, alimentar a placa a partir do pacote de baterias do motor, qualquer projeto que ande sozinho.",
+      "tecnico": "Ajuste a saida no trimpot ANTES de ligar a carga, medindo com o multimetro. Ele so abaixa: para ter 5 volts na saida precisa de pelo menos uns 7 na entrada. Entrada e saida tem lado, e inverter estraga o modulo."
+    },
+    "ams1117": {
+      "curiosidade": "Aquele chiptinho preto de tres pernas que aparece em quase toda placa. Ele e o motivo de a sua placa esquentar perto do conector de energia quando voce alimenta com 12 volts.",
+      "uso": "Baixar tensao para 5 ou 3,3 volts em circuitos pequenos, alimentar sensores a partir de bateria de 9 volts.",
+      "tecnico": "Entrega no maximo 800 mA e precisa de pelo menos 1,5 volt acima da saida para funcionar. Tudo que sobra vira calor: com 12 volts na entrada, 5 na saida e meio ampere, ele dissipa mais de 3 watts e queima o dedo de quem encostar."
+    },
+    "celula-solar": {
+      "curiosidade": "Uma celula solar nao guarda nada: ela produz enquanto ha luz e para no escuro. Por isso todo projeto solar de verdade tem bateria no meio, senao ele morre quando passa uma nuvem.",
+      "uso": "Carrinho movido a energia solar, sensor de jardim que nao precisa de pilha, carregador de emergencia.",
+      "tecnico": "A tensao cai rapido conforme voce puxa corrente, e a corrente depende da luz que chega. Sombra numa parte da celula derruba o painel inteiro. Convem um diodo na saida para a bateria nao devolver corrente para ela a noite."
+    },
+    "keypad": {
+      "curiosidade": "Dezesseis teclas com so oito fios. O truque e uma matriz: a placa energiza uma linha por vez e olha qual coluna respondeu. Se duas teclas forem apertadas juntas, ela pode se confundir, e isso tem nome: fantasma de tecla.",
+      "uso": "Cofre eletronico, senha de porta, calculadora, menu de maquina, jogo de adivinhacao.",
+      "tecnico": "Nao precisa de alimentacao: e so um monte de botao. Os oito pinos vao em oito pinos digitais e o codigo faz a varredura. As linhas precisam de resistor de pull-up, e a maioria dos microcontroladores tem esses resistores por dentro."
+    },
+    "clipe": {
+      "curiosidade": "Clipe de papel conduz porque e metal. Todo laboratorio ja resolveu uma emergencia com um: como jumper improvisado, como haste de sensor, como chave de teste. Nao e elegante, mas funciona e ensina que circuito nao liga porque a peca e bonita, e sim porque ha caminho para a corrente.",
+      "uso": "Gambiarra honesta: fechar contato para teste, virar sonda de umidade, servir de antena improvisada.",
+      "tecnico": "Resistencia praticamente zero, entao ele se comporta como um pedaco de fio. Justamente por isso ele tambem faz curto com a mesma facilidade: cuidado ao largar um clipe solto sobre uma placa energizada."
+    },
+    "ponta-solta": {
+      "curiosidade": "Toda bancada tem aquele ponto onde tres ou quatro fios se encontram no ar, segurados por uma garra jacare. Nao esta no livro, mas esta em todo laboratorio do mundo.",
+      "uso": "Distribuir a mesma alimentacao para varios pontos, testar rapido sem montar na protoboard, juntar fios de tipos diferentes.",
+      "tecnico": "E so um ponto de contato: aceita garra jacare, ponta macho e ponta femea ao mesmo tempo. Eletricamente tudo o que chega nele vira o mesmo no. Some sozinha quando o ultimo fio e removido."
     }
   }
 }

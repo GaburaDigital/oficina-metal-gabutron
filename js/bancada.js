@@ -433,6 +433,25 @@ export function pegarDaPaleta(tipo, clientX, clientY, pointerId) {
   return comp;
 }
 
+function criarPontaSolta(x, y) {
+  const d = PORID["ponta-solta"];
+  const comp = {
+    id: novoId(), tipo: "ponta-solta",
+    x: Math.round((x - d.pinos[0].x) / 8) * 8,
+    y: Math.round((y - d.pinos[0].y) / 8) * 8,
+    rot: 0, encaixes: [],
+  };
+  estado.comps.push(comp);
+  return comp;
+}
+
+/* Ponta solta que ficou sem nenhum fio nao serve para nada: some. */
+function limparPontasOrfas() {
+  const usados = new Set();
+  estado.fios.forEach((f) => { usados.add(f.a.comp); usados.add(f.b.comp); });
+  estado.comps = estado.comps.filter((c) => c.tipo !== "ponta-solta" || usados.has(c.id));
+}
+
 export function remover(id) {
   filhosDe(id).forEach((f) => { f.pai = null; f.encaixes = []; });
   estado.comps = estado.comps.filter((c) => c.id !== id);
@@ -510,6 +529,7 @@ export function organizarFios() {
 }
 
 export function recalcular() {
+  limparPontasOrfas();
   estado.ultimoCircuito = calcular(estado.comps, estado.fios.concat(ligacoesFisicas()), estado.energizado);
   redesenhar();
   if (ganchos.aoMudar) ganchos.aoMudar(estado);
@@ -667,7 +687,14 @@ function aoApertar(ev) {
     return;
   }
 
-  if (estado.pendente) { estado.pendente = null; desenharTopo(); atualizarPontaCursor(ev.clientX, ev.clientY); return; }
+  // Fio na mao e clique no vazio: a ponta fica pendurada ali, virando
+  // um ponto de ligacao onde outros fios podem se pendurar depois.
+  if (estado.pendente) {
+    const m = telaParaMundo(ev.clientX, ev.clientY);
+    const solta = criarPontaSolta(m.x, m.y);
+    clicarPino(solta.id, "no");
+    return;
+  }
   selecionar(null);
   panorama = { x: ev.clientX, y: ev.clientY, vx: estado.vista.x, vy: estado.vista.y };
   svg.setPointerCapture(ev.pointerId);

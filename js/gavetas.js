@@ -26,7 +26,7 @@ function render(filtro = "") {
 
   for (const m of MOVEIS) {
     const pecas = COMPONENTES.filter(
-      (c) => c.caixa === m.id && (!f || c.nome.toLowerCase().includes(f) || c.id.includes(f))
+      (c) => c.caixa === m.id && !c.avulsa && (!f || c.nome.toLowerCase().includes(f) || c.id.includes(f))
     );
     if (!pecas.length) continue;
     html += `<details class="gaveta" ${f ? "open" : m.id === "placas" ? "open" : ""}>
