@@ -149,6 +149,9 @@
 /* ---------- multimetro ---------- */
 #ferramenta-caixa { margin: 0 var(--e3) var(--e2); }
 
+#fonte-painel { background: var(--casco); border: 2px solid var(--linha-viva); border-radius: var(--raio); margin-bottom: 8px; }
+#fonte-painel .mm-visor { font-size: 20px; }
+
 #multimetro {
   background: var(--casco);
   border: 2px solid var(--linha-viva); border-radius: var(--raio);

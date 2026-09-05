@@ -5,7 +5,7 @@
    pegar a versao nova.
    ============================================================ */
 
-const VERSAO = "gabutron-v8";
+const VERSAO = "gabutron-v9";
 
 const ARQUIVOS = [
   "./",
@@ -40,6 +40,8 @@ const ARQUIVOS = [
   "js/museu.js",
   "js/multimetro.js",
   "js/solda.js",
+  "js/arte.js",
+  "js/fonte-bancada.js",
   "assets/favicon.svg",
   "assets/favicon-16.svg",
   "assets/icone-pwa.svg",

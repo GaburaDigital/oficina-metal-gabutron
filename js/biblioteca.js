@@ -23,6 +23,8 @@
      lado     e | d | cima | baixo — de que lado fica o rotulo
    ============================================================ */
 
+import { PINOS_AJUSTADOS, TAMANHOS } from "./arte.js";
+
 export const P = 24; // passo entre furos
 
 /* ---------- placas de controle -------------------------------- */
@@ -181,8 +183,8 @@ function pinosExpansaoMicrobura() {
 
 /* ---------- protoboard ---------------------------------------- */
 
-export const PB = { colunas: 30, x0: 24, larg: 768, alt: 456 };
-export const LINHAS_PB = { supMais: 24, supMenos: 48, blocoA: 120, canal: 264, blocoB: 288, infMais: 408, infMenos: 432 };
+export const PB = { colunas: 30, x0: 24, larg: 768, alt: 480 };
+export const LINHAS_PB = { supMais: 24, supMenos: 48, blocoA: 120, canal: 264, blocoB: 288, infMais: 432, infMenos: 456 };
 
 function pinosProtoboard() {
   const p = [];
@@ -249,6 +251,18 @@ add({
   pinos: pinosProtoboard(),
 });
 
+add({
+  id: "motor-passo", nome: "Motor de passo 28BYJ-48", caixa: "motores", arte: "motor-passo",
+  w: 288, h: 288, cor: "#3A3F47", alimenta: 4.5, correnteTipica: 240, custo: 16,
+  pinos: [
+    { id: "com", n: "VM", rotulo: "Fio vermelho — comum das bobinas, vai no COM do driver", x: 48, y: 264, r: "macho", papel: "v+", lado: "baixo" },
+    { id: "a", n: "AZ", rotulo: "Fio azul — bobina A", x: 96, y: 264, r: "macho", papel: "sinal", lado: "baixo" },
+    { id: "b", n: "RS", rotulo: "Fio rosa — bobina B", x: 144, y: 264, r: "macho", papel: "sinal", lado: "baixo" },
+    { id: "c", n: "AM", rotulo: "Fio amarelo — bobina C", x: 192, y: 264, r: "macho", papel: "sinal", lado: "baixo" },
+    { id: "d", n: "LR", rotulo: "Fio laranja — bobina D", x: 240, y: 264, r: "macho", papel: "sinal", lado: "baixo" },
+  ],
+});
+
 /* alimentacao */
 add({
   id: "bateria9v", nome: "Bateria 9V", caixa: "energia", arte: "bateria", w: 168, h: 216,
@@ -259,30 +273,46 @@ add({
   ],
 });
 add({
-  id: "suporteaa", nome: "Suporte 4x AA", caixa: "energia", arte: "suporte-aa", w: 336, h: 216,
+  id: "suporteaa", nome: "Suporte de pilhas AA", caixa: "energia", arte: "suporte-aa", w: 336, h: 216,
   cor: "#1B1F26", fonte: true, custo: 12,
+  slots: { min: 1, max: 6, padrao: 4, porSlot: 1.5, rotulo: "pilhas" },
   pinos: [
-    { id: "p", n: "+", rotulo: "Positivo — 6 volts com quatro pilhas", x: 240, y: 192, r: "macho", papel: "v+", v: 6, lado: "baixo" },
+    { id: "p", n: "+", rotulo: "Positivo — cada pilha AA soma 1,5 volt", x: 240, y: 192, r: "macho", papel: "v+", v: 6, lado: "baixo" },
     { id: "n", n: "-", rotulo: "Negativo — terra", x: 288, y: 192, r: "macho", papel: "gnd", lado: "baixo" },
   ],
 });
 add({
   id: "fonte-protoboard", nome: "Fonte de protoboard", caixa: "energia", arte: "fonte-pb",
-  w: 288, h: 144, cor: "#134E3A", fonte: true, ajustavel: [3.3, 5], custo: 15,
+  w: 288, h: 168, cor: "#134E3A", regulador: true, ajustavel: [3.3, 5], custo: 15,
   pinos: [
-    { id: "vout", n: "OUT", rotulo: "Saida ajustavel — 3,3 ou 5 volts", x: 72, y: 120, r: "macho", papel: "v+", v: 5, lado: "baixo" },
-    { id: "gnd", n: "GND", rotulo: "Terra", x: 216, y: 120, r: "macho", papel: "gnd", lado: "baixo" },
+    { id: "inp", n: "IN+", rotulo: "Entrada de energia — ela NAO gera nada, so regula. De 7 a 12 volts", x: 24, y: 24, r: "borne", papel: "v+", entrada: true, vmin: 6.5, vmax: 12, lado: "baixo" },
+    { id: "inn", n: "IN-", rotulo: "Entrada, negativo", x: 72, y: 24, r: "borne", papel: "gnd", lado: "baixo" },
+    { id: "vout", n: "OUT", rotulo: "Saida regulada — 3,3 ou 5 volts, escolhidos na peca", x: 72, y: 144, r: "macho", papel: "v+", v: 5, lado: "baixo" },
+    { id: "gnd", n: "GND", rotulo: "Terra da saida", x: 216, y: 144, r: "macho", papel: "gnd", lado: "baixo" },
   ],
 });
 add({
-  id: "rele", nome: "Modulo rele", caixa: "energia", arte: "modulo", w: 264, h: 192,
+  id: "rele", nome: "Modulo rele 5V", caixa: "energia", arte: "modulo", w: 288, h: 192,
   cor: "#1B4E8A", alimenta: 4.5, custo: 18, correnteTipica: 75,
   pinos: [
     { id: "gnd", n: "GND", rotulo: "Terra do lado de controle", x: 48, y: 168, r: "macho", papel: "gnd", lado: "baixo" },
     { id: "in", n: "IN", rotulo: "Sinal que aciona a bobina", x: 72, y: 168, r: "macho", papel: "sinal", lado: "baixo" },
     { id: "vcc", n: "VCC", rotulo: "Alimentacao de 5 volts", x: 96, y: 168, r: "macho", papel: "v+", lado: "baixo" },
-    { id: "no", n: "NA", rotulo: "Contato normalmente aberto — isolado do controle", x: 192, y: 24, r: "borne", papel: "terminal", lado: "cima" },
-    { id: "com", n: "COM", rotulo: "Contato comum — isolado do controle", x: 240, y: 24, r: "borne", papel: "terminal", lado: "cima" },
+    { id: "no", n: "NA", rotulo: "Normalmente aberto — fecha quando a bobina liga", x: 176, y: 24, r: "borne", papel: "terminal", lado: "cima" },
+    { id: "com", n: "COM", rotulo: "Comum — a corrente da carga entra por aqui. Isolado do lado de controle", x: 224, y: 24, r: "borne", papel: "terminal", lado: "cima" },
+    { id: "nc", n: "NF", rotulo: "Normalmente fechado — abre quando a bobina liga", x: 272, y: 24, r: "borne", papel: "terminal", lado: "cima" },
+  ],
+});
+add({
+  id: "rele3v", nome: "Modulo rele 3V", caixa: "energia", arte: "modulo", w: 288, h: 192,
+  cor: "#1B4E8A", alimenta: 3, custo: 18, correnteTipica: 45,
+  pinos: [
+    { id: "gnd", n: "GND", rotulo: "Terra do lado de controle", x: 120, y: 168, r: "macho", papel: "gnd", lado: "baixo" },
+    { id: "in", n: "IN", rotulo: "Sinal que aciona a bobina", x: 144, y: 168, r: "macho", papel: "sinal", lado: "baixo" },
+    { id: "vcc", n: "VCC", rotulo: "Alimentacao de 3,3 volts — versao para placas de 3,3", x: 168, y: 168, r: "macho", papel: "v+", lado: "baixo" },
+    { id: "no", n: "NA", rotulo: "Normalmente aberto — fecha quando a bobina liga", x: 176, y: 24, r: "borne", papel: "terminal", lado: "cima" },
+    { id: "com", n: "COM", rotulo: "Comum — isolado do lado de controle", x: 224, y: 24, r: "borne", papel: "terminal", lado: "cima" },
+    { id: "nc", n: "NF", rotulo: "Normalmente fechado — abre quando a bobina liga", x: 272, y: 24, r: "borne", papel: "terminal", lado: "cima" },
   ],
 });
 add({
@@ -466,6 +496,15 @@ add({
     { id: "vcc", n: "VCC", rotulo: "Alimentacao de 3,3 ou 5 volts", x: 96, y: 168, r: "macho", papel: "v+", lado: "baixo" },
     { id: "gnd", n: "GND", rotulo: "Terra", x: 120, y: 168, r: "macho", papel: "gnd", lado: "baixo" },
     { id: "out", n: "OUT", rotulo: "Saida digital — cai para zero quando ve obstaculo", x: 144, y: 168, r: "macho", papel: "digital", lado: "baixo" },
+  ],
+});
+
+add({
+  id: "sonda-solo", nome: "Sonda de umidade", caixa: "sensores", arte: "sonda", w: 168, h: 288,
+  cor: "#C9A227", custo: 5,
+  pinos: [
+    { id: "a", n: "1", rotulo: "Haste da sonda — vai num dos bornes do modulo de leitura", x: 48, y: 24, r: "macho", papel: "terminal", lado: "cima" },
+    { id: "b", n: "2", rotulo: "Outra haste da sonda", x: 120, y: 24, r: "macho", papel: "terminal", lado: "cima" },
   ],
 });
 
@@ -837,18 +876,20 @@ add({
 });
 
 add({
-  id: "dfplayer", nome: "Modulo MP3 DFPlayer", caixa: "som", arte: "modulo",
-  w: 312, h: 216, cor: "#1B1F26", alimenta: 3.2, correnteTipica: 100, custo: 30,
+  id: "dfplayer", nome: "Modulo MP3 DFPlayer", caixa: "som", arte: "dfplayer",
+  w: 336, h: 288, encaixe: { tipo: "cartao-sd-midia", x: 168, y: 48, rotulo: "slot do cartao" }, cor: "#1B1F26", alimenta: 3.2, correnteTipica: 100, custo: 30,
   pinos: [
-    { id: "vcc", n: "VCC", rotulo: "De 3,3 a 5 volts", x: 48, y: 192, r: "macho", papel: "v+", lado: "baixo" },
-    { id: "rx", n: "RX", rotulo: "Recebe comando da placa — use resistor de 1k em serie", x: 72, y: 192, r: "macho", papel: "digital", lado: "baixo" },
-    { id: "tx", n: "TX", rotulo: "Devolve resposta para a placa", x: 96, y: 192, r: "macho", papel: "digital", lado: "baixo" },
-    { id: "dacr", n: "DAC_R", rotulo: "Audio da direita, nivel de linha", x: 120, y: 192, r: "macho", papel: "sinal", lado: "baixo" },
-    { id: "dacl", n: "DAC_L", rotulo: "Audio da esquerda, nivel de linha", x: 144, y: 192, r: "macho", papel: "sinal", lado: "baixo" },
-    { id: "spk1", n: "SPK1", rotulo: "Alto-falante, terminal 1", x: 168, y: 192, r: "macho", papel: "sinal", lado: "baixo" },
-    { id: "gnd", n: "GND", rotulo: "Terra", x: 192, y: 192, r: "macho", papel: "gnd", lado: "baixo" },
-    { id: "spk2", n: "SPK2", rotulo: "Alto-falante, terminal 2", x: 216, y: 192, r: "macho", papel: "sinal", lado: "baixo" },
-    { id: "busy", n: "BUSY", rotulo: "Cai para zero enquanto toca", x: 240, y: 192, r: "macho", papel: "digital", lado: "baixo" },
+    { id: "vcc", n: "VCC", rotulo: "De 3,3 a 5 volts", x: 48, y: 264, r: "macho", papel: "v+", lado: "baixo" },
+    { id: "rx", n: "RX", rotulo: "Recebe comando da placa — use resistor de 1k em serie", x: 72, y: 264, r: "macho", papel: "digital", lado: "baixo" },
+    { id: "tx", n: "TX", rotulo: "Devolve resposta para a placa", x: 96, y: 264, r: "macho", papel: "digital", lado: "baixo" },
+    { id: "dacr", n: "DAC_R", rotulo: "Audio da direita, nivel de linha", x: 120, y: 264, r: "macho", papel: "sinal", lado: "baixo" },
+    { id: "dacl", n: "DAC_L", rotulo: "Audio da esquerda, nivel de linha", x: 144, y: 264, r: "macho", papel: "sinal", lado: "baixo" },
+    { id: "spk1", n: "SPK1", rotulo: "Alto-falante, terminal 1", x: 168, y: 264, r: "macho", papel: "sinal", lado: "baixo" },
+    { id: "gnd", n: "GND", rotulo: "Terra", x: 192, y: 264, r: "macho", papel: "gnd", lado: "baixo" },
+    { id: "spk2", n: "SPK2", rotulo: "Alto-falante, terminal 2", x: 216, y: 264, r: "macho", papel: "sinal", lado: "baixo" },
+    { id: "busy", n: "BUSY", rotulo: "Cai para zero enquanto toca", x: 240, y: 264, r: "macho", papel: "digital", lado: "baixo" },
+    { id: "spk1", n: "SPK1", rotulo: "Borne do alto-falante — ligue direto, sem amplificador", x: 264, y: 24, r: "borne", papel: "sinal", lado: "cima" },
+    { id: "spk2", n: "SPK2", rotulo: "Outro borne do alto-falante", x: 312, y: 24, r: "borne", papel: "sinal", lado: "cima" },
   ],
 });
 
@@ -903,8 +944,9 @@ add({
 });
 
 add({
-  id: "joystick", nome: "Joystick analogico", caixa: "entradas", arte: "modulo",
+  id: "joystick", nome: "Joystick analogico", caixa: "entradas", arte: "joystick",
   w: 288, h: 288, cor: "#1B1F26", alimenta: 4.5, correnteTipica: 10, custo: 14,
+  manche: true, zonaAcao: { x: 144, y: 108, r: 76, acao: "manche" },
   pinos: [
     { id: "gnd", n: "GND", rotulo: "Terra", x: 48, y: 264, r: "macho", papel: "gnd", lado: "baixo" },
     { id: "vcc", n: "VCC", rotulo: "5 volts", x: 72, y: 264, r: "macho", papel: "v+", lado: "baixo" },
@@ -995,8 +1037,8 @@ add({
     { id: "gnd", n: "GND", rotulo: "Terra", x: 72, y: 192, r: "macho", papel: "gnd", lado: "baixo" },
     { id: "a0", n: "A0", rotulo: "Umidade em valor analogico", x: 96, y: 192, r: "macho", papel: "analog", lado: "baixo" },
     { id: "d0", n: "D0", rotulo: "Liga ou desliga conforme o trimpot", x: 120, y: 192, r: "macho", papel: "digital", lado: "baixo" },
-    { id: "s1", n: "SONDA1", rotulo: "Vai para uma haste da sonda", x: 144, y: 192, r: "macho", papel: "terminal", lado: "baixo" },
-    { id: "s2", n: "SONDA2", rotulo: "Vai para a outra haste da sonda", x: 168, y: 192, r: "macho", papel: "terminal", lado: "baixo" },
+    { id: "s1", n: "SD1", rotulo: "Vai para uma haste da sonda — a sonda e uma peca separada", x: 144, y: 192, r: "borne", papel: "terminal", lado: "baixo" },
+    { id: "s2", n: "SD2", rotulo: "Vai para a outra haste da sonda", x: 192, y: 192, r: "borne", papel: "terminal", lado: "baixo" },
   ],
 });
 
@@ -1083,9 +1125,15 @@ add({
 });
 
 add({
-  id: "uln2003", nome: "Driver ULN2003 + motor de passo", caixa: "motores", arte: "modulo",
-  w: 240, h: 240, cor: "#1B1F26", alimenta: 4.5, correnteTipica: 240, custo: 18,
+  id: "uln2003", nome: "Driver ULN2003", caixa: "motores", arte: "modulo",
+  w: 384, h: 240, cor: "#1B1F26", alimenta: 4.5, correnteTipica: 240, custo: 18,
+  saidasMotor: ["m1", "m2", "m3", "m4", "mc"],
   pinos: [
+    { id: "m1", n: "A", rotulo: "Bobina A do motor de passo", x: 216, y: 24, r: "femea", papel: "sinal", lado: "cima" },
+    { id: "m2", n: "B", rotulo: "Bobina B do motor de passo", x: 240, y: 24, r: "femea", papel: "sinal", lado: "cima" },
+    { id: "m3", n: "C", rotulo: "Bobina C do motor de passo", x: 264, y: 24, r: "femea", papel: "sinal", lado: "cima" },
+    { id: "m4", n: "D", rotulo: "Bobina D do motor de passo", x: 288, y: 24, r: "femea", papel: "sinal", lado: "cima" },
+    { id: "mc", n: "COM", rotulo: "Comum do motor — o fio vermelho", x: 312, y: 24, r: "femea", papel: "v+", lado: "cima" },
     { id: "in1", n: "IN1", rotulo: "Bobina 1", x: 48, y: 216, r: "macho", papel: "digital", lado: "baixo" },
     { id: "in2", n: "IN2", rotulo: "Bobina 2", x: 72, y: 216, r: "macho", papel: "digital", lado: "baixo" },
     { id: "in3", n: "IN3", rotulo: "Bobina 3", x: 96, y: 216, r: "macho", papel: "digital", lado: "baixo" },
@@ -1096,9 +1144,57 @@ add({
 });
 
 add({
-  id: "expansao-servo", nome: "Expansao de 16 servos", caixa: "energia", arte: "modulo",
-  w: 456, h: 264, cor: "#134E3A", alimenta: 4.5, correnteTipica: 20, custo: 40,
+  id: "expansao-servo", nome: "Expansao de 16 servos", caixa: "energia", arte: "expansao-servo",
+  w: 480, h: 264, cor: "#134E3A", alimenta: 4.5, correnteTipica: 20, custo: 40,
   pinos: [
+    { id: "s0gnd", n: "G0", rotulo: "Canal 0 — terra do servo", x: 48, y: 168, r: "femea", papel: "gnd", lado: "cima" },
+    { id: "s0vcc", n: "V0", rotulo: "Canal 0 — alimentacao do servo, vem do V+ externo", x: 48, y: 192, r: "femea", papel: "v+", lado: "cima" },
+    { id: "s0sig", n: "0", rotulo: "Canal 0 — sinal PWM para o servo", x: 48, y: 216, r: "femea", papel: "pwm", lado: "baixo" },
+    { id: "s1gnd", n: "G1", rotulo: "Canal 1 — terra do servo", x: 72, y: 168, r: "femea", papel: "gnd", lado: "cima" },
+    { id: "s1vcc", n: "V1", rotulo: "Canal 1 — alimentacao do servo, vem do V+ externo", x: 72, y: 192, r: "femea", papel: "v+", lado: "cima" },
+    { id: "s1sig", n: "1", rotulo: "Canal 1 — sinal PWM para o servo", x: 72, y: 216, r: "femea", papel: "pwm", lado: "baixo" },
+    { id: "s2gnd", n: "G2", rotulo: "Canal 2 — terra do servo", x: 96, y: 168, r: "femea", papel: "gnd", lado: "cima" },
+    { id: "s2vcc", n: "V2", rotulo: "Canal 2 — alimentacao do servo, vem do V+ externo", x: 96, y: 192, r: "femea", papel: "v+", lado: "cima" },
+    { id: "s2sig", n: "2", rotulo: "Canal 2 — sinal PWM para o servo", x: 96, y: 216, r: "femea", papel: "pwm", lado: "baixo" },
+    { id: "s3gnd", n: "G3", rotulo: "Canal 3 — terra do servo", x: 120, y: 168, r: "femea", papel: "gnd", lado: "cima" },
+    { id: "s3vcc", n: "V3", rotulo: "Canal 3 — alimentacao do servo, vem do V+ externo", x: 120, y: 192, r: "femea", papel: "v+", lado: "cima" },
+    { id: "s3sig", n: "3", rotulo: "Canal 3 — sinal PWM para o servo", x: 120, y: 216, r: "femea", papel: "pwm", lado: "baixo" },
+    { id: "s4gnd", n: "G4", rotulo: "Canal 4 — terra do servo", x: 144, y: 168, r: "femea", papel: "gnd", lado: "cima" },
+    { id: "s4vcc", n: "V4", rotulo: "Canal 4 — alimentacao do servo, vem do V+ externo", x: 144, y: 192, r: "femea", papel: "v+", lado: "cima" },
+    { id: "s4sig", n: "4", rotulo: "Canal 4 — sinal PWM para o servo", x: 144, y: 216, r: "femea", papel: "pwm", lado: "baixo" },
+    { id: "s5gnd", n: "G5", rotulo: "Canal 5 — terra do servo", x: 168, y: 168, r: "femea", papel: "gnd", lado: "cima" },
+    { id: "s5vcc", n: "V5", rotulo: "Canal 5 — alimentacao do servo, vem do V+ externo", x: 168, y: 192, r: "femea", papel: "v+", lado: "cima" },
+    { id: "s5sig", n: "5", rotulo: "Canal 5 — sinal PWM para o servo", x: 168, y: 216, r: "femea", papel: "pwm", lado: "baixo" },
+    { id: "s6gnd", n: "G6", rotulo: "Canal 6 — terra do servo", x: 192, y: 168, r: "femea", papel: "gnd", lado: "cima" },
+    { id: "s6vcc", n: "V6", rotulo: "Canal 6 — alimentacao do servo, vem do V+ externo", x: 192, y: 192, r: "femea", papel: "v+", lado: "cima" },
+    { id: "s6sig", n: "6", rotulo: "Canal 6 — sinal PWM para o servo", x: 192, y: 216, r: "femea", papel: "pwm", lado: "baixo" },
+    { id: "s7gnd", n: "G7", rotulo: "Canal 7 — terra do servo", x: 216, y: 168, r: "femea", papel: "gnd", lado: "cima" },
+    { id: "s7vcc", n: "V7", rotulo: "Canal 7 — alimentacao do servo, vem do V+ externo", x: 216, y: 192, r: "femea", papel: "v+", lado: "cima" },
+    { id: "s7sig", n: "7", rotulo: "Canal 7 — sinal PWM para o servo", x: 216, y: 216, r: "femea", papel: "pwm", lado: "baixo" },
+    { id: "s8gnd", n: "G8", rotulo: "Canal 8 — terra do servo", x: 240, y: 168, r: "femea", papel: "gnd", lado: "cima" },
+    { id: "s8vcc", n: "V8", rotulo: "Canal 8 — alimentacao do servo, vem do V+ externo", x: 240, y: 192, r: "femea", papel: "v+", lado: "cima" },
+    { id: "s8sig", n: "8", rotulo: "Canal 8 — sinal PWM para o servo", x: 240, y: 216, r: "femea", papel: "pwm", lado: "baixo" },
+    { id: "s9gnd", n: "G9", rotulo: "Canal 9 — terra do servo", x: 264, y: 168, r: "femea", papel: "gnd", lado: "cima" },
+    { id: "s9vcc", n: "V9", rotulo: "Canal 9 — alimentacao do servo, vem do V+ externo", x: 264, y: 192, r: "femea", papel: "v+", lado: "cima" },
+    { id: "s9sig", n: "9", rotulo: "Canal 9 — sinal PWM para o servo", x: 264, y: 216, r: "femea", papel: "pwm", lado: "baixo" },
+    { id: "s10gnd", n: "G10", rotulo: "Canal 10 — terra do servo", x: 288, y: 168, r: "femea", papel: "gnd", lado: "cima" },
+    { id: "s10vcc", n: "V10", rotulo: "Canal 10 — alimentacao do servo, vem do V+ externo", x: 288, y: 192, r: "femea", papel: "v+", lado: "cima" },
+    { id: "s10sig", n: "10", rotulo: "Canal 10 — sinal PWM para o servo", x: 288, y: 216, r: "femea", papel: "pwm", lado: "baixo" },
+    { id: "s11gnd", n: "G11", rotulo: "Canal 11 — terra do servo", x: 312, y: 168, r: "femea", papel: "gnd", lado: "cima" },
+    { id: "s11vcc", n: "V11", rotulo: "Canal 11 — alimentacao do servo, vem do V+ externo", x: 312, y: 192, r: "femea", papel: "v+", lado: "cima" },
+    { id: "s11sig", n: "11", rotulo: "Canal 11 — sinal PWM para o servo", x: 312, y: 216, r: "femea", papel: "pwm", lado: "baixo" },
+    { id: "s12gnd", n: "G12", rotulo: "Canal 12 — terra do servo", x: 336, y: 168, r: "femea", papel: "gnd", lado: "cima" },
+    { id: "s12vcc", n: "V12", rotulo: "Canal 12 — alimentacao do servo, vem do V+ externo", x: 336, y: 192, r: "femea", papel: "v+", lado: "cima" },
+    { id: "s12sig", n: "12", rotulo: "Canal 12 — sinal PWM para o servo", x: 336, y: 216, r: "femea", papel: "pwm", lado: "baixo" },
+    { id: "s13gnd", n: "G13", rotulo: "Canal 13 — terra do servo", x: 360, y: 168, r: "femea", papel: "gnd", lado: "cima" },
+    { id: "s13vcc", n: "V13", rotulo: "Canal 13 — alimentacao do servo, vem do V+ externo", x: 360, y: 192, r: "femea", papel: "v+", lado: "cima" },
+    { id: "s13sig", n: "13", rotulo: "Canal 13 — sinal PWM para o servo", x: 360, y: 216, r: "femea", papel: "pwm", lado: "baixo" },
+    { id: "s14gnd", n: "G14", rotulo: "Canal 14 — terra do servo", x: 384, y: 168, r: "femea", papel: "gnd", lado: "cima" },
+    { id: "s14vcc", n: "V14", rotulo: "Canal 14 — alimentacao do servo, vem do V+ externo", x: 384, y: 192, r: "femea", papel: "v+", lado: "cima" },
+    { id: "s14sig", n: "14", rotulo: "Canal 14 — sinal PWM para o servo", x: 384, y: 216, r: "femea", papel: "pwm", lado: "baixo" },
+    { id: "s15gnd", n: "G15", rotulo: "Canal 15 — terra do servo", x: 408, y: 168, r: "femea", papel: "gnd", lado: "cima" },
+    { id: "s15vcc", n: "V15", rotulo: "Canal 15 — alimentacao do servo, vem do V+ externo", x: 408, y: 192, r: "femea", papel: "v+", lado: "cima" },
+    { id: "s15sig", n: "15", rotulo: "Canal 15 — sinal PWM para o servo", x: 408, y: 216, r: "femea", papel: "pwm", lado: "baixo" },
     { id: "gnd", n: "GND", rotulo: "Terra da logica", x: 48, y: 240, r: "macho", papel: "gnd", lado: "baixo" },
     { id: "vcc", n: "VCC", rotulo: "Alimentacao da logica, 5 volts", x: 72, y: 240, r: "macho", papel: "v+", lado: "baixo" },
     { id: "sda", n: "SDA", rotulo: "Dados do I2C", x: 96, y: 240, r: "macho", papel: "i2c", lado: "baixo" },
@@ -1140,11 +1236,13 @@ add({
 });
 
 add({
-  id: "fonte-bancada", nome: "Fonte de bancada", caixa: "energia", arte: "modulo", w: 288, h: 192,
-  cor: "#2A2E36", fonte: true, ajustavel: [3.3, 5, 9, 12], custo: 180,
+  id: "fonte-bancada", nome: "Fonte de bancada", caixa: "energia", arte: "fonte-bancada", w: 384, h: 264,
+  cor: "#2A2E36", fonte: true, instrumento: true, custo: 180,
+  faixaTensao: { min: 0, max: 30, padrao: 5 },
+  faixaCorrente: { min: 0.1, max: 5, padrao: 2 },
   pinos: [
-    { id: "vout", n: "+", rotulo: "Fonte de laboratorio: voce escolhe a tensao no botao", x: 96, y: 168, r: "macho", papel: "v+", v: 12, lado: "baixo" },
-    { id: "gnd", n: "-", rotulo: "Terra da fonte", x: 144, y: 168, r: "macho", papel: "gnd", lado: "baixo" }
+    { id: "vout", n: "+", rotulo: "Saida positiva — ajuste tensao e limite de corrente no painel", x: 144, y: 240, r: "borne", papel: "v+", v: 5, lado: "cima" },
+    { id: "gnd", n: "-", rotulo: "Saida negativa", x: 216, y: 240, r: "borne", papel: "gnd", lado: "cima" }
   ],
 });
 
@@ -1152,7 +1250,7 @@ add({
   id: "fonte-tomada", nome: "Fonte de tomada", caixa: "energia", arte: "modulo", w: 288, h: 192,
   cor: "#1B1F26", fonte: true, ajustavel: [5, 9], custo: 25,
   pinos: [
-    { id: "vout", n: "+", rotulo: "Fonte de parede — 3 amperes de folga", x: 96, y: 168, r: "macho", papel: "v+", v: 9, lado: "baixo" },
+    { id: "vout", n: "+", rotulo: "Fonte de parede — escolha 5 ou 9 volts na peca, 3 amperes de folga", x: 96, y: 168, r: "macho", papel: "v+", v: 9, lado: "baixo" },
     { id: "gnd", n: "-", rotulo: "Terra da fonte", x: 144, y: 168, r: "macho", papel: "gnd", lado: "baixo" }
   ],
 });
@@ -1167,8 +1265,9 @@ add({
 });
 
 add({
-  id: "suporte-litio", nome: "Suporte de bateria de litio", caixa: "energia", arte: "modulo", w: 288, h: 192,
+  id: "suporte-litio", nome: "Suporte de bateria de litio", caixa: "energia", arte: "suporte-litio", w: 336, h: 216,
   cor: "#1B1F26", fonte: true, custo: 14,
+  slots: { min: 1, max: 4, padrao: 1, porSlot: 3.7, rotulo: "celulas" },
   pinos: [
     { id: "vout", n: "+", rotulo: "Celula de litio: 3,7 volts que caem devagar", x: 96, y: 168, r: "macho", papel: "v+", v: 3.7, lado: "baixo" },
     { id: "gnd", n: "-", rotulo: "Terra da fonte", x: 144, y: 168, r: "macho", papel: "gnd", lado: "baixo" }
@@ -1263,6 +1362,7 @@ add({
 add({
   id: "caixa-bluetooth", nome: "Caixa de som bluetooth", caixa: "extras", arte: "caixa-som",
   w: 336, h: 264, cor: "#1B1F26", custo: 90, inerte: true,
+  encaixe: { tipo: "pendrive", x: 300, y: 60, rotulo: "entrada USB" },
   pinos: [
     { id: "p3", n: "P2", rotulo: "Entrada auxiliar de audio", x: 288, y: 240, r: "borne", papel: "sinal", lado: "cima" }
   ],
@@ -1278,6 +1378,26 @@ add({
   ligacoes: [["a", "b"]],
 });
 
+add({
+  id: "moeda", nome: "Moeda", caixa: "extras", arte: "moeda", w: 120, h: 120,
+  cor: "#C9A227", custo: 0,
+  ligacoes: [["a", "b"]],
+  pinos: [
+    { id: "a", n: "", rotulo: "Borda da moeda — metal conduz, e por isso ela fecha contato", x: 24, y: 48, r: "macho", papel: "terminal", lado: "e" },
+    { id: "b", n: "", rotulo: "Outra borda da moeda", x: 96, y: 48, r: "macho", papel: "terminal", lado: "d" },
+  ],
+});
+add({
+  id: "borracha", nome: "Borracha", caixa: "extras", arte: "borracha", w: 168, h: 96,
+  cor: "#E0A7B0", custo: 0, isolante: true,
+  pinos: [],
+});
+add({
+  id: "cartao-sd-midia", nome: "Cartao de memoria SD", caixa: "extras", arte: "cartao-midia",
+  w: 168, h: 216, cor: "#1B4E8A", custo: 12, inerte: true, encaixavel: "cartao-sd-midia",
+  pinos: [],
+});
+
 /* Ponta solta: quando voce clipa uma garra e deixa a outra ponta
    pendurada, ela vira um ponto de ligacao na bancada. Dali saem
    quantos fios voce quiser — a gambiarra classica do laboratorio. */
@@ -1288,6 +1408,22 @@ add({
     { id: "no", n: "", rotulo: "Ponta solta — aceita garra jacare, ponta macho e ponta femea", x: 24, y: 48, r: "borne", papel: "terminal" },
   ],
 });
+
+/* O assistente de desenho pode ter movido pinos e mudado o tamanho de
+   algumas pecas. Aplicamos isso aqui, por cima das definicoes, para o
+   modelo tecnico e o desenho nunca discordarem. */
+for (const [id, mov] of Object.entries(PINOS_AJUSTADOS)) {
+  const d = C.find((c) => c.id === id);
+  if (!d) continue;
+  for (const [pid, pos] of Object.entries(mov)) {
+    const p = d.pinos.find((x) => x.id === pid);
+    if (p) { p.x = pos.x; p.y = pos.y; }
+  }
+}
+for (const [id, t] of Object.entries(TAMANHOS)) {
+  const d = C.find((c) => c.id === id);
+  if (d) { d.w = t.w; d.h = t.h; }
+}
 
 export const COMPONENTES = C;
 export const PORID = Object.fromEntries(C.map((c) => [c.id, c]));

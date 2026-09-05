@@ -74,6 +74,7 @@ footer .ok{color:var(--fosforo)}
 
 .pino-alca{cursor:move}
 .alca{fill:var(--fosforo);stroke:var(--vacuo);stroke-width:1.5;cursor:nwse-resize}
+.no-alca{cursor:move}
 @media(max-width:900px){
   body{grid-template-columns:1fr;grid-template-rows:46px 180px minmax(0,1fr) 200px 30px;
     grid-template-areas:"topo" "pecas" "mesa" "props" "base"}
@@ -107,10 +108,13 @@ footer .ok{color:var(--fosforo)}
     <button data-fer="circle">Circulo</button>
     <button data-fer="line">Linha</button>
     <button data-fer="pen">Caneta</button>
+    <button data-fer="no">Remodelar</button>
     <button data-fer="text">Rotulo</button>
     <button data-fer="led">Luz de ligado</button>
     <button id="b-grade" class="on">Grade</button>
     <button id="b-pinos" class="on">Pinos</button>
+    <button id="b-copiar">Copiar</button>
+    <button id="b-colar">Colar</button>
   </div>
   <div id="zoomctl">
     <button id="b-mais">+</button>
@@ -163,7 +167,9 @@ const app = {
   atual: null,        // id do componente aberto
   formas: [],         // formas editaveis da peca aberta
   pinos: [],          // copia dos pinos, com posicao editavel
-  sel: null,          // id da forma selecionada
+  sel: null,          // id da forma em foco
+  selMulti: [],       // ids selecionados junto (Shift)
+  area: null,         // copia de formas para colar em outro componente
   ferramenta: "sel",
   vista: { x: 40, y: 40, k: 1 },
   grade: true,
@@ -227,6 +233,7 @@ function elementoDe(f) {
   } else {
     el = criar(f.tipo, f.attrs);
     if (f.tipo === "text") el.textContent = f.texto || "";
+    if (f.luzLigado) el.setAttribute("data-luz", "1");
   }
   const t = [];
   if (f.dx || f.dy) t.push(`translate(${f.dx} ${f.dy})`);
@@ -282,7 +289,33 @@ function aplicarVista() {
   q("#fundo").style.display = app.grade ? "" : "none";
 }
 
-function pintar() {
+let focoAtual = null;
+
+function guardarFoco() {
+  const el = document.activeElement;
+  if (el && q("#props") && q("#props").contains(el)) {
+    focoAtual = {
+      attr: el.dataset.attr || el.dataset.pinoCampo || el.dataset.mov || el.dataset.cor || (el.dataset.texto != null ? "texto" : null),
+      inicio: el.selectionStart, fim: el.selectionEnd,
+    };
+  } else focoAtual = null;
+}
+
+function devolverFoco() {
+  if (!focoAtual || !focoAtual.attr) return;
+  const el = q(`#props [data-attr="${focoAtual.attr}"], #props [data-pino-campo="${focoAtual.attr}"], #props [data-mov="${focoAtual.attr}"], #props [data-cor="${focoAtual.attr}"]`)
+    || (focoAtual.attr === "texto" ? q("#props [data-texto]") : null);
+  if (!el) return;
+  el.focus();
+  try { el.setSelectionRange(focoAtual.inicio, focoAtual.fim); } catch (e) {}
+}
+
+/* O painel so e reconstruido quando a selecao muda. Enquanto voce
+   digita num campo, ele nao se reconstroi: era isso que fazia o cursor
+   pular e a peca sair da selecao no meio do ajuste. */
+let assinaturaPainel = "";
+
+function pintar(soMesa) {
   if (!app.atual) return;
   const d = compAtual();
 
@@ -306,25 +339,84 @@ function pintar() {
   }).join("") : "";
 
   pintarAlcas();
-  pintarProps();
+  const assin = [app.sel, app.selMulti.join(","), app.formas.length, app.formas.map((f) => f.nome).join("|")].join("::");
+  if (!soMesa && assin !== assinaturaPainel) {
+    assinaturaPainel = assin;
+    guardarFoco();
+    pintarProps();
+    devolverFoco();
+  }
 }
 
 function pintarAlcas() {
   camadaAlcas.innerHTML = "";
+  if (penPontos) { previewCaneta(); return; }
+  const grupo = selecionadas();
+  if (!grupo.length) return;
+
+  let html = "";
+  for (const f of grupo) {
+    const el = camadaFormas.querySelector(`[data-forma="${f.id}"]`);
+    if (!el) continue;
+    let b;
+    try { b = el.getBBox(); } catch (e) { continue; }
+    const cor = f.id === app.sel ? "#5CE07A" : "#7DD3FC";
+    html += `<rect x="${b.x - 3}" y="${b.y - 3}" width="${b.width + 6}" height="${b.height + 6}"
+      fill="none" stroke="${cor}" stroke-width="1.5" stroke-dasharray="6 4" pointer-events="none"/>`;
+    if (grupo.length === 1 && ["rect", "circle", "ellipse"].includes(f.tipo))
+      html += `<rect class="alca" data-alca="se" x="${b.x + b.width - 5}" y="${b.y + b.height - 5}" width="10" height="10" rx="2"/>`;
+  }
+
+  // Remodelar: os pontos do caminho aparecem e podem ser arrastados.
   const f = formaSel();
-  if (!f) return;
-  const cx = camadaFormas.querySelector(`[data-forma="${f.id}"]`);
-  if (!cx) return;
-  let cx2;
-  try { cx2 = cx.getBBox(); } catch (e) { return; }
-  camadaAlcas.innerHTML =
-    `<rect x="${cx2.x - 3}" y="${cx2.y - 3}" width="${cx2.width + 6}" height="${cx2.height + 6}"
-       fill="none" stroke="#5CE07A" stroke-width="1.5" stroke-dasharray="6 4" pointer-events="none"/>` +
-    (["rect", "circle", "ellipse"].includes(f.tipo)
-      ? `<rect class="alca" data-alca="se" x="${cx2.x + cx2.width - 5}" y="${cx2.y + cx2.height - 5}" width="10" height="10" rx="2"/>` : "");
+  if (app.ferramenta === "no" && f && f.tipo === "path") {
+    const p = pontosDoCaminho(f.attrs.d);
+    if (p) html += p.pontos.map((pt, k) =>
+      `<circle class="no-alca" data-no="${k}" cx="${pt.x}" cy="${pt.y}" r="6" fill="#E9C542" stroke="#05060A" stroke-width="1.5"/>`).join("");
+  }
+  camadaAlcas.innerHTML = html;
+}
+
+/* Le um caminho simples (M / L / C) e devolve os pontos de ancora.
+   Serve para a ferramenta de remodelar: e o suficiente para tudo que a
+   propria caneta desta ferramenta produz. */
+function pontosDoCaminho(d) {
+  if (!d) return null;
+  const partes = d.trim().match(/[MLC][^MLCZ]*/gi);
+  if (!partes) return null;
+  const pontos = [], segs = [];
+  for (const parte of partes) {
+    const tipo = parte[0].toUpperCase();
+    const n = parte.slice(1).trim().split(/[\s,]+/).map(Number);
+    if (tipo === "M" || tipo === "L") {
+      pontos.push({ x: n[0], y: n[1] });
+      segs.push({ tipo, ctrl: null });
+    } else if (tipo === "C") {
+      pontos.push({ x: n[4], y: n[5] });
+      segs.push({ tipo, ctrl: [n[0], n[1], n[2], n[3]] });
+    }
+  }
+  return { pontos, segs, fechado: /z\s*$/i.test(d) };
+}
+
+function caminhoDePontos(dados, fechado) {
+  let d = "";
+  dados.pontos.forEach((p, i) => {
+    const seg = dados.segs[i];
+    if (i === 0) d += `M${p.x} ${p.y}`;
+    else if (seg.tipo === "C" && seg.ctrl) d += ` C${seg.ctrl[0]} ${seg.ctrl[1]} ${seg.ctrl[2]} ${seg.ctrl[3]} ${p.x} ${p.y}`;
+    else d += ` L${p.x} ${p.y}`;
+  });
+  if (fechado) d += " Z";
+  return d;
 }
 
 const formaSel = () => app.formas.find((f) => f.id === app.sel);
+const selecionadas = () => {
+  const ids = new Set([app.sel, ...app.selMulti].filter(Boolean));
+  return app.formas.filter((f) => ids.has(f.id));
+};
+const estaSel = (id) => id === app.sel || app.selMulti.includes(id);
 
 /* ---------- painel de propriedades ---------- */
 
@@ -387,7 +479,7 @@ function pintarProps() {
   }
 
   html += `<div class="bloco"><h3>Camadas</h3><div class="camadas">
-    ${app.formas.map((x, i) => `<div class="camada ${app.sel === x.id ? "on" : ""}" data-camada="${x.id}">
+    ${app.formas.map((x, i) => `<div class="camada ${estaSel(x.id) ? "on" : ""}" data-camada="${x.id}">
       <span class="tag">${String(app.formas.length - i).padStart(2, "0")}</span>${x.nome}
       <span class="olho" data-olho="${x.id}">${x.oculta ? "&#9675;" : "&#9679;"}</span></div>`).reverse().join("")}
   </div></div>`;
@@ -414,17 +506,17 @@ function ligarProps() {
   const f = formaSel();
 
   alvo.querySelectorAll("[data-attr]").forEach((el) =>
-    el.addEventListener("input", () => { if (f) { f.attrs[el.dataset.attr] = el.value; pintar(); } }));
+    el.addEventListener("input", () => { if (f) { f.attrs[el.dataset.attr] = el.value; marcarEditado(); pintar(true); } }));
   alvo.querySelectorAll("[data-cor]").forEach((el) =>
-    el.addEventListener("input", () => { if (f) { f.attrs[el.dataset.cor] = el.value; pintar(); } }));
+    el.addEventListener("input", () => { if (f) { f.attrs[el.dataset.cor] = el.value; marcarEditado(); pintar(true); } }));
   alvo.querySelectorAll("[data-limpa]").forEach((el) =>
-    el.addEventListener("click", () => { if (f) { f.attrs[el.dataset.limpa] = "none"; pintar(); } }));
+    el.addEventListener("click", () => { if (f) { f.attrs[el.dataset.limpa] = "none"; marcarEditado(); pintar(true); } }));
   const t = alvo.querySelector("[data-texto]");
-  if (t) t.addEventListener("input", () => { f.texto = t.value; f.nome = `rotulo "${t.value.slice(0, 14)}"`; pintar(); });
+  if (t) t.addEventListener("input", () => { f.texto = t.value; f.nome = `rotulo "${t.value.slice(0, 14)}"`; marcarEditado(); pintar(true); });
   const r = alvo.querySelector("[data-rot]");
-  if (r) r.addEventListener("input", () => { f.rot = Number(r.value); pintar(); });
+  if (r) r.addEventListener("input", () => { f.rot = Number(r.value); marcarEditado(); pintar(true); });
   alvo.querySelectorAll("[data-mov]").forEach((el) =>
-    el.addEventListener("input", () => { f[el.dataset.mov] = Number(el.value); pintar(); }));
+    el.addEventListener("input", () => { f[el.dataset.mov] = Number(el.value); marcarEditado(); pintar(true); }));
 
   alvo.querySelectorAll("[data-ordem]").forEach((el) => el.addEventListener("click", () => {
     const i = app.formas.indexOf(f);
@@ -450,7 +542,11 @@ function ligarProps() {
       const alvoF = app.formas.find((x) => x.id === ev.target.dataset.olho);
       alvoF.oculta = !alvoF.oculta;
       alvoF.attrs.opacity = alvoF.oculta ? 0 : 1;
-    } else app.sel = el.dataset.camada;
+    } else if (ev.shiftKey) {
+      const id = el.dataset.camada;
+      if (!app.selMulti.includes(id) && id !== app.sel) app.selMulti.push(id);
+      else app.selMulti = app.selMulti.filter((x) => x !== id);
+    } else { app.sel = el.dataset.camada; app.selMulti = []; }
     marcarEditado(); pintar();
   }));
 
@@ -546,11 +642,20 @@ function iniciarMesa() {
 
     if (app.ferramenta === "pen") { penClique(m, ev); return; }
 
-    if (app.ferramenta !== "sel") { criarForma(m); return; }
+    if (app.ferramenta !== "sel" && app.ferramenta !== "no") { criarForma(m); return; }
 
     const alca = ev.target.closest("[data-alca]");
     if (alca) {
       arraste = { modo: "escala", f: formaSel(), inicio: m, orig: JSON.parse(JSON.stringify(formaSel().attrs)) };
+      svg.setPointerCapture(ev.pointerId);
+      return;
+    }
+
+    const noAlca = ev.target.closest("[data-no]");
+    if (noAlca) {
+      const f = formaSel();
+      const dados = pontosDoCaminho(f.attrs.d);
+      arraste = { modo: "ponto", f, pontos: dados, ponto: dados.pontos[Number(noAlca.dataset.no)], fechado: dados.fechado };
       svg.setPointerCapture(ev.pointerId);
       return;
     }
@@ -566,15 +671,26 @@ function iniciarMesa() {
 
     const forma = ev.target.closest("[data-forma]");
     if (forma) {
-      app.sel = forma.dataset.forma;
-      const f = formaSel();
-      arraste = { modo: "mover", f, inicio: m, dx0: f.dx, dy0: f.dy };
+      const id = forma.dataset.forma;
+      if (ev.shiftKey) {
+        // Shift junta formas na selecao, para mover varias de uma vez.
+        if (id === app.sel) { /* mantem */ }
+        else if (app.selMulti.includes(id)) app.selMulti = app.selMulti.filter((x) => x !== id);
+        else app.selMulti.push(id);
+      } else if (!estaSel(id)) {
+        app.sel = id;
+        app.selMulti = [];
+      } else app.sel = id;
+
+      const grupo = selecionadas();
+      arraste = { modo: "mover", grupo, inicio: m, base: grupo.map((f) => ({ f, dx: f.dx, dy: f.dy })) };
       svg.setPointerCapture(ev.pointerId);
       pintar();
       return;
     }
 
     app.sel = null;
+    app.selMulti = [];
     arraste = { modo: "pan", x: ev.clientX, y: ev.clientY, vx: app.vista.x, vy: app.vista.y };
     svg.setPointerCapture(ev.pointerId);
     pintar();
@@ -588,9 +704,15 @@ function iniciarMesa() {
       app.vista.y = arraste.vy + (ev.clientY - arraste.y);
       aplicarVista();
     } else if (arraste.modo === "mover") {
-      arraste.f.dx = Math.round(arraste.dx0 + (m.x - arraste.inicio.x));
-      arraste.f.dy = Math.round(arraste.dy0 + (m.y - arraste.inicio.y));
-      pintar();
+      const ddx = Math.round(m.x - arraste.inicio.x), ddy = Math.round(m.y - arraste.inicio.y);
+      for (const b of arraste.base) { b.f.dx = b.dx + ddx; b.f.dy = b.dy + ddy; }
+      pintar(true);
+    } else if (arraste.modo === "ponto") {
+      const g = 1;
+      arraste.ponto.x = Math.round(m.x / g) * g;
+      arraste.ponto.y = Math.round(m.y / g) * g;
+      arraste.f.attrs.d = caminhoDePontos(arraste.pontos, arraste.fechado);
+      pintar(true);
     } else if (arraste.modo === "pino") {
       const p = app.pinos.find((x) => x.id === arraste.id);
       const g = p.r === "macho" ? PASSO : 4;
@@ -629,9 +751,18 @@ function iniciarMesa() {
     if (ev.target.matches("input, select, textarea")) return;
     if (ev.key === "Escape") { penPontos = null; app.sel = null; pintar(); }
     if (ev.key === "Enter" && penPontos) fecharCaneta(false);
-    if ((ev.key === "Delete" || ev.key === "Backspace") && formaSel()) {
-      app.formas = app.formas.filter((x) => x.id !== app.sel);
-      app.sel = null; marcarEditado(); pintar();
+    if ((ev.key === "Delete" || ev.key === "Backspace") && selecionadas().length) {
+      const fora = new Set(selecionadas().map((f) => f.id));
+      app.formas = app.formas.filter((x) => !fora.has(x.id));
+      app.sel = null; app.selMulti = []; marcarEditado(); pintar();
+    }
+    if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === "c") q("#b-copiar").click();
+    if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === "v") q("#b-colar").click();
+    if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === "a") {
+      ev.preventDefault();
+      app.sel = app.formas[0] && app.formas[0].id;
+      app.selMulti = app.formas.slice(1).map((f) => f.id);
+      pintar();
     }
   });
 }
@@ -757,13 +888,14 @@ function fecharCaneta(fechado) {
 function atualizarBarra() {
   document.querySelectorAll("[data-fer]").forEach((b) => b.classList.toggle("on", b.dataset.fer === app.ferramenta));
   const dicas = {
-    sel: "Clique para escolher. Arraste para mover. Alca verde muda o tamanho. Delete apaga.",
+    sel: "Clique para escolher, Shift junta mais formas. Arraste move todas. Ctrl+C copia, Ctrl+V cola em qualquer peca.",
     rect: "Clique na mesa para largar um retangulo.",
     circle: "Clique na mesa para largar um circulo.",
     line: "Clique na mesa para largar uma linha.",
     pen: "Clique para fixar um ponto; arraste no clique para curvar. Enter fecha, Esc cancela.",
     text: "Clique para colocar um rotulo e depois edite o texto no painel.",
     led: "Clique onde fica a luz de ligado da peca.",
+    no: "Escolha um traco da caneta: os pontos dele aparecem em amarelo e voce arrasta cada um.",
   };
   q("#ajuda").textContent = dicas[app.ferramenta] || "";
 }
@@ -863,6 +995,34 @@ q("#b-abrir").addEventListener("click", () => {
     leitor.readAsText(arq);
   });
   campo.click();
+});
+
+/* Copiar e colar formas, inclusive de um componente para outro. A area
+   de transferencia vive na sessao, entao da para abrir outra peca e
+   colar la o mesmo detalhe. */
+q("#b-copiar").addEventListener("click", () => {
+  const grupo = selecionadas();
+  if (!grupo.length) { recado("selecione alguma forma antes de copiar"); return; }
+  app.area = JSON.parse(JSON.stringify(grupo));
+  recado(`${grupo.length} forma(s) na area de transferencia`);
+});
+
+q("#b-colar").addEventListener("click", () => {
+  if (!app.area || !app.area.length) { recado("nada copiado ainda"); return; }
+  if (!app.atual) { recado("abra um componente para colar"); return; }
+  const novas = app.area.map((f) => {
+    const c = JSON.parse(JSON.stringify(f));
+    c.id = "f" + (app.seq++);
+    c.dx = (c.dx || 0) + 16;
+    c.dy = (c.dy || 0) + 16;
+    return c;
+  });
+  app.formas.push(...novas);
+  app.sel = novas[0].id;
+  app.selMulti = novas.slice(1).map((f) => f.id);
+  marcarEditado();
+  pintar();
+  recado(`${novas.length} forma(s) coladas`);
 });
 
 q("#b-exportar").addEventListener("click", exportarTudo);

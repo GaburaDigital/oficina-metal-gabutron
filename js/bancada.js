@@ -46,7 +46,7 @@ export const estado = {
 
 let svg, mundo, camadaComp, camadaFios, camadaTopo, ganchos = {};
 let arrasto = null, panorama = null, ponteiros = new Map(), pinca = null;
-let dica = null, pontaCursor = null;
+let dica = null;
 
 /* ---------- geometria ----------------------------------------- */
 
@@ -142,11 +142,6 @@ export function iniciar(elemento, cb) {
   dica.hidden = true;
   svg.parentElement.appendChild(dica);
 
-  pontaCursor = document.createElement("div");
-  pontaCursor.id = "ponta-cursor";
-  pontaCursor.hidden = true;
-  svg.parentElement.appendChild(pontaCursor);
-
   svg.addEventListener("pointerdown", aoApertar);
   svg.addEventListener("pointermove", aoMover);
   svg.addEventListener("pointerup", aoSoltar);
@@ -223,6 +218,11 @@ function svgComponente(comp, ocupados) {
   const inst = {
     variante: comp.variante, valorAtual: comp.valor, giro: comp.giro,
     pressionado: comp.pressionado, tensaoSaida: comp.tensaoSaida,
+    slots: comp.slots ?? (d.slots && d.slots.padrao),
+    tensao: comp.tensao ?? (d.faixaTensao && d.faixaTensao.padrao),
+    limite: comp.limite ?? (d.faixaCorrente && d.faixaCorrente.padrao),
+    eixoX: comp.eixoX, eixoY: comp.eixoY, passo: comp.passo,
+    temCartao: comp.temMidia === "cartao-sd-midia", temMidia: comp.temMidia,
     ligado: estado.energizado && est.ligado,
     aceso: estado.energizado && est.aceso,
     brilho: est.brilho || 1,
@@ -354,6 +354,24 @@ function tentarEncaixar(comp) {
     }
   }
 
+  // 2) Midia: cartao de memoria e pen drive entram no slot de quem
+  //    tem encaixe, sem fio nenhum. E so mecanico, mas o aluno espera.
+  if (d.inerte || d.encaixavel) {
+    for (const host of estado.comps) {
+      if (host.id === comp.id) continue;
+      const hd = PORID[host.tipo];
+      if (!hd.encaixe) continue;
+      const tipoOk = hd.encaixe.tipo === comp.tipo || hd.encaixe.tipo === d.encaixavel;
+      if (!tipoOk) continue;
+      const alvoX = host.x + hd.encaixe.x - d.w / 2, alvoY = host.y + hd.encaixe.y - d.h / 2;
+      if (Math.hypot(comp.x - alvoX, comp.y - alvoY) > 140) continue;
+      comp.x = alvoX; comp.y = alvoY;
+      comp.pai = host.id;
+      host.temMidia = comp.tipo;
+      return true;
+    }
+  }
+
   const machos = d.pinos.filter((p) => p.r === "macho");
   if (!machos.length) return false;
 
@@ -451,6 +469,12 @@ export function adicionar(tipo, opcoes = {}) {
     valor: d.valores ? d.valores[0] : undefined,
     giro: d.ajuste ? 50 : undefined,
     tensaoSaida: d.ajustavel ? d.ajustavel[1] : undefined,
+    slots: d.slots ? d.slots.padrao : undefined,
+    tensao: d.faixaTensao ? d.faixaTensao.padrao : undefined,
+    limite: d.faixaCorrente ? d.faixaCorrente.padrao : undefined,
+    eixoX: d.manche ? 50 : undefined,
+    eixoY: d.manche ? 50 : undefined,
+    passo: d.passos ? 0 : undefined,
     usbLigado: d.usb ? true : undefined,
     pressionado: false,
     encaixes: [],
@@ -612,20 +636,11 @@ export function inverterPontas() {
   return estado.ferramentaFio.pontas[0];
 }
 
-function atualizarPontaCursor(x, y) {
+/* O rotulo que seguia o cursor foi removido: a mesma informacao ja
+   aparece no chip fixo da bancada, e flutuando ela cobria justamente o
+   contato que o aluno queria enxergar. */
+function atualizarPontaCursor() {
   if (ganchos.aoMudarPonta) ganchos.aoMudarPonta(pontaDaVez());
-  const f = estado.ferramentaFio;
-  if (!f) { pontaCursor.hidden = true; return; }
-  const i = estado.pendente ? 1 : 0;
-  const ponta = f.pontas[i];
-  const forma = { macho: "&#9632;", femea: "&#9679;", jacare: "&#9644;" }[ponta] || "&#9632;";
-  pontaCursor.hidden = false;
-  pontaCursor.innerHTML = `<span style="color:${f.cor}">${forma}</span> ${i === 0 ? "1a ponta" : "2a ponta"}: ${ponta} <em>Tab inverte</em>`;
-  if (x != null) {
-    const cr = svg.parentElement.getBoundingClientRect();
-    pontaCursor.style.left = (x - cr.left + 18) + "px";
-    pontaCursor.style.top = (y - cr.top + 18) + "px";
-  }
 }
 
 /* ---------- zoom e enquadramento ------------------------------ */
@@ -699,6 +714,16 @@ function aoApertar(ev) {
       comp.pressionado = !comp.pressionado;
       SOM.encaixe();
       recalcular();
+    } else if (zona.dataset.acao === "manche") {
+      const d = PORID[comp.tipo];
+      arrasto = { acaoManche: comp.id, cx: comp.x + d.zonaAcao.x, cy: comp.y + d.zonaAcao.y, r: d.zonaAcao.r };
+      comp.pressionado = true;
+      recalcular();
+      svg.setPointerCapture(ev.pointerId);
+    } else if (zona.dataset.acao === "passo") {
+      const m = telaParaMundo(ev.clientX, ev.clientY);
+      arrasto = { acaoPasso: comp.id, y0: m.y, base: comp.passo || 0 };
+      svg.setPointerCapture(ev.pointerId);
     } else if (zona.dataset.acao === "girar") {
       const d = PORID[comp.tipo];
       arrasto = { acaoGiro: comp.id, cx: comp.x + d.zonaAcao.x, cy: comp.y + d.zonaAcao.y };
@@ -766,6 +791,23 @@ function aoMover(ev) {
     recalcular();
     return;
   }
+  if (arrasto && arrasto.acaoManche) {
+    const comp = achar(arrasto.acaoManche);
+    const m = telaParaMundo(ev.clientX, ev.clientY);
+    const dx = Math.max(-1, Math.min(1, (m.x - arrasto.cx) / arrasto.r));
+    const dy = Math.max(-1, Math.min(1, (m.y - arrasto.cy) / arrasto.r));
+    comp.eixoX = Math.round(50 + dx * 50);
+    comp.eixoY = Math.round(50 + dy * 50);
+    redesenhar();
+    return;
+  }
+  if (arrasto && arrasto.acaoPasso) {
+    const comp = achar(arrasto.acaoPasso);
+    const m = telaParaMundo(ev.clientX, ev.clientY);
+    comp.passo = arrasto.base + Math.round((arrasto.y0 - m.y) / 12);
+    redesenhar();
+    return;
+  }
   if (arrasto && arrasto.acaoBotao) return;
 
   if (arrasto) {
@@ -797,9 +839,11 @@ function aoMover(ev) {
     desenharTopo();
   }
 
-  const alvo = ev.target.closest(".alvo");
-  if (alvo) mostrarDica(alvo.dataset.comp, alvo.dataset.pino, ev.clientX, ev.clientY);
-  else esconderDica();
+  if (ev.pointerType === "mouse") {
+    const alvo = ev.target.closest(".alvo");
+    if (alvo) mostrarDica(alvo.dataset.comp, alvo.dataset.pino, ev.clientX, ev.clientY);
+    else esconderDica();
+  }
 }
 
 function posicionarGrupo(comp, filhos) {
@@ -826,6 +870,14 @@ function aoSoltar(ev) {
     return;
   }
   if (arrasto && arrasto.acaoGiro) { arrasto = null; return; }
+  if (arrasto && arrasto.acaoManche) {
+    // O manche volta ao centro sozinho, como o de verdade.
+    const comp = achar(arrasto.acaoManche);
+    if (comp) { comp.eixoX = 50; comp.eixoY = 50; comp.pressionado = false; recalcular(); }
+    arrasto = null;
+    return;
+  }
+  if (arrasto && arrasto.acaoPasso) { arrasto = null; return; }
 
   if (arrasto) {
     const comp = achar(arrasto.id);

@@ -100,6 +100,7 @@ export function calcular(comps, fios, energizado = true) {
   // suficiente vinda de fora. E assim na bancada real.
   const porUsb = (c, d) => d.alimentada === true && d.usb && c.usbLigado !== false;
   const ativa = (c, d) => !c.queimado && (d.fonte === true || porUsb(c, d) || c.__vinOk === true);
+  const reguladorAtivo = (c, d) => d.regulador === true && c.__vinOk === true;
 
   const registrarFonte = (r, comp, def, pino, v, limite, duty = 1) => {
     tensao.set(r, Math.max(tensao.get(r) ?? 0, v));
@@ -112,7 +113,7 @@ export function calcular(comps, fios, energizado = true) {
   const registrarPlacaEFontes = () => {
   for (const c of energizado ? comps : []) {
     const d = PORID[c.tipo];
-    if (!d || !ativa(c, d)) continue;
+    if (!d || !(ativa(c, d) || reguladorAtivo(c, d))) continue;
     const fw = c.firmware || {};
     for (const p of d.pinos) {
       const r = no(c.id, p.id);
@@ -120,8 +121,15 @@ export function calcular(comps, fios, energizado = true) {
 
       if (p.papel === "gnd") { terra.add(r); continue; }
 
-      const vFixa = p.id === "vout" && c.tensaoSaida ? c.tensaoSaida : p.v;
-      if (vFixa != null) { registrarFonte(r, c, d, p, vFixa, d.limiteAlim ?? 3000); continue; }
+      let vFixa = p.v;
+      // Suporte de pilhas: a tensao vem do numero de slots ocupados.
+      if (d.slots && p.papel === "v+") vFixa = (c.slots ?? d.slots.padrao) * d.slots.porSlot;
+      // Fonte de bancada: o aluno ajusta tensao e limite de corrente.
+      else if (d.instrumento && p.papel === "v+") vFixa = c.tensao ?? d.faixaTensao.padrao;
+      // Fonte de tomada e reguladores ajustaveis.
+      else if ((p.id === "vout" || p.id === "outp") && c.tensaoSaida) vFixa = c.tensaoSaida;
+      const limite = d.instrumento ? (c.limite ?? d.faixaCorrente.padrao) * 1000 : (d.correnteMax ?? d.limiteAlim ?? 3000);
+      if (vFixa != null) { registrarFonte(r, c, d, p, vFixa, limite); continue; }
 
       const est = fw[p.id];
       if (!est || !d.tensaoLogica) continue;
@@ -153,7 +161,7 @@ export function calcular(comps, fios, energizado = true) {
     let mudou = false;
     for (const c of comps) {
       const d = PORID[c.tipo];
-      if (!d || !d.alimentada || porUsb(c, d) || c.__vinOk) continue;
+      if (!d || !(d.alimentada || d.regulador) || porUsb(c, d) || c.__vinOk) continue;
       // Qualquer entrada de energia serve: VIN, plugue redondo,
       // conector de bateria. Cada uma com a sua faixa de tensao.
       const entradas = d.pinos.filter((p) => p.entrada);
@@ -206,6 +214,21 @@ export function calcular(comps, fios, energizado = true) {
       canal("enb", "in3", "in4", "out3", "out4");
       if (Object.keys(saidas).length) { c.__saidas = saidas; mudouDriver = true; }
     }
+    // Driver ULN2003: ele nao inverte nada, so puxa cada bobina para o
+    // GND quando a entrada correspondente esta em nivel alto.
+    for (const c of comps) {
+      const d = PORID[c.tipo];
+      if (!d || d.id !== "uln2003" || c.queimado) continue;
+      const v = tensao.get(no(c.id, "vcc")) ?? 0;
+      if (v < (d.alimenta || 4.5) || !terra.has(no(c.id, "gnd"))) continue;
+      const saidas = { mc: v };
+      [["in1", "m1"], ["in2", "m2"], ["in3", "m3"], ["in4", "m4"]].forEach(([entrada, saida]) => {
+        if ((tensao.get(no(c.id, entrada)) ?? 0) > 2) saidas[saida] = "gnd";
+      });
+      c.__saidas = saidas;
+      mudouDriver = true;
+    }
+
     if (mudouDriver) { tensao.clear(); terra.clear(); fontesDoNo.clear(); registrarPlacaEFontes(); }
   }
 
@@ -414,6 +437,15 @@ export function calcular(comps, fios, energizado = true) {
         avisar("critico", c.id, `A ${d.nome} inteira esta puxando ${total.toFixed(0)} miliamperes. O regulador dela desiste antes disso.`, { tipo: "placa" });
     }
 
+    if (d.id === "motor-passo" && !c.queimado) {
+      const v = vDe(c.id, "com");
+      const bobina = ["a", "b", "c", "d"].some((x) => gndDe(c.id, x));
+      e.ligado = v >= (d.alimenta || 4.5) && bobina;
+      e.corrente = e.ligado ? d.correnteTipica : 0;
+      if (v > 0 && !bobina)
+        avisar("aviso", c.id, "O motor de passo tem tensao no fio vermelho, mas nenhuma bobina esta sendo puxada para o GND. Sem isso ele nao anda: quem faz esse trabalho e o driver.");
+    }
+
     if (d.id === "ponteh" && !c.queimado) {
       const vmot = vDe(c.id, "v12");
       const terraOk = gndDe(c.id, "gnd");
@@ -422,6 +454,13 @@ export function calcular(comps, fios, energizado = true) {
       const enaSolto = !c.__saidas && vmot >= (d.alimenta || 6) && terraOk;
       if (enaSolto)
         avisar("aviso", c.id, "A ponte H esta alimentada, mas nenhuma saida ligou. Confira o ENA em nivel alto e IN1 e IN2 em estados diferentes: iguais entre si e o mesmo que freio.");
+    }
+
+    if (d.regulador && !c.__vinOk && !c.queimado) {
+      const ent = d.pinos.find((p) => p.entrada);
+      const v = ent ? vDe(c.id, ent.id) : 0;
+      if (v <= 0.5)
+        avisar("aviso", c.id, `${d.nome} nao gera energia: ele so regula a que recebe. Ligue a entrada dele numa bateria ou fonte.`);
     }
 
     if (d.precisaPwm && e.ligado) {

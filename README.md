@@ -257,7 +257,7 @@ Os outros campos da missão: `briefing` e `sucesso` são falas do GabuTRON; `dic
 
 ## O que existe na oficina
 
-79 componentes distribuídos em dez gavetas e caixas, todos com pinagem fiel e encaixe real na protoboard.
+85 componentes distribuídos em dez gavetas e caixas, todos com pinagem fiel e encaixe real na protoboard.
 
 | Móvel | Peças | Destaques |
 |---|---|---|
@@ -273,6 +273,22 @@ Os outros campos da missão: `briefing` e `sucesso` são falas do GabuTRON; `dic
 | Gaveta das tranqueiras | 4 | cartão SD, pen drive, caixa bluetooth, clipe de papel |
 
 A **placa perfurada** é a única cuja ilhas são isoladas entre si: nela só a solda liga um ponto ao outro. É o passo seguinte à protoboard.
+
+Peças que dependem de outra para funcionar, como no laboratório de verdade:
+
+| Peça | Precisa de |
+|---|---|
+| Motor de passo | driver ULN2003 — ele não liga direto na placa |
+| Sonda de umidade | módulo de leitura, ligada nos dois bornes |
+| Fonte de protoboard | uma fonte de entrada: ela regula, não gera |
+| Regulador AMS1117, stepdown, stepup | entrada de energia acima da tensão de saída |
+| Cartão SD, pen drive | encaixam no slot do módulo MP3 e da caixa de som |
+
+**Suporte de pilhas e de bateria de lítio** têm número de slots ajustável nas propriedades, e a tensão acompanha: 1 a 6 pilhas AA (1,5 V cada), 1 a 4 células de lítio (3,7 V cada).
+
+**Fonte de bancada** é um instrumento, como o multímetro: abre um painel onde o aluno ajusta tensão e limite de corrente antes de ligar na carga.
+
+**Joystick e encoder** respondem ao toque com a bancada energizada: o manche arrasta nos dois eixos e volta ao centro sozinho, e o encoder gira arrastando para cima e para baixo.
 
 ## A ponte H de verdade
 
@@ -355,9 +371,13 @@ Ferramenta **isolada**, que não faz parte da aplicação. Serve para redesenhar
 | Caneta | clique fixa um ponto, arrastar no clique curva o segmento; Enter fecha |
 | Rótulo | texto editável, com tamanho e alinhamento |
 | Luz de ligado | marca onde fica o LED indicador da peça |
+| Remodelar | mostra os pontos de um traço da caneta e permite arrastar cada um |
+| Copiar e colar | leva formas de um componente para outro (Ctrl+C, Ctrl+V) |
 | Painel direito | preenchimento, traço, espessura, transparência, rotação, deslocamento |
 | Camadas | ordem de empilhamento, subir, descer, ao topo, ao fundo, ocultar |
 | Pinos | arraste para mover; os machos grudam na grade de 24 |
+
+**Seleção múltipla.** Shift junta formas na seleção e arrastar move todas juntas. Ctrl+A seleciona tudo. O painel de propriedades não desfaz mais a seleção enquanto você digita.
 
 **Os pinos são protegidos.** Dá para mover e renomear, não dá para apagar — apagar um pino quebraria o modelo elétrico. Pinos machos travam na grade de 24 porque fora dela a peça deixa de encaixar na protoboard.
 

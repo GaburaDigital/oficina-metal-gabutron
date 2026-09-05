@@ -156,6 +156,41 @@
       "curiosidade": "Toda bancada tem aquele ponto onde tres ou quatro fios se encontram no ar, segurados por uma garra jacare. Nao esta no livro, mas esta em todo laboratorio do mundo.",
       "uso": "Distribuir a mesma alimentacao para varios pontos, testar rapido sem montar na protoboard, juntar fios de tipos diferentes.",
       "tecnico": "E so um ponto de contato: aceita garra jacare, ponta macho e ponta femea ao mesmo tempo. Eletricamente tudo o que chega nele vira o mesmo no. Some sozinha quando o ultimo fio e removido."
+    },
+    "motor-passo": {
+      "curiosidade": "Ele nao gira: ele pula. Cada pulso move o eixo um pedacinho exato, e por isso a impressora 3D e a CNC sabem onde a peca esta sem precisar de sensor nenhum.",
+      "uso": "Impressora 3D, CNC, plotter, relogio, cortina automatica, qualquer coisa que precise parar num lugar certo.",
+      "tecnico": "Cinco fios: o vermelho e o comum das bobinas e vai no COM do driver; azul, rosa, amarelo e laranja sao as quatro bobinas. Ele nao se liga direto na placa — quem puxa cada bobina para o GND e o driver. Segura posicao mesmo parado, e por isso esquenta parado."
+    },
+    "sonda-solo": {
+      "curiosidade": "As duas hastes medem o quanto a terra conduz. Terra seca quase nao conduz; molhada conduz bem. Com o tempo elas se corroem, e por isso a sonda e peca separada: ela e a parte descartavel.",
+      "uso": "Plantacao inteligente, vaso que avisa quando tem sede, estufa automatica.",
+      "tecnico": "Nao tem polaridade e nao tem eletronica: sao dois pedacos de metal. Ela liga nos dois bornes do modulo de leitura, que e quem tem o comparador e a saida. Deixar ela energizada o tempo todo acelera a corrosao."
+    },
+    "rele3v": {
+      "curiosidade": "A versao de 3 volts existe porque placas modernas trabalham em 3,3 e nao conseguem acionar a bobina de 5. Por fora as duas sao iguais, e trocar uma pela outra e um erro comum de gaveta.",
+      "uso": "Mesma coisa do rele de 5 volts, mas em projetos com Bura32, MicroBURA e Arubag Pi.",
+      "tecnico": "Bobina de 3,3 volts, consumo perto de 45 mA. NA fecha quando a bobina liga, NF abre. COM e por onde a corrente da carga entra, e os tres ficam isolados do lado de controle."
+    },
+    "fonte-bancada": {
+      "curiosidade": "O botao de limite de corrente e o recurso mais mal compreendido do laboratorio. Ele nao empurra corrente: ele impede que passe demais. Fonte bem ajustada segura um curto sem queimar nada.",
+      "uso": "Testar qualquer projeto antes de colocar bateria, descobrir quanto um circuito consome, alimentar prototipo com tensao exata.",
+      "tecnico": "Ajuste a tensao primeiro, depois baixe o limite de corrente para pouco acima do que o circuito deve consumir. Se ao ligar a fonte for para o limite, ha curto: ela avisa em vez de deixar queimar."
+    },
+    "moeda": {
+      "curiosidade": "Moeda e disco de metal, e disco de metal conduz. Ja resolvi contato de bateria com moeda mais de uma vez. Nao e bonito, mas circuito nao liga por beleza: liga por caminho.",
+      "uso": "Gambiarra de emergencia, peso, contato improvisado, e o classico exercicio de descobrir o que conduz e o que nao conduz.",
+      "tecnico": "Resistencia quase zero entre as bordas. Justamente por isso faz curto com a mesma facilidade: moeda solta sobre placa energizada e receita de fumaca."
+    },
+    "borracha": {
+      "curiosidade": "Ela esta na gaveta de proposito: e a peca que NAO conduz. Metade do entendimento de eletronica e saber o que deixa a corrente passar e o que nao deixa.",
+      "uso": "Isolar, calçar, apoiar. E servir de contraexemplo na hora de testar continuidade.",
+      "tecnico": "Isolante. No teste de continuidade, ela nunca apita — e essa e a licao."
+    },
+    "cartao-sd-midia": {
+      "curiosidade": "Um cartao desse tamanho guarda mais musica do que cabia numa sala inteira de fitas cassete. E dentro dele nao ha nenhuma parte que se mexa.",
+      "uso": "Guardar as musicas do modulo MP3, registrar leitura de sensor ao longo do dia, salvar foto.",
+      "tecnico": "Encaixa no slot do modulo, sem fio nenhum. Trabalha em 3,3 volts, e por isso todo modulo leitor traz regulador e conversor de nivel. Formate em FAT32: e o que quase todo modulo entende."
     }
   }
 }

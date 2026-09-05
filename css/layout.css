@@ -107,15 +107,6 @@
 #dica-pino span { display: block; color: var(--luz); }
 #dica-pino em { display: block; color: var(--poeira); font-style: normal; font-size: var(--t-micro); margin-top: 3px; }
 
-/* etiqueta que segue o cursor quando ha um jumper na mao */
-#ponta-cursor {
-  position: absolute; z-index: 8; pointer-events: none;
-  padding: 4px 8px; background: var(--casco);
-  border: 1px solid var(--linha-viva); border-radius: var(--raio);
-  font-size: var(--t-micro); color: var(--luz);
-}
-#ponta-cursor em { color: var(--poeira); font-style: normal; }
-
 /* fios: acender ao passar o mouse, destacar quando selecionado */
 .fio .alma { transition: stroke-width var(--rapido); }
 .fio:hover { cursor: pointer; }

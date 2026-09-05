@@ -12,6 +12,7 @@
    ============================================================ */
 
 import { P, PB, LINHAS_PB } from "./biblioteca.js";
+import { ARTE } from "./arte.js";
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
 
@@ -390,14 +391,16 @@ ${txt("ALCALINA", 84, 116, 14, "#8A8F98")}
 }
 
 function suporteAA(d, i) {
+  const n = i.slots || 4;
   let pilhas = "";
-  for (let k = 0; k < 4; k++) {
+  for (let k = 0; k < n; k++) {
     const y = 14 + k * 36;
     pilhas += `<rect x="20" y="${y}" width="248" height="28" rx="9" fill="#3A3F47" stroke="#101318" stroke-width="2"/>`;
     pilhas += txt("AA", 144, y + 20, 13, "#B9BEC6");
   }
   return `<rect width="312" height="168" rx="7" fill="#1B1F26" stroke="#05060A" stroke-width="2"/>${pilhas}
-${txt("6V", 296, 96, 14, "#E24B4A")}
+${txt((n * 1.5).toFixed(1) + " V", 300, 60, 15, "#E24B4A")}
+${txt(n + " pilha" + (n > 1 ? "s" : ""), 300, 84, 11, "#8A8F98")}
 <path d="M240 168v24" stroke="#E24B4A" stroke-width="8" stroke-linecap="round"/>
 <path d="M288 168v24" stroke="#2A2E36" stroke-width="8" stroke-linecap="round"/>`;
 }
@@ -536,6 +539,146 @@ function clipe(d, i) {
 ${txt("clipe", 84, 88, 12, "#8A8F98")}`;
 }
 
+
+/* ---------- pecas separadas e instrumentos --------------------- */
+
+function motorPasso(d, i) {
+  const on = i.ligado;
+  return `
+<circle cx="144" cy="120" r="96" fill="#B9BEC6" stroke="#7C828C" stroke-width="4"/>
+<circle cx="144" cy="120" r="70" fill="#9BA1AA"/>
+<circle cx="144" cy="120" r="28" fill="#6C727B"/>
+<g transform="rotate(${on ? 30 : 0} 144 120)"><rect x="136" y="46" width="16" height="74" rx="4" fill="#D5D9DE"/></g>
+<rect x="30" y="216" width="228" height="34" rx="6" fill="#2A2E36"/>
+${txt("28BYJ-48", 144, 240, 14, "#B9BEC6")}
+<path d="M48 250v14" stroke="#E24B4A" stroke-width="7" stroke-linecap="round"/>
+<path d="M96 250v14" stroke="#5B9BE8" stroke-width="7" stroke-linecap="round"/>
+<path d="M144 250v14" stroke="#E2A0C0" stroke-width="7" stroke-linecap="round"/>
+<path d="M192 250v14" stroke="#E9C542" stroke-width="7" stroke-linecap="round"/>
+<path d="M240 250v14" stroke="#E08A3C" stroke-width="7" stroke-linecap="round"/>
+${on ? `<path d="M252 66a68 68 0 010 108" fill="none" stroke="#5CE07A" stroke-width="3"/>` : ""}`;
+}
+
+function sonda(d, i) {
+  return `
+<rect x="30" y="12" width="108" height="60" rx="6" fill="#1B1F26" stroke="#05060A" stroke-width="2"/>
+${txt("SONDA", 84, 50, 14, "#C9CDD3")}
+<rect x="42" y="72" width="30" height="190" rx="4" fill="#C9A227" stroke="#8A6B14" stroke-width="2"/>
+<rect x="96" y="72" width="30" height="190" rx="4" fill="#C9A227" stroke="#8A6B14" stroke-width="2"/>
+<path d="M42 262l15 22 15-22M96 262l15 22 15-22" fill="#C9A227"/>
+${txt("solo", 84, 286, 12, "#8A6B2A")}`;
+}
+
+function expansaoServo(d, i) {
+  const on = i.ligado;
+  let fileira = "";
+  for (let k = 0; k < 16; k++) {
+    const x = 48 + k * 24;
+    fileira += `<rect x="${x - 10}" y="156" width="20" height="72" rx="3" fill="#0B3D2E"/>`;
+    fileira += txt(String(k), x, 250, 11, "#9FD8C6");
+  }
+  return `
+<rect width="${d.w}" height="${d.h}" rx="7" fill="#134E3A" stroke="#05060A" stroke-width="2"/>
+${fileira}
+${txt("EXPANSAO 16 SERVOS", 240, 60, 18, "#F2F2EE")}
+${txt("V+ externo alimenta os servos, nunca a placa", 240, 84, 12, "#9FD8C6")}
+${txt("G / V / sinal em cada canal", 240, 108, 12, "#7FC0AC")}
+${ledAlim(440, 60, on)}`;
+}
+
+function suporteLitio(d, i) {
+  const n = i.slots || 1;
+  let cel = "";
+  for (let k = 0; k < n; k++) {
+    const y = 18 + k * 48;
+    cel += `<rect x="24" y="${y}" width="240" height="40" rx="8" fill="#134E3A" stroke="#0A2A20" stroke-width="2"/>`;
+    cel += txt("18650", 144, y + 27, 14, "#9FD8C6");
+  }
+  return `<rect width="${d.w}" height="${d.h}" rx="7" fill="#1B1F26" stroke="#05060A" stroke-width="2"/>${cel}
+${txt((n * 3.7).toFixed(1) + " V", 300, 40, 15, "#E24B4A")}
+${txt(n + " celula" + (n > 1 ? "s" : ""), 300, 64, 11, "#8A8F98")}`;
+}
+
+function fonteBancada(d, i) {
+  const v = (i.tensao ?? 5).toFixed(1);
+  const a = (i.limite ?? 2).toFixed(2);
+  return `
+<rect width="${d.w}" height="${d.h}" rx="10" fill="#2A2E36" stroke="#101318" stroke-width="3"/>
+<rect x="24" y="24" width="192" height="60" rx="5" fill="#0F1A12"/>
+${txt(v + " V", 120, 68, 30, "#7CFF9B")}
+<rect x="24" y="96" width="192" height="48" rx="5" fill="#1A0F0F"/>
+${txt(a + " A", 120, 132, 24, "#FF9B7C")}
+<circle cx="288" cy="60" r="34" fill="#3A3F47" stroke="#1B1F26" stroke-width="3"/>
+<path d="M288 30v24" stroke="#E8E8E4" stroke-width="4"/>
+<circle cx="288" cy="140" r="26" fill="#3A3F47" stroke="#1B1F26" stroke-width="3"/>
+<path d="M288 118v18" stroke="#E8E8E4" stroke-width="4"/>
+${txt("TENSAO", 288, 104, 11, "#8A8F98")}
+${txt("CORRENTE", 288, 178, 11, "#8A8F98")}
+${txt("FONTE DE BANCADA", 168, 210, 15, "#C9CDD3")}`;
+}
+
+function joystick(d, i) {
+  const dx = ((i.eixoX ?? 50) - 50) * 0.9;
+  const dy = ((i.eixoY ?? 50) - 50) * 0.9;
+  const ap = i.pressionado;
+  return `
+<rect width="${d.w}" height="${d.h}" rx="7" fill="#1B1F26" stroke="#05060A" stroke-width="2"/>
+<circle cx="144" cy="108" r="80" fill="#101318" stroke="#3A3F47" stroke-width="4"/>
+<circle cx="${144 + dx}" cy="${108 + dy}" r="${ap ? 46 : 52}" fill="${ap ? "#5A2320" : "#8A2C28"}" stroke="#4A1614" stroke-width="4"/>
+<circle cx="${144 + dx}" cy="${108 + dy}" r="${ap ? 30 : 34}" fill="#A33832"/>
+${txt("arraste e clique", 144, 236, 12, "#8A8F98")}
+${txt(`X ${Math.round(i.eixoX ?? 50)}  Y ${Math.round(i.eixoY ?? 50)}`, 144, 214, 13, "#7DD3FC")}`;
+}
+
+function encoder(d, i) {
+  const passo = i.passo || 0;
+  return `
+<rect width="${d.w}" height="${d.h}" rx="7" fill="#1B1F26" stroke="#05060A" stroke-width="2"/>
+<circle cx="132" cy="84" r="56" fill="#3A3F47" stroke="#101318" stroke-width="3"/>
+${Array.from({ length: 20 }, (_, k) => {
+    const ang = (k * 18 + passo * 6) * Math.PI / 180;
+    return `<rect x="${132 + Math.cos(ang) * 46 - 3}" y="${84 + Math.sin(ang) * 46 - 3}" width="6" height="6" fill="#1B1F26"/>`;
+  }).join("")}
+<circle cx="132" cy="84" r="22" fill="#565C66"/>
+${txt("gire arrastando", 132, 160, 12, "#8A8F98")}
+${txt("passo " + passo, 132, 180, 13, "#7DD3FC")}`;
+}
+
+function dfplayer(d, i) {
+  const on = i.ligado;
+  return `
+<rect width="${d.w}" height="${d.h}" rx="7" fill="#1B1F26" stroke="#05060A" stroke-width="2"/>
+<rect x="96" y="24" width="144" height="96" rx="6" fill="#0A0C11" stroke="#3A3F47" stroke-width="3"/>
+${txt("cartao SD", 168, 78, 13, "#7C828C")}
+${i.temCartao ? `<rect x="104" y="30" width="128" height="84" rx="4" fill="#1B4E8A"/>${txt("SD", 168, 80, 20, "#CFE4EE")}` : ""}
+${txt("DFPlayer Mini", 168, 168, 16, "#F2F2EE")}
+${txt("MP3", 168, 194, 13, "#8A8F98")}
+${ledAlim(300, 168, on)}`;
+}
+
+function moeda(d, i) {
+  return `
+<circle cx="60" cy="60" r="44" fill="#C9A227" stroke="#8A6B14" stroke-width="4"/>
+<circle cx="60" cy="60" r="34" fill="#D8B63C"/>
+${txt("1", 60, 70, 26, "#6E5410")}
+<path d="M24 60h-8M96 60h8" stroke="#B9BEC6" stroke-width="4"/>`;
+}
+
+function borracha(d, i) {
+  return `
+<rect x="12" y="18" width="144" height="60" rx="8" fill="#E0A7B0" stroke="#B07C86" stroke-width="3"/>
+<rect x="12" y="18" width="60" height="60" rx="8" fill="#D18B98"/>
+${txt("nao conduz", 84, 92, 11, "#8A8F98")}`;
+}
+
+function cartaoMidia(d, i) {
+  return `
+<path d="M24 12h96l24 24v168H24z" fill="#1B4E8A" stroke="#0A2A56" stroke-width="3"/>
+<rect x="40" y="30" width="52" height="46" rx="3" fill="#0A1E33"/>
+${txt("SD", 84, 130, 26, "#CFE4EE")}
+${txt("16 GB", 84, 160, 13, "#9FC4E8")}`;
+}
+
 /* ---------- despacho ------------------------------------------ */
 
 const MAPA = {
@@ -548,10 +691,57 @@ const MAPA = {
   botao, chave, potenciometro, ldr, ultrassonico, "ir-obstaculo": irObstaculo,
   servo, motor, bateria, "suporte-aa": suporteAA, "fonte-pb": fontePb, "ponta-solta": pontaSolta,
   arubag, fenolite, falante, arcade, chave3, keypad, pir, bomba, solar,
+  "motor-passo": motorPasso, sonda, "expansao-servo": expansaoServo,
+  "suporte-litio": suporteLitio, "fonte-bancada": fonteBancada,
+  joystick, encoder, dfplayer, moeda, borracha, "cartao-midia": cartaoMidia,
   pendrive, "caixa-som": caixaSom, clipe,
 };
 
+/* Camada viva: o que muda quando a bancada e energizada.
+   O corpo da peca vem pronto do assistente de desenho, mas brilho,
+   luz de ligado, tela acesa, onda de som e motor girando precisam
+   reagir. Por isso eles continuam sendo desenhados aqui por cima. */
+function camadaViva(def, inst, arte) {
+  const i = inst || {};
+  let s = "";
+
+  for (const luz of arte.luzes || []) s += ledAlim(luz.x, luz.y, i.ligado);
+
+  if (def.arte === "led" && i.aceso) {
+    const v = (def.variantes || []).find((x) => x.nome === i.variante) || def.variantes[0];
+    const b = Math.max(0.2, Math.min(1, i.brilho ?? 1));
+    const cx = def.w / 2, cy = def.h * 0.34;
+    s = `<circle cx="${cx}" cy="${cy}" r="${34 + b * 26}" fill="${v.cor}" opacity="${0.1 + b * 0.2}"/>
+         <circle cx="${cx}" cy="${cy}" r="${20 + b * 14}" fill="${v.cor}" opacity="${0.18 + b * 0.3}"/>` + s;
+  }
+
+  if ((def.id === "ledrgb" || def.id === "neopixel") && i.ligado)
+    s += `<circle cx="${def.w / 2}" cy="${def.h * 0.35}" r="${def.w * 0.34}" fill="#F2F2EE" opacity=".24"/>`;
+
+  if (def.tela && i.ligado)
+    s += `<rect x="${def.w * 0.09}" y="${def.h * 0.1}" width="${def.w * 0.82}" height="${def.h * 0.5}" rx="4" fill="#2FA5D8" opacity=".5"/>` +
+         txt("METAL GABUTRON", def.w / 2, def.h * 0.3, 16, "#062033") +
+         txt("bancada online", def.w / 2, def.h * 0.44, 13, "#062033");
+
+  if (def.apito && i.ligado)
+    s += `<g fill="none" stroke="#5CE07A" stroke-width="3">
+      <path d="M${def.w - 26} ${def.h * 0.25}a30 30 0 010 ${def.h * 0.3}"/>
+      <path d="M${def.w - 14} ${def.h * 0.16}a48 48 0 010 ${def.h * 0.48}"/></g>`;
+
+  if (def.correnteTipica >= 200 && i.ligado && /motor|servo|bomba/.test(def.id))
+    s += `<path d="M${def.w - 30} ${def.h * 0.2}a${def.h * 0.3} ${def.h * 0.3} 0 010 ${def.h * 0.6}"
+          fill="none" stroke="#5CE07A" stroke-width="3"/>`;
+
+  if (i.valorAtual && (def.id === "resistor" || def.id === "diodo"))
+    s += txt(i.valorAtual, def.w / 2, 18, 18, "#E9C542", "middle", 700);
+
+  return s;
+}
+
 export function desenhar(def, inst) {
+  // Desenho revisado no assistente tem prioridade sobre o do codigo.
+  const arte = ARTE[def.id];
+  if (arte) return arte.svg + camadaViva(def, inst, arte);
   const f = MAPA[def.arte] || modulo;
   return f(def, inst || {});
 }

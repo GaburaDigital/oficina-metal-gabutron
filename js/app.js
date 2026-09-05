@@ -23,6 +23,7 @@ import { NOME_CONTATO } from "./biblioteca.js";
 import * as danos from "./danos.js";
 import * as multimetro from "./multimetro.js";
 import * as solda from "./solda.js";
+import * as fonteBancada from "./fonte-bancada.js";
 import { carregarCatalogo, textoDe } from "./conteudo.js";
 import { registrarPwa, prepararInstalacao } from "./pwa.js";
 
@@ -245,6 +246,13 @@ function ligarFerramentas() {
   });
 
   q("#b-falar").addEventListener("click", () => { destravarAudio(); robo.repetir(); });
+  q("#props").addEventListener("click", (ev) => {
+    const b = ev.target.closest("[data-abrir-fonte]");
+    if (!b) return;
+    const comp = bancada.estado.comps.find((c) => c.id === b.dataset.abrirFonte);
+    if (comp) fonteBancada.abrir(comp, bancada, {});
+  });
+
   q("#props").addEventListener("change", (ev) => {
     const alvo = ev.target;
     const comp = bancada.estado.comps.find((c) => c.id === alvo.dataset.comp);
@@ -253,6 +261,7 @@ function ligarFerramentas() {
     if (alvo.dataset.campo === "valor") comp.valor = alvo.value;
     if (alvo.dataset.campo === "variante") comp.variante = alvo.value;
     if (alvo.dataset.campo === "tensao") comp.tensaoSaida = Number(alvo.value);
+    if (alvo.dataset.campo === "slots") comp.slots = Number(alvo.value);
     SOM.clique();
     bancada.recalcular();
   });
@@ -585,6 +594,14 @@ function pintarPropriedades(comp) {
   const partes = [`<b>${d.nome}</b>`];
 
   if (d.usb) partes.push(`<label><input type="checkbox" data-comp="${comp.id}" data-campo="usb" ${comp.usbLigado !== false ? "checked" : ""}> alimentar pelo cabo USB</label>`);
+  if (d.slots) {
+    const n = comp.slots ?? d.slots.padrao;
+    partes.push(`<label>${d.slots.rotulo} <select data-comp="${comp.id}" data-campo="slots">
+      ${Array.from({ length: d.slots.max - d.slots.min + 1 }, (_, k) => d.slots.min + k)
+        .map((v) => `<option ${v === n ? "selected" : ""}>${v}</option>`).join("")}</select></label>`);
+    partes.push(`<span style="color:var(--fosforo)">${(n * d.slots.porSlot).toFixed(1)} V</span>`);
+  }
+  if (d.instrumento) partes.push(`<button class="btn" data-abrir-fonte="${comp.id}">Abrir painel da fonte</button>`);
   if (d.usb) partes.push(comp.usbLigado !== false
     ? `<span style="color:var(--fosforo)">energia pelo USB</span>`
     : `<span style="color:var(--ambar)">depende do VIN (${d.vinMin} a ${d.vinMax} V)</span>`);
