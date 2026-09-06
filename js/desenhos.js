@@ -656,6 +656,25 @@ ${txt("MP3", 168, 194, 13, "#8A8F98")}
 ${ledAlim(300, 168, on)}`;
 }
 
+function multimetroPeca(d, i) {
+  const leitura = i.leitura || "---";
+  return `
+<rect width="${d.w}" height="${d.h}" rx="18" fill="#E0703C" stroke="#8A421C" stroke-width="4"/>
+<rect x="24" y="24" width="288" height="108" rx="8" fill="#0F1A12" stroke="#0A0C11" stroke-width="3"/>
+${txt(leitura, 168, 96, 34, "#7CFF9B")}
+<circle cx="168" cy="264" r="86" fill="#2A2E36" stroke="#1B1F26" stroke-width="4"/>
+<circle cx="168" cy="264" r="30" fill="#3A3F47"/>
+<g transform="rotate(${{ continuidade: -60, tensao: 20, resistencia: 100, corrente: 170 }[i.modo] ?? -60} 168 264)">
+  <rect x="160" y="186" width="16" height="80" rx="5" fill="#E8E8E4"/></g>
+${txt("((&#183;))", 96, 200, 15, "#2A1608")}
+${txt("V&#8212;", 240, 200, 15, "#2A1608")}
+${txt("&#937;", 254, 300, 17, "#2A1608")}
+${txt("mA", 92, 320, 14, "#2A1608")}
+${txt("MULTIMETRO", 168, 388, 16, "#4A2410")}
+<circle cx="96" cy="432" r="16" fill="#1B1F26" stroke="#0A0C11" stroke-width="3"/>
+<circle cx="216" cy="432" r="16" fill="#8A2C28" stroke="#4A1614" stroke-width="3"/>`;
+}
+
 function moeda(d, i) {
   return `
 <circle cx="60" cy="60" r="44" fill="#C9A227" stroke="#8A6B14" stroke-width="4"/>
@@ -694,8 +713,31 @@ const MAPA = {
   "motor-passo": motorPasso, sonda, "expansao-servo": expansaoServo,
   "suporte-litio": suporteLitio, "fonte-bancada": fonteBancada,
   joystick, encoder, dfplayer, moeda, borracha, "cartao-midia": cartaoMidia,
+  "multimetro-peca": multimetroPeca,
   pendrive, "caixa-som": caixaSom, clipe,
 };
+
+/* O desenho exportado e estatico, mas duas coisas dele precisam
+   acompanhar a peca: a cor da variante (LED de outra cor) e o valor
+   escrito no corpo (resistor de 10k). Trocamos direto no texto do SVG,
+   e assim o rotulo continua sendo UM so, dentro do desenho. */
+function ajustarArte(def, i, svg) {
+  let saida = svg;
+
+  if (def.variantes && i.variante) {
+    const base = def.variantes[0];
+    const escolhida = def.variantes.find((v) => v.nome === i.variante);
+    if (escolhida && escolhida.cor !== base.cor)
+      saida = saida.split(base.cor).join(escolhida.cor);
+  }
+
+  if (def.valores && i.valorAtual && i.valorAtual !== def.valores[0]) {
+    const antigo = def.valores[0].replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    saida = saida.replace(new RegExp(">\\s*" + antigo + "\\s*<"), ">" + i.valorAtual + "<");
+  }
+
+  return saida;
+}
 
 /* Camada viva: o que muda quando a bancada e energizada.
    O corpo da peca vem pronto do assistente de desenho, mas brilho,
@@ -706,6 +748,49 @@ function camadaViva(def, inst, arte) {
   let s = "";
 
   for (const luz of arte.luzes || []) s += ledAlim(luz.x, luz.y, i.ligado);
+
+  // Botao e chave: o desenho exportado e estatico, entao o efeito de
+  // apertar entra por cima. Sem isso a peca parece travada.
+  if (def.zonaAcao && (def.pressionavel || def.chaveavel)) {
+    const z = def.zonaAcao;
+    if (i.pressionado)
+      s += `<circle cx="${z.x}" cy="${z.y + 4}" r="${z.r * 0.82}" fill="#05060A" opacity=".38"/>
+            <circle cx="${z.x}" cy="${z.y + 4}" r="${z.r * 0.62}" fill="#05060A" opacity=".3"/>`;
+    else
+      s += `<circle cx="${z.x}" cy="${z.y}" r="${z.r * 0.86}" fill="#FFFFFF" opacity=".07"/>`;
+  }
+
+  // Manche do joystick: a bola e desenhada aqui para poder se mexer.
+  if (def.manche) {
+    const z = def.zonaAcao;
+    const dx = ((i.eixoX ?? 50) - 50) * (z.r / 60);
+    const dy = ((i.eixoY ?? 50) - 50) * (z.r / 60);
+    const r = i.pressionado ? z.r * 0.56 : z.r * 0.64;
+    s += `<circle cx="${z.x + dx}" cy="${z.y + dy}" r="${r}" fill="${i.pressionado ? "#5A2320" : "#8A2C28"}" stroke="#4A1614" stroke-width="4"/>
+          <circle cx="${z.x + dx}" cy="${z.y + dy}" r="${r * 0.62}" fill="#A33832"/>`;
+    s += txt(`X ${Math.round(i.eixoX ?? 50)}  Y ${Math.round(i.eixoY ?? 50)}`, def.w / 2, def.h - 44, 13, "#7DD3FC");
+  }
+
+  // Encoder: o disco entalhado gira conforme o passo.
+  if (def.passos) {
+    const z = def.zonaAcao;
+    const passo = i.passo || 0;
+    s += `<circle cx="${z.x}" cy="${z.y}" r="${z.r * 0.86}" fill="#3A3F47" stroke="#101318" stroke-width="3"/>`;
+    for (let k = 0; k < 20; k++) {
+      const ang = ((k * 18 + passo * 6) * Math.PI) / 180;
+      s += `<rect x="${z.x + Math.cos(ang) * z.r * 0.7 - 3}" y="${z.y + Math.sin(ang) * z.r * 0.7 - 3}" width="6" height="6" fill="#1B1F26"/>`;
+    }
+    s += `<circle cx="${z.x}" cy="${z.y}" r="${z.r * 0.36}" fill="#565C66"/>`;
+    s += txt("passo " + passo, def.w / 2, def.h - 44, 13, "#7DD3FC");
+  }
+
+  // Slot de midia: sem a marca, ninguem descobre onde encaixa.
+  if (def.encaixe) {
+    const e = def.encaixe;
+    s += `<rect x="${e.x - 46}" y="${e.y - 26}" width="92" height="52" rx="5"
+            fill="${i.temMidia ? "#1B4E8A" : "#0A0C11"}" stroke="#5CE07A" stroke-width="2" stroke-dasharray="${i.temMidia ? "0" : "7 5"}"/>`;
+    s += txt(i.temMidia ? "encaixado" : e.rotulo, e.x, e.y + 44, 11, i.temMidia ? "#5CE07A" : "#8A8F98");
+  }
 
   if (def.arte === "led" && i.aceso) {
     const v = (def.variantes || []).find((x) => x.nome === i.variante) || def.variantes[0];
@@ -732,16 +817,13 @@ function camadaViva(def, inst, arte) {
     s += `<path d="M${def.w - 30} ${def.h * 0.2}a${def.h * 0.3} ${def.h * 0.3} 0 010 ${def.h * 0.6}"
           fill="none" stroke="#5CE07A" stroke-width="3"/>`;
 
-  if (i.valorAtual && (def.id === "resistor" || def.id === "diodo"))
-    s += txt(i.valorAtual, def.w / 2, 18, 18, "#E9C542", "middle", 700);
-
   return s;
 }
 
 export function desenhar(def, inst) {
   // Desenho revisado no assistente tem prioridade sobre o do codigo.
   const arte = ARTE[def.id];
-  if (arte) return arte.svg + camadaViva(def, inst, arte);
+  if (arte) return ajustarArte(def, inst || {}, arte.svg) + camadaViva(def, inst, arte);
   const f = MAPA[def.arte] || modulo;
   return f(def, inst || {});
 }

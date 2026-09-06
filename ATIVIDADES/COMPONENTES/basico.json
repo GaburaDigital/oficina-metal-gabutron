@@ -191,6 +191,11 @@
       "curiosidade": "Um cartao desse tamanho guarda mais musica do que cabia numa sala inteira de fitas cassete. E dentro dele nao ha nenhuma parte que se mexa.",
       "uso": "Guardar as musicas do modulo MP3, registrar leitura de sensor ao longo do dia, salvar foto.",
       "tecnico": "Encaixa no slot do modulo, sem fio nenhum. Trabalha em 3,3 volts, e por isso todo modulo leitor traz regulador e conversor de nivel. Formate em FAT32: e o que quase todo modulo entende."
+    },
+    "multimetro": {
+      "curiosidade": "O cabo do multimetro e enrolado por um motivo pratico: assim ele estica quando voce precisa alcancar o outro lado da bancada e recolhe sozinho depois. Aqui na oficina isso tambem ajuda a diferenciar o que e medida do que e circuito.",
+      "uso": "Descobrir se o fio esta inteiro, se a tensao chegou, se a corrente esta certa e se a peca ainda vive. E a ferramenta que separa quem conserta de quem troca peca no chute.",
+      "tecnico": "A ponta preta vai sempre no COM, e ela e a referencia de toda medida. A vermelha vai no borne de tensao, resistencia e corrente. Continuidade e resistencia so com o circuito DESLIGADO. Corrente exige o aparelho em serie, ou seja, as duas pontas nos dois terminais da mesma peca."
     }
   }
 }

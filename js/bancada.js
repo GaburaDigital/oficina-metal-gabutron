@@ -223,6 +223,7 @@ function svgComponente(comp, ocupados) {
     limite: comp.limite ?? (d.faixaCorrente && d.faixaCorrente.padrao),
     eixoX: comp.eixoX, eixoY: comp.eixoY, passo: comp.passo,
     temCartao: comp.temMidia === "cartao-sd-midia", temMidia: comp.temMidia,
+    leitura: comp.leitura, modo: comp.modo,
     ligado: estado.energizado && est.ligado,
     aceso: estado.energizado && est.aceso,
     brilho: est.brilho || 1,

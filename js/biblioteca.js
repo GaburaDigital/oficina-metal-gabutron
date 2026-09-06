@@ -252,7 +252,7 @@ add({
 });
 
 add({
-  id: "motor-passo", nome: "Motor de passo 28BYJ-48", caixa: "motores", arte: "motor-passo",
+  id: "motor-passo", nome: "Motor de passo 28BYJ-48", caixa: "motores", arte: "motor-passo", agrupaCom: "uln2003",
   w: 288, h: 288, cor: "#3A3F47", alimenta: 4.5, correnteTipica: 240, custo: 16,
   pinos: [
     { id: "com", n: "VM", rotulo: "Fio vermelho — comum das bobinas, vai no COM do driver", x: 48, y: 264, r: "macho", papel: "v+", lado: "baixo" },
@@ -500,7 +500,7 @@ add({
 });
 
 add({
-  id: "sonda-solo", nome: "Sonda de umidade", caixa: "sensores", arte: "sonda", w: 168, h: 288,
+  id: "sonda-solo", nome: "Sonda de umidade", caixa: "sensores", arte: "sonda", w: 168, h: 288, agrupaCom: "umidade-solo",
   cor: "#C9A227", custo: 5,
   pinos: [
     { id: "a", n: "1", rotulo: "Haste da sonda — vai num dos bornes do modulo de leitura", x: 48, y: 24, r: "macho", papel: "terminal", lado: "cima" },
@@ -972,8 +972,9 @@ add({
 });
 
 add({
-  id: "encoder", nome: "Encoder rotativo KY-040", caixa: "entradas", arte: "modulo",
-  w: 240, h: 216, cor: "#1B1F26", alimenta: 3, correnteTipica: 8, custo: 10,
+  id: "encoder", nome: "Encoder rotativo KY-040", caixa: "entradas", arte: "encoder",
+  w: 264, h: 216, cor: "#1B1F26", alimenta: 3, correnteTipica: 8, custo: 10,
+  passos: true, zonaAcao: { x: 132, y: 84, r: 56, acao: "passo" },
   pinos: [
     { id: "gnd", n: "GND", rotulo: "Terra", x: 48, y: 192, r: "macho", papel: "gnd", lado: "baixo" },
     { id: "vcc", n: "+", rotulo: "De 3,3 a 5 volts", x: 72, y: 192, r: "macho", papel: "v+", lado: "baixo" },
@@ -1205,11 +1206,12 @@ add({
 
 add({
   id: "ams1117", nome: "Regulador 5V AMS1117", caixa: "energia", arte: "modulo",
-  w: 240, h: 168, cor: "#1B1F26", regula: 5, correnteMax: 800, custo: 4,
+  w: 240, h: 168, cor: "#1B1F26", regulador: true, correnteMax: 800, custo: 4,
   pinos: [
-    { id: "in", n: "IN", rotulo: "Entrada — precisa de pelo menos 6,5 volts", x: 48, y: 144, r: "macho", papel: "v+", lado: "baixo" },
-    { id: "gnd", n: "GND", rotulo: "Terra", x: 72, y: 144, r: "macho", papel: "gnd", lado: "baixo" },
-    { id: "out", n: "OUT", rotulo: "Saida de 5 volts, ate 800 mA", x: 96, y: 144, r: "macho", papel: "v+", lado: "baixo" },
+    { id: "inp", n: "IN+", rotulo: "Entrada positiva — precisa de pelo menos 6,5 volts", x: 48, y: 144, r: "macho", papel: "v+", entrada: true, vmin: 6.5, vmax: 15, lado: "baixo" },
+    { id: "inn", n: "IN-", rotulo: "Entrada negativa", x: 72, y: 144, r: "macho", papel: "gnd", lado: "baixo" },
+    { id: "outp", n: "OUT+", rotulo: "Saida de 5 volts, ate 800 mA. O que sobra da entrada vira calor", x: 96, y: 144, r: "macho", papel: "v+", v: 5, lado: "baixo" },
+    { id: "outn", n: "OUT-", rotulo: "Saida negativa", x: 120, y: 144, r: "macho", papel: "gnd", lado: "baixo" },
   ],
 });
 
@@ -1396,6 +1398,15 @@ add({
   id: "cartao-sd-midia", nome: "Cartao de memoria SD", caixa: "extras", arte: "cartao-midia",
   w: 168, h: 216, cor: "#1B4E8A", custo: 12, inerte: true, encaixavel: "cartao-sd-midia",
   pinos: [],
+});
+
+add({
+  id: "multimetro", nome: "Multimetro", caixa: "energia", arte: "multimetro-peca",
+  w: 336, h: 456, cor: "#E0703C", custo: 70, instrumentoMedida: true,
+  pinos: [
+    { id: "com", n: "COM", rotulo: "Entrada da ponta preta — e sempre a referencia da medida", x: 96, y: 432, r: "borne", papel: "terminal", lado: "cima" },
+    { id: "vw", n: "V&#937;mA", rotulo: "Entrada da ponta vermelha — tensao, resistencia e corrente", x: 216, y: 432, r: "borne", papel: "terminal", lado: "cima" },
+  ],
 });
 
 /* Ponta solta: quando voce clipa uma garra e deixa a outra ponta

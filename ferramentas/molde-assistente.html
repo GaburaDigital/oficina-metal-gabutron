@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assistente de desenho de componentes — Oficina do Metal GabuTRON</title>
+<style>
+/* ============================================================
+   Ferramenta isolada. Nao faz parte da aplicacao: serve so para
+   redesenhar as pecas e exportar o resultado.
+   ============================================================ */
+:root{
+  --vacuo:#05060A; --casco:#0E1014; --casco-alto:#161A21; --mesa:#12151C;
+  --luz:#E8E8E4; --grafite:#8A8F98; --poeira:#565C66;
+  --linha:#262B33; --linha-viva:#3A414D;
+  --fosforo:#5CE07A; --gelo:#7DD3FC; --ambar:#E0A73C; --brasa:#E24B4A;
+  --mono:"Cascadia Mono","JetBrains Mono","SF Mono",Menlo,"DejaVu Sans Mono",Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--vacuo);color:var(--luz);font-family:var(--mono);font-size:13px}
+body{display:grid;grid-template-columns:250px minmax(0,1fr) 268px;grid-template-rows:46px minmax(0,1fr) 30px;
+  grid-template-areas:"topo topo topo" "pecas mesa props" "base base base";height:100dvh;overflow:hidden}
+
+header{grid-area:topo;display:flex;align-items:center;gap:12px;padding:0 12px;background:var(--casco);border-bottom:1px solid var(--linha)}
+header b{font-weight:500;letter-spacing:.03em}
+header small{color:var(--poeira);font-size:11px}
+header .dir{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+
+button,select,input[type=text],input[type=number]{font:inherit;font-size:12px;background:transparent;color:var(--luz);
+  border:1px solid var(--linha);border-radius:3px;padding:5px 8px;cursor:pointer}
+button:hover{background:var(--casco-alto);border-color:var(--linha-viva)}
+button.on{border-color:var(--fosforo);color:var(--fosforo);background:rgba(92,224,122,.14)}
+button.perigo{border-color:var(--brasa);color:var(--brasa)}
+select,input{background:var(--casco-alto);cursor:auto}
+input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--linha);background:none;cursor:pointer}
+input[type=range]{accent-color:var(--fosforo);width:100%;cursor:pointer}
+label{color:var(--grafite);font-size:11px}
+
+#lista{grid-area:pecas;background:var(--casco);border-right:1px solid var(--linha);overflow-y:auto;padding:8px}
+#busca{width:100%;margin-bottom:8px}
+.grupo-mov{color:var(--poeira);font-size:10px;text-transform:uppercase;letter-spacing:.08em;margin:10px 0 4px}
+.item{display:flex;align-items:center;gap:8px;width:100%;padding:5px 6px;margin-bottom:2px;text-align:left;
+  border:1px solid transparent;border-radius:3px;color:var(--grafite)}
+.item:hover{color:var(--luz);border-color:var(--linha)}
+.item.on{color:var(--fosforo);border-color:var(--fosforo);background:rgba(92,224,122,.1)}
+.item svg{width:34px;height:26px;flex:none}
+.item .mexido{margin-left:auto;color:var(--ambar);font-size:14px;line-height:1}
+
+#mesa{grid-area:mesa;position:relative;background:var(--mesa);overflow:hidden}
+#tela{width:100%;height:100%;display:block;touch-action:none}
+#barra-fer{position:absolute;top:8px;left:8px;display:flex;gap:4px;flex-wrap:wrap;z-index:3}
+#barra-fer button{background:var(--casco)}
+#zoomctl{position:absolute;top:50%;right:8px;transform:translateY(-50%);display:flex;flex-direction:column;gap:4px;z-index:3}
+#zoomctl button{background:var(--casco)}
+#ajuda{position:absolute;left:8px;bottom:8px;color:var(--poeira);font-size:11px;max-width:70%;z-index:3}
+
+#props{grid-area:props;background:var(--casco);border-left:1px solid var(--linha);overflow-y:auto;padding:10px}
+#props h3{margin:0 0 6px;font-size:11px;color:var(--grafite);text-transform:uppercase;letter-spacing:.07em;
+  border-bottom:1px solid var(--linha);padding-bottom:4px}
+.bloco{margin-bottom:16px}
+.campo{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:5px 0}
+.campo input[type=number],.campo select,.campo input[type=text]{width:96px}
+.camadas{max-height:190px;overflow-y:auto;border:1px solid var(--linha);border-radius:3px}
+.camada{display:flex;align-items:center;gap:6px;padding:4px 6px;border-bottom:1px solid var(--linha);
+  color:var(--grafite);font-size:11px;cursor:pointer}
+.camada:hover{color:var(--luz)}
+.camada.on{color:var(--fosforo);background:rgba(92,224,122,.1)}
+.camada .tag{color:var(--poeira);font-size:10px}
+.camada .olho{margin-left:auto}
+
+footer{grid-area:base;display:flex;align-items:center;gap:12px;padding:0 12px;background:var(--casco);
+  border-top:1px solid var(--linha);color:var(--poeira);font-size:11px}
+footer .ok{color:var(--fosforo)}
+
+.pino-alca{cursor:move}
+.alca{fill:var(--fosforo);stroke:var(--vacuo);stroke-width:1.5;cursor:nwse-resize}
+.no-alca{cursor:move}
+@media(max-width:900px){
+  body{grid-template-columns:1fr;grid-template-rows:46px 180px minmax(0,1fr) 200px 30px;
+    grid-template-areas:"topo" "pecas" "mesa" "props" "base"}
+  #lista{border-right:0;border-bottom:1px solid var(--linha)}
+  #props{border-left:0;border-top:1px solid var(--linha)}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div><b>Assistente de desenho de componentes</b><br><small>ferramenta isolada — nada aqui altera a aplicacao sozinho</small></div>
+  <div class="dir">
+    <button id="b-salvar">Salvar progresso</button>
+    <button id="b-abrir">Abrir progresso</button>
+    <button id="b-exportar" class="on">Exportar tudo</button>
+    <button id="b-reverter" class="perigo">Reverter peca</button>
+  </div>
+</header>
+
+<aside id="lista">
+  <input type="text" id="busca" placeholder="procurar componente">
+  <div id="itens"></div>
+</aside>
+
+<main id="mesa">
+  <svg id="tela"></svg>
+  <div id="barra-fer">
+    <button data-fer="sel" class="on">Selecionar</button>
+    <button data-fer="rect">Retangulo</button>
+    <button data-fer="circle">Circulo</button>
+    <button data-fer="line">Linha</button>
+    <button data-fer="pen">Caneta</button>
+    <button data-fer="no">Remodelar</button>
+    <button data-fer="text">Rotulo</button>
+    <button data-fer="led">Luz de ligado</button>
+    <button id="b-grade" class="on">Grade</button>
+    <button id="b-pinos" class="on">Pinos</button>
+    <button id="b-copiar">Copiar</button>
+    <button id="b-colar">Colar</button>
+  </div>
+  <div id="zoomctl">
+    <button id="b-mais">+</button>
+    <button id="b-menos">&minus;</button>
+    <button id="b-enq">[ ]</button>
+  </div>
+  <p id="ajuda"></p>
+</main>
+
+<aside id="props"><p style="color:var(--poeira)">Escolha um componente na lista.</p></aside>
+
+<footer>
+  <span id="recado">pronto</span>
+  <span style="margin-left:auto" class="ok" id="conta"></span>
+</footer>
+
+<script id="dados-base" type="application/json">__BASE__</script>
+<script>
+"use strict";
+/* ============================================================
+   ASSISTENTE DE DESENHO — Oficina do Metal GabuTRON
+
+   O que ele faz: abre o desenho atual de cada peca, quebra em formas
+   editaveis e deixa voce mexer em tudo. O que ele NAO faz: mudar a
+   aplicacao. Ele exporta um arquivo, e esse arquivo e que vira o
+   desenho novo.
+
+   Duas regras que a ferramenta protege:
+   - o passo da bancada e 24; pino fora da grade nao encaixa na
+     protoboard, entao o arraste de pino gruda de 24 em 24;
+   - todo pino do modelo tecnico continua existindo. Da para mover,
+     nao da para apagar.
+   ============================================================ */
+
+const NS = "http://www.w3.org/2000/svg";
+const PASSO = 24;
+const BASE = JSON.parse(document.getElementById("dados-base").textContent);
+const CHAVE = "gabutron.desenhos.v1";
+
+const q = (s) => document.querySelector(s);
+const criar = (t, attrs = {}) => {
+  const el = document.createElementNS(NS, t);
+  for (const [k, v] of Object.entries(attrs)) if (v != null) el.setAttribute(k, v);
+  return el;
+};
+
+/* ---------- estado ---------- */
+
+const app = {
+  atual: null,        // id do componente aberto
+  formas: [],         // formas editaveis da peca aberta
+  pinos: [],          // copia dos pinos, com posicao editavel
+  sel: null,          // id da forma em foco
+  selMulti: [],       // ids selecionados junto (Shift)
+  area: null,         // copia de formas para colar em outro componente
+  ferramenta: "sel",
+  vista: { x: 40, y: 40, k: 1 },
+  grade: true,
+  verPinos: true,
+  seq: 1,
+  trabalho: {},       // id -> { formas, pinos } ja editados
+};
+
+try {
+  const salvo = localStorage.getItem(CHAVE);
+  if (salvo) app.trabalho = JSON.parse(salvo);
+} catch (e) { console.warn("progresso ilegivel", e); }
+
+const guardar = () => {
+  try { localStorage.setItem(CHAVE, JSON.stringify(app.trabalho)); } catch (e) {}
+  atualizarConta();
+};
+
+const recado = (t) => { q("#recado").textContent = t; };
+
+function atualizarConta() {
+  const n = Object.keys(app.trabalho).length;
+  q("#conta").textContent = n ? `${n} de ${BASE.componentes.length} pecas editadas` : "nenhuma peca editada ainda";
+}
+
+/* ---------- leitura do desenho atual ----------
+   Cada elemento de primeiro nivel do SVG vira uma forma. Grupos
+   inteiros entram como bloco: da para mover, girar e mudar a ordem,
+   mas nao mexer por dentro. Foi a troca que fez a ferramenta caber
+   num arquivo so sem virar um editor de SVG completo. */
+
+function lerFormas(svgTexto) {
+  const doc = new DOMParser().parseFromString(`<svg xmlns="${NS}">${svgTexto}</svg>`, "image/svg+xml");
+  const raiz = doc.documentElement;
+  const formas = [];
+  for (const el of Array.from(raiz.children)) {
+    const tipo = el.tagName.toLowerCase();
+    const f = {
+      id: "f" + (app.seq++),
+      tipo: ["rect", "circle", "ellipse", "path", "line", "text"].includes(tipo) ? tipo : "bloco",
+      attrs: {},
+      texto: tipo === "text" ? el.textContent : undefined,
+      rot: 0,
+      dx: 0, dy: 0,
+      bruto: tipo === "g" || !["rect", "circle", "ellipse", "path", "line", "text"].includes(tipo) ? el.outerHTML : null,
+      nome: tipo === "text" ? `rotulo "${(el.textContent || "").slice(0, 14)}"` : tipo,
+    };
+    for (const a of Array.from(el.attributes)) f.attrs[a.name] = a.value;
+    formas.push(f);
+  }
+  return formas;
+}
+
+/* ---------- desenho da forma ---------- */
+
+function elementoDe(f) {
+  let el;
+  if (f.tipo === "bloco") {
+    el = criar("g");
+    el.innerHTML = f.bruto;
+  } else {
+    el = criar(f.tipo, f.attrs);
+    if (f.tipo === "text") el.textContent = f.texto || "";
+    if (f.luzLigado) el.setAttribute("data-luz", "1");
+  }
+  const t = [];
+  if (f.dx || f.dy) t.push(`translate(${f.dx} ${f.dy})`);
+  if (f.rot) {
+    const c = centroDe(f);
+    t.push(`rotate(${f.rot} ${c.x} ${c.y})`);
+  }
+  if (t.length) el.setAttribute("transform", t.join(" "));
+  el.dataset.forma = f.id;
+  el.style.cursor = "pointer";
+  return el;
+}
+
+function centroDe(f) {
+  const n = (v) => parseFloat(v || 0);
+  if (f.tipo === "rect") return { x: n(f.attrs.x) + n(f.attrs.width) / 2, y: n(f.attrs.y) + n(f.attrs.height) / 2 };
+  if (f.tipo === "circle") return { x: n(f.attrs.cx), y: n(f.attrs.cy) };
+  if (f.tipo === "ellipse") return { x: n(f.attrs.cx), y: n(f.attrs.cy) };
+  if (f.tipo === "text") return { x: n(f.attrs.x), y: n(f.attrs.y) };
+  if (f.tipo === "line") return { x: (n(f.attrs.x1) + n(f.attrs.x2)) / 2, y: (n(f.attrs.y1) + n(f.attrs.y2)) / 2 };
+  const d = app.atual ? compAtual() : null;
+  return { x: d ? d.w / 2 : 0, y: d ? d.h / 2 : 0 };
+}
+
+const compAtual = () => BASE.componentes.find((c) => c.id === app.atual);
+
+/* ---------- pintura da mesa ---------- */
+
+let camadaFormas, camadaPinos, camadaAlcas, camadaMoldura;
+
+function montarTela() {
+  const svg = q("#tela");
+  svg.innerHTML = `
+<defs>
+  <pattern id="gr" width="${PASSO}" height="${PASSO}" patternUnits="userSpaceOnUse">
+    <circle cx="1" cy="1" r="1.1" fill="#2A303A"/>
+  </pattern>
+</defs>
+<g id="mundo">
+  <rect id="fundo" x="-4000" y="-4000" width="12000" height="12000" fill="url(#gr)"/>
+  <g id="cmoldura"></g><g id="cformas"></g><g id="cpinos"></g><g id="calcas"></g>
+</g>`;
+  camadaMoldura = svg.querySelector("#cmoldura");
+  camadaFormas = svg.querySelector("#cformas");
+  camadaPinos = svg.querySelector("#cpinos");
+  camadaAlcas = svg.querySelector("#calcas");
+  aplicarVista();
+}
+
+function aplicarVista() {
+  const v = app.vista;
+  q("#tela").querySelector("#mundo").setAttribute("transform", `translate(${v.x} ${v.y}) scale(${v.k})`);
+  q("#fundo").style.display = app.grade ? "" : "none";
+}
+
+let focoAtual = null;
+
+function guardarFoco() {
+  const el = document.activeElement;
+  if (el && q("#props") && q("#props").contains(el)) {
+    focoAtual = {
+      attr: el.dataset.attr || el.dataset.pinoCampo || el.dataset.mov || el.dataset.cor || (el.dataset.texto != null ? "texto" : null),
+      inicio: el.selectionStart, fim: el.selectionEnd,
+    };
+  } else focoAtual = null;
+}
+
+function devolverFoco() {
+  if (!focoAtual || !focoAtual.attr) return;
+  const el = q(`#props [data-attr="${focoAtual.attr}"], #props [data-pino-campo="${focoAtual.attr}"], #props [data-mov="${focoAtual.attr}"], #props [data-cor="${focoAtual.attr}"]`)
+    || (focoAtual.attr === "texto" ? q("#props [data-texto]") : null);
+  if (!el) return;
+  el.focus();
+  try { el.setSelectionRange(focoAtual.inicio, focoAtual.fim); } catch (e) {}
+}
+
+/* O painel so e reconstruido quando a selecao muda. Enquanto voce
+   digita num campo, ele nao se reconstroi: era isso que fazia o cursor
+   pular e a peca sair da selecao no meio do ajuste. */
+let assinaturaPainel = "";
+
+function pintar(soMesa) {
+  if (!app.atual) return;
+  const d = compAtual();
+
+  camadaMoldura.innerHTML =
+    `<rect x="0" y="0" width="${d.w}" height="${d.h}" fill="none" stroke="#3A414D" stroke-width="1.5" stroke-dasharray="8 6"/>` +
+    `<text x="0" y="-10" font-family="monospace" font-size="12" fill="#565C66">${d.nome} — ${d.w} x ${d.h}</text>`;
+
+  camadaFormas.innerHTML = "";
+  for (const f of app.formas) camadaFormas.appendChild(elementoDe(f));
+
+  camadaPinos.innerHTML = app.verPinos ? app.pinos.map((p) => {
+    const forma = p.r === "macho"
+      ? `<rect class="pino-alca" data-pino="${p.id}" x="${p.x - 7}" y="${p.y - 7}" width="14" height="14" rx="2" fill="#D5D9DE" stroke="#6C727B"/>`
+      : p.r === "femea"
+        ? `<circle class="pino-alca" data-pino="${p.id}" cx="${p.x}" cy="${p.y}" r="8" fill="#0A0C11" stroke="#9A968C"/>`
+        : `<rect class="pino-alca" data-pino="${p.id}" x="${p.x - 15}" y="${p.y - 11}" width="30" height="22" rx="3" fill="${p.r === "pad" ? "#C9A227" : "#B9BEC6"}" stroke="#565C66"/>`;
+    const marca = app.sel === "pino:" + p.id
+      ? `<circle cx="${p.x}" cy="${p.y}" r="16" fill="none" stroke="#5CE07A" stroke-width="2"/>` : "";
+    return forma + marca +
+      `<text x="${p.x}" y="${p.y - 16}" font-family="monospace" font-size="10" fill="#7DD3FC" text-anchor="middle">${p.n || p.id}</text>`;
+  }).join("") : "";
+
+  pintarAlcas();
+  const assin = [app.sel, app.selMulti.join(","), app.formas.length, app.formas.map((f) => f.nome).join("|")].join("::");
+  if (!soMesa && assin !== assinaturaPainel) {
+    assinaturaPainel = assin;
+    guardarFoco();
+    pintarProps();
+    devolverFoco();
+  }
+}
+
+function pintarAlcas() {
+  camadaAlcas.innerHTML = "";
+  if (penPontos) { previewCaneta(); return; }
+  const grupo = selecionadas();
+  if (!grupo.length) return;
+
+  let html = "";
+  for (const f of grupo) {
+    const el = camadaFormas.querySelector(`[data-forma="${f.id}"]`);
+    if (!el) continue;
+    let b;
+    try { b = el.getBBox(); } catch (e) { continue; }
+    const cor = f.id === app.sel ? "#5CE07A" : "#7DD3FC";
+    html += `<rect x="${b.x - 3}" y="${b.y - 3}" width="${b.width + 6}" height="${b.height + 6}"
+      fill="none" stroke="${cor}" stroke-width="1.5" stroke-dasharray="6 4" pointer-events="none"/>`;
+    if (grupo.length === 1 && ["rect", "circle", "ellipse"].includes(f.tipo))
+      html += `<rect class="alca" data-alca="se" x="${b.x + b.width - 5}" y="${b.y + b.height - 5}" width="10" height="10" rx="2"/>`;
+  }
+
+  // Remodelar: os pontos do caminho aparecem e podem ser arrastados.
+  const f = formaSel();
+  if (app.ferramenta === "no" && f && f.tipo === "path") {
+    const p = pontosDoCaminho(f.attrs.d);
+    if (p) html += p.pontos.map((pt, k) =>
+      `<circle class="no-alca" data-no="${k}" cx="${pt.x}" cy="${pt.y}" r="6" fill="#E9C542" stroke="#05060A" stroke-width="1.5"/>`).join("");
+  }
+  camadaAlcas.innerHTML = html;
+}
+
+/* Le um caminho simples (M / L / C) e devolve os pontos de ancora.
+   Serve para a ferramenta de remodelar: e o suficiente para tudo que a
+   propria caneta desta ferramenta produz. */
+function pontosDoCaminho(d) {
+  if (!d) return null;
+  const partes = d.trim().match(/[MLC][^MLCZ]*/gi);
+  if (!partes) return null;
+  const pontos = [], segs = [];
+  for (const parte of partes) {
+    const tipo = parte[0].toUpperCase();
+    const n = parte.slice(1).trim().split(/[\s,]+/).map(Number);
+    if (tipo === "M" || tipo === "L") {
+      pontos.push({ x: n[0], y: n[1] });
+      segs.push({ tipo, ctrl: null });
+    } else if (tipo === "C") {
+      pontos.push({ x: n[4], y: n[5] });
+      segs.push({ tipo, ctrl: [n[0], n[1], n[2], n[3]] });
+    }
+  }
+  return { pontos, segs, fechado: /z\s*$/i.test(d) };
+}
+
+function caminhoDePontos(dados, fechado) {
+  let d = "";
+  dados.pontos.forEach((p, i) => {
+    const seg = dados.segs[i];
+    if (i === 0) d += `M${p.x} ${p.y}`;
+    else if (seg.tipo === "C" && seg.ctrl) d += ` C${seg.ctrl[0]} ${seg.ctrl[1]} ${seg.ctrl[2]} ${seg.ctrl[3]} ${p.x} ${p.y}`;
+    else d += ` L${p.x} ${p.y}`;
+  });
+  if (fechado) d += " Z";
+  return d;
+}
+
+const formaSel = () => app.formas.find((f) => f.id === app.sel);
+const selecionadas = () => {
+  const ids = new Set([app.sel, ...app.selMulti].filter(Boolean));
+  return app.formas.filter((f) => ids.has(f.id));
+};
+const estaSel = (id) => id === app.sel || app.selMulti.includes(id);
+
+/* ---------- painel de propriedades ---------- */
+
+function pintarProps() {
+  const alvo = q("#props");
+  const d = compAtual();
+  if (!d) { alvo.innerHTML = `<p style="color:var(--poeira)">Escolha um componente na lista.</p>`; return; }
+
+  const f = formaSel();
+  const pinoSel = String(app.sel || "").startsWith("pino:")
+    ? app.pinos.find((p) => p.id === app.sel.slice(5)) : null;
+
+  let html = "";
+
+  if (pinoSel) {
+    html += `<div class="bloco"><h3>Pino ${pinoSel.n || pinoSel.id}</h3>
+      <p style="color:var(--poeira);font-size:11px;margin:0 0 6px">${pinoSel.rotulo || ""}</p>
+      <div class="campo"><label>x</label><input type="number" step="${PASSO}" data-pino-campo="x" value="${pinoSel.x}"></div>
+      <div class="campo"><label>y</label><input type="number" step="${PASSO}" data-pino-campo="y" value="${pinoSel.y}"></div>
+      <div class="campo"><label>nome curto</label><input type="text" data-pino-campo="n" value="${pinoSel.n || ""}"></div>
+      <div class="campo"><label>lado do rotulo</label>
+        <select data-pino-campo="lado">${["cima", "baixo", "e", "d"].map((l) => `<option ${pinoSel.lado === l ? "selected" : ""}>${l}</option>`).join("")}</select></div>
+      <p style="color:var(--ambar);font-size:11px">Pinos machos precisam ficar na grade de ${PASSO}, senao a peca deixa de encaixar na protoboard.</p>
+    </div>`;
+  }
+
+  if (f) {
+    const a = f.attrs;
+    const campo = (rot, nome, tipo = "number", passo = 1) =>
+      `<div class="campo"><label>${rot}</label><input type="${tipo}" ${tipo === "number" ? `step="${passo}"` : ""} data-attr="${nome}" value="${a[nome] ?? ""}"></div>`;
+    html += `<div class="bloco"><h3>${f.nome}</h3>`;
+    if (f.tipo === "rect") html += campo("x", "x") + campo("y", "y") + campo("largura", "width") + campo("altura", "height") + campo("cantos", "rx");
+    if (f.tipo === "circle") html += campo("centro x", "cx") + campo("centro y", "cy") + campo("raio", "r");
+    if (f.tipo === "ellipse") html += campo("centro x", "cx") + campo("centro y", "cy") + campo("raio x", "rx") + campo("raio y", "ry");
+    if (f.tipo === "line") html += campo("x1", "x1") + campo("y1", "y1") + campo("x2", "x2") + campo("y2", "y2");
+    if (f.tipo === "text") {
+      html += `<div class="campo"><label>texto</label><input type="text" data-texto value="${(f.texto || "").replace(/"/g, "&quot;")}"></div>`;
+      html += campo("x", "x") + campo("y", "y") + campo("tamanho", "font-size");
+      html += `<div class="campo"><label>alinhamento</label><select data-attr="text-anchor">
+        ${["start", "middle", "end"].map((v) => `<option ${a["text-anchor"] === v ? "selected" : ""}>${v}</option>`).join("")}</select></div>`;
+    }
+    if (f.tipo !== "bloco") {
+      html += `<div class="campo"><label>preenchimento</label>
+        <span><input type="color" data-cor="fill" value="${corHex(a.fill)}">
+        <button data-limpa="fill" title="sem preenchimento">x</button></span></div>`;
+      html += `<div class="campo"><label>traco</label>
+        <span><input type="color" data-cor="stroke" value="${corHex(a.stroke)}">
+        <button data-limpa="stroke" title="sem traco">x</button></span></div>`;
+      html += campo("espessura", "stroke-width", "number", 0.5);
+    }
+    html += `<div class="campo"><label>transparencia</label><input type="range" min="0" max="1" step="0.05" data-attr="opacity" value="${a.opacity ?? 1}"></div>`;
+    html += `<div class="campo"><label>rotacao</label><input type="range" min="-180" max="180" step="1" data-rot value="${f.rot}"></div>`;
+    html += `<div class="campo"><label>deslocar x</label><input type="number" data-mov="dx" value="${f.dx}"></div>`;
+    html += `<div class="campo"><label>deslocar y</label><input type="number" data-mov="dy" value="${f.dy}"></div>`;
+    html += `<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:8px">
+      <button data-ordem="cima">Subir</button><button data-ordem="baixo">Descer</button>
+      <button data-ordem="topo">Ao topo</button><button data-ordem="fundo">Ao fundo</button>
+      <button data-duplicar>Duplicar</button><button class="perigo" data-apagar>Apagar</button></div>`;
+    html += `</div>`;
+  }
+
+  html += `<div class="bloco"><h3>Camadas</h3><div class="camadas">
+    ${app.formas.map((x, i) => `<div class="camada ${estaSel(x.id) ? "on" : ""}" data-camada="${x.id}">
+      <span class="tag">${String(app.formas.length - i).padStart(2, "0")}</span>${x.nome}
+      <span class="olho" data-olho="${x.id}">${x.oculta ? "&#9675;" : "&#9679;"}</span></div>`).reverse().join("")}
+  </div></div>`;
+
+  html += `<div class="bloco"><h3>Peca</h3>
+    <div class="campo"><label>largura</label><input type="number" step="${PASSO}" data-peca="w" value="${d.w}"></div>
+    <div class="campo"><label>altura</label><input type="number" step="${PASSO}" data-peca="h" value="${d.h}"></div>
+    <p style="color:var(--poeira);font-size:11px">Mudar o tamanho nao move os pinos: confira se eles continuam na grade.</p>
+  </div>`;
+
+  alvo.innerHTML = html;
+  ligarProps();
+}
+
+function corHex(v) {
+  if (!v || v === "none" || v.startsWith("url") || v.startsWith("var")) return "#888888";
+  if (v.startsWith("#") && (v.length === 7 || v.length === 4)) return v.length === 4
+    ? "#" + v[1] + v[1] + v[2] + v[2] + v[3] + v[3] : v;
+  return "#888888";
+}
+
+function ligarProps() {
+  const alvo = q("#props");
+  const f = formaSel();
+
+  alvo.querySelectorAll("[data-attr]").forEach((el) =>
+    el.addEventListener("input", () => { if (f) { f.attrs[el.dataset.attr] = el.value; marcarEditado(); pintar(true); } }));
+  alvo.querySelectorAll("[data-cor]").forEach((el) =>
+    el.addEventListener("input", () => { if (f) { f.attrs[el.dataset.cor] = el.value; marcarEditado(); pintar(true); } }));
+  alvo.querySelectorAll("[data-limpa]").forEach((el) =>
+    el.addEventListener("click", () => { if (f) { f.attrs[el.dataset.limpa] = "none"; marcarEditado(); pintar(true); } }));
+  const t = alvo.querySelector("[data-texto]");
+  if (t) t.addEventListener("input", () => { f.texto = t.value; f.nome = `rotulo "${t.value.slice(0, 14)}"`; marcarEditado(); pintar(true); });
+  const r = alvo.querySelector("[data-rot]");
+  if (r) r.addEventListener("input", () => { f.rot = Number(r.value); marcarEditado(); pintar(true); });
+  alvo.querySelectorAll("[data-mov]").forEach((el) =>
+    el.addEventListener("input", () => { f[el.dataset.mov] = Number(el.value); marcarEditado(); pintar(true); }));
+
+  alvo.querySelectorAll("[data-ordem]").forEach((el) => el.addEventListener("click", () => {
+    const i = app.formas.indexOf(f);
+    app.formas.splice(i, 1);
+    const onde = { cima: Math.min(app.formas.length, i + 1), baixo: Math.max(0, i - 1), topo: app.formas.length, fundo: 0 }[el.dataset.ordem];
+    app.formas.splice(onde, 0, f);
+    marcarEditado(); pintar();
+  }));
+  const dup = alvo.querySelector("[data-duplicar]");
+  if (dup) dup.addEventListener("click", () => {
+    const copia = JSON.parse(JSON.stringify(f));
+    copia.id = "f" + (app.seq++); copia.dx += 12; copia.dy += 12;
+    app.formas.push(copia); app.sel = copia.id; marcarEditado(); pintar();
+  });
+  const ap = alvo.querySelector("[data-apagar]");
+  if (ap) ap.addEventListener("click", () => {
+    app.formas = app.formas.filter((x) => x.id !== f.id);
+    app.sel = null; marcarEditado(); pintar();
+  });
+
+  alvo.querySelectorAll("[data-camada]").forEach((el) => el.addEventListener("click", (ev) => {
+    if (ev.target.dataset.olho) {
+      const alvoF = app.formas.find((x) => x.id === ev.target.dataset.olho);
+      alvoF.oculta = !alvoF.oculta;
+      alvoF.attrs.opacity = alvoF.oculta ? 0 : 1;
+    } else if (ev.shiftKey) {
+      const id = el.dataset.camada;
+      if (!app.selMulti.includes(id) && id !== app.sel) app.selMulti.push(id);
+      else app.selMulti = app.selMulti.filter((x) => x !== id);
+    } else { app.sel = el.dataset.camada; app.selMulti = []; }
+    marcarEditado(); pintar();
+  }));
+
+  alvo.querySelectorAll("[data-pino-campo]").forEach((el) => el.addEventListener("change", () => {
+    const p = app.pinos.find((x) => x.id === app.sel.slice(5));
+    const campo = el.dataset.pinoCampo;
+    if (campo === "x" || campo === "y") {
+      let v = Number(el.value);
+      if (p.r === "macho") v = Math.round(v / PASSO) * PASSO;
+      p[campo] = v; el.value = v;
+    } else p[campo] = el.value;
+    marcarEditado(); pintar();
+  }));
+
+  alvo.querySelectorAll("[data-peca]").forEach((el) => el.addEventListener("change", () => {
+    const d = compAtual();
+    d[el.dataset.peca === "w" ? "w" : "h"] = Number(el.value);
+    marcarEditado(); pintar();
+  }));
+}
+
+/* ---------- lista de componentes ---------- */
+
+function pintarLista(filtro = "") {
+  const f = filtro.trim().toLowerCase();
+  const alvo = q("#itens");
+  let html = "";
+  for (const mov of BASE.moveis) {
+    const pecas = BASE.componentes.filter((c) => c.caixa === mov.id &&
+      (!f || c.nome.toLowerCase().includes(f) || c.id.includes(f)));
+    if (!pecas.length) continue;
+    html += `<div class="grupo-mov">${mov.nome}</div>`;
+    for (const c of pecas) {
+      const k = Math.min(34 / c.w, 26 / c.h);
+      html += `<button class="item ${app.atual === c.id ? "on" : ""}" data-abrir="${c.id}">
+        <svg viewBox="0 0 34 26"><g transform="translate(${(34 - c.w * k) / 2} ${(26 - c.h * k) / 2}) scale(${k})">${c.svg}</g></svg>
+        <span>${c.nome}</span>${app.trabalho[c.id] ? '<span class="mexido">&#9679;</span>' : ""}</button>`;
+    }
+  }
+  alvo.innerHTML = html || `<p style="color:var(--poeira)">Nada encontrado.</p>`;
+  alvo.querySelectorAll("[data-abrir]").forEach((b) =>
+    b.addEventListener("click", () => abrirComponente(b.dataset.abrir)));
+}
+
+function abrirComponente(id) {
+  app.atual = id;
+  app.sel = null;
+  const c = BASE.componentes.find((x) => x.id === id);
+  const guardado = app.trabalho[id];
+  if (guardado) {
+    app.formas = JSON.parse(JSON.stringify(guardado.formas));
+    app.pinos = JSON.parse(JSON.stringify(guardado.pinos));
+    if (guardado.w) c.w = guardado.w;
+    if (guardado.h) c.h = guardado.h;
+    app.seq = Math.max(app.seq, ...app.formas.map((f) => parseInt(String(f.id).slice(1), 10) || 0)) + 1;
+  } else {
+    app.formas = lerFormas(c.svg);
+    app.pinos = JSON.parse(JSON.stringify(c.pinos));
+  }
+  enquadrar();
+  pintarLista(q("#busca").value);
+  pintar();
+  recado(`${c.nome} aberto — ${app.formas.length} formas, ${app.pinos.length} pinos`);
+}
+
+function marcarEditado() {
+  if (!app.atual) return;
+  const c = compAtual();
+  app.trabalho[app.atual] = {
+    formas: JSON.parse(JSON.stringify(app.formas)),
+    pinos: JSON.parse(JSON.stringify(app.pinos)),
+    w: c.w, h: c.h,
+  };
+  guardar();
+  pintarLista(q("#busca").value);
+}
+
+/* ---------- interacao na mesa ---------- */
+
+let arraste = null, penPontos = null;
+
+function paraMundo(cx, cy) {
+  const r = q("#tela").getBoundingClientRect();
+  return { x: (cx - r.left - app.vista.x) / app.vista.k, y: (cy - r.top - app.vista.y) / app.vista.k };
+}
+
+function iniciarMesa() {
+  const svg = q("#tela");
+
+  svg.addEventListener("pointerdown", (ev) => {
+    if (!app.atual) return;
+    const m = paraMundo(ev.clientX, ev.clientY);
+
+    if (app.ferramenta === "pen") { penClique(m, ev); return; }
+
+    if (app.ferramenta !== "sel" && app.ferramenta !== "no") { criarForma(m); return; }
+
+    const alca = ev.target.closest("[data-alca]");
+    if (alca) {
+      arraste = { modo: "escala", f: formaSel(), inicio: m, orig: JSON.parse(JSON.stringify(formaSel().attrs)) };
+      svg.setPointerCapture(ev.pointerId);
+      return;
+    }
+
+    const noAlca = ev.target.closest("[data-no]");
+    if (noAlca) {
+      const f = formaSel();
+      const dados = pontosDoCaminho(f.attrs.d);
+      arraste = { modo: "ponto", f, pontos: dados, ponto: dados.pontos[Number(noAlca.dataset.no)], fechado: dados.fechado };
+      svg.setPointerCapture(ev.pointerId);
+      return;
+    }
+
+    const pino = ev.target.closest("[data-pino]");
+    if (pino) {
+      app.sel = "pino:" + pino.dataset.pino;
+      arraste = { modo: "pino", id: pino.dataset.pino };
+      svg.setPointerCapture(ev.pointerId);
+      pintar();
+      return;
+    }
+
+    const forma = ev.target.closest("[data-forma]");
+    if (forma) {
+      const id = forma.dataset.forma;
+      if (ev.shiftKey) {
+        // Shift junta formas na selecao, para mover varias de uma vez.
+        if (id === app.sel) { /* mantem */ }
+        else if (app.selMulti.includes(id)) app.selMulti = app.selMulti.filter((x) => x !== id);
+        else app.selMulti.push(id);
+      } else if (!estaSel(id)) {
+        app.sel = id;
+        app.selMulti = [];
+      } else app.sel = id;
+
+      const grupo = selecionadas();
+      arraste = { modo: "mover", grupo, inicio: m, base: grupo.map((f) => ({ f, dx: f.dx, dy: f.dy })) };
+      svg.setPointerCapture(ev.pointerId);
+      pintar();
+      return;
+    }
+
+    app.sel = null;
+    app.selMulti = [];
+    arraste = { modo: "pan", x: ev.clientX, y: ev.clientY, vx: app.vista.x, vy: app.vista.y };
+    svg.setPointerCapture(ev.pointerId);
+    pintar();
+  });
+
+  svg.addEventListener("pointermove", (ev) => {
+    if (!arraste) return;
+    const m = paraMundo(ev.clientX, ev.clientY);
+    if (arraste.modo === "pan") {
+      app.vista.x = arraste.vx + (ev.clientX - arraste.x);
+      app.vista.y = arraste.vy + (ev.clientY - arraste.y);
+      aplicarVista();
+    } else if (arraste.modo === "mover") {
+      const ddx = Math.round(m.x - arraste.inicio.x), ddy = Math.round(m.y - arraste.inicio.y);
+      for (const b of arraste.base) { b.f.dx = b.dx + ddx; b.f.dy = b.dy + ddy; }
+      pintar(true);
+    } else if (arraste.modo === "ponto") {
+      const g = 1;
+      arraste.ponto.x = Math.round(m.x / g) * g;
+      arraste.ponto.y = Math.round(m.y / g) * g;
+      arraste.f.attrs.d = caminhoDePontos(arraste.pontos, arraste.fechado);
+      pintar(true);
+    } else if (arraste.modo === "pino") {
+      const p = app.pinos.find((x) => x.id === arraste.id);
+      const g = p.r === "macho" ? PASSO : 4;
+      p.x = Math.round(m.x / g) * g;
+      p.y = Math.round(m.y / g) * g;
+      pintar();
+    } else if (arraste.modo === "escala") {
+      const f = arraste.f, o = arraste.orig;
+      const dx = m.x - arraste.inicio.x, dy = m.y - arraste.inicio.y;
+      if (f.tipo === "rect") {
+        f.attrs.width = Math.max(2, Math.round(parseFloat(o.width) + dx));
+        f.attrs.height = Math.max(2, Math.round(parseFloat(o.height) + dy));
+      } else if (f.tipo === "circle") {
+        f.attrs.r = Math.max(1, Math.round(parseFloat(o.r) + (dx + dy) / 2));
+      } else if (f.tipo === "ellipse") {
+        f.attrs.rx = Math.max(1, Math.round(parseFloat(o.rx) + dx));
+        f.attrs.ry = Math.max(1, Math.round(parseFloat(o.ry) + dy));
+      }
+      pintar();
+    }
+  });
+
+  const soltar = () => {
+    if (arraste && arraste.modo !== "pan") marcarEditado();
+    arraste = null;
+  };
+  svg.addEventListener("pointerup", soltar);
+  svg.addEventListener("pointercancel", soltar);
+
+  svg.addEventListener("wheel", (ev) => {
+    ev.preventDefault();
+    zoom(ev.deltaY > 0 ? 0.9 : 1.1, ev.clientX, ev.clientY);
+  }, { passive: false });
+
+  window.addEventListener("keydown", (ev) => {
+    if (ev.target.matches("input, select, textarea")) return;
+    if (ev.key === "Escape") { penPontos = null; app.sel = null; pintar(); }
+    if (ev.key === "Enter" && penPontos) fecharCaneta(false);
+    if ((ev.key === "Delete" || ev.key === "Backspace") && selecionadas().length) {
+      const fora = new Set(selecionadas().map((f) => f.id));
+      app.formas = app.formas.filter((x) => !fora.has(x.id));
+      app.sel = null; app.selMulti = []; marcarEditado(); pintar();
+    }
+    if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === "c") q("#b-copiar").click();
+    if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === "v") q("#b-colar").click();
+    if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === "a") {
+      ev.preventDefault();
+      app.sel = app.formas[0] && app.formas[0].id;
+      app.selMulti = app.formas.slice(1).map((f) => f.id);
+      pintar();
+    }
+  });
+}
+
+function zoom(fator, cx, cy) {
+  const r = q("#tela").getBoundingClientRect();
+  const px = (cx ?? r.left + r.width / 2) - r.left;
+  const py = (cy ?? r.top + r.height / 2) - r.top;
+  const k2 = Math.min(6, Math.max(0.15, app.vista.k * fator));
+  app.vista.x = px - ((px - app.vista.x) * k2) / app.vista.k;
+  app.vista.y = py - ((py - app.vista.y) * k2) / app.vista.k;
+  app.vista.k = k2;
+  aplicarVista();
+}
+
+function enquadrar() {
+  const d = compAtual();
+  if (!d) return;
+  const r = q("#tela").getBoundingClientRect();
+  const k = Math.min((r.width - 120) / d.w, (r.height - 120) / d.h, 4);
+  app.vista.k = Math.max(0.15, k);
+  app.vista.x = (r.width - d.w * app.vista.k) / 2;
+  app.vista.y = (r.height - d.h * app.vista.k) / 2;
+  aplicarVista();
+}
+
+/* ---------- criacao de formas ---------- */
+
+function criarForma(m) {
+  const x = Math.round(m.x), y = Math.round(m.y);
+  let f;
+  if (app.ferramenta === "rect")
+    f = { tipo: "rect", nome: "rect", attrs: { x, y, width: 72, height: 48, rx: 4, fill: "#3A3F47", stroke: "#05060A", "stroke-width": 2 } };
+  else if (app.ferramenta === "circle")
+    f = { tipo: "circle", nome: "circle", attrs: { cx: x, cy: y, r: 24, fill: "#3A3F47", stroke: "#05060A", "stroke-width": 2 } };
+  else if (app.ferramenta === "line")
+    f = { tipo: "line", nome: "line", attrs: { x1: x, y1: y, x2: x + 72, y2: y, stroke: "#B9BEC6", "stroke-width": 4, "stroke-linecap": "round" } };
+  else if (app.ferramenta === "text")
+    f = { tipo: "text", nome: 'rotulo "texto"', texto: "texto", attrs: { x, y, "font-family": "monospace", "font-size": 14, fill: "#F2F2EE", "text-anchor": "middle" } };
+  else if (app.ferramenta === "led")
+    f = {
+      tipo: "circle", nome: "luz de ligado", luzLigado: true,
+      attrs: { cx: x, cy: y, r: 6, fill: "#4A1E1E", stroke: "#05060A", "stroke-width": 1 },
+    };
+  else return;
+
+  f.id = "f" + (app.seq++);
+  f.rot = 0; f.dx = 0; f.dy = 0;
+  app.formas.push(f);
+  app.sel = f.id;
+  app.ferramenta = "sel";
+  atualizarBarra();
+  marcarEditado();
+  pintar();
+}
+
+/* Caneta: cada clique fixa um ponto; arrastar no clique curva o
+   segmento. Enter ou clique no primeiro ponto fecha o contorno. */
+function penClique(m, ev) {
+  if (!penPontos) penPontos = [];
+  const ponto = { x: Math.round(m.x), y: Math.round(m.y), cx: null, cy: null };
+  penPontos.push(ponto);
+
+  const mover = (e) => {
+    const p = paraMundo(e.clientX, e.clientY);
+    ponto.cx = Math.round(p.x); ponto.cy = Math.round(p.y);
+    previewCaneta();
+  };
+  const soltar = () => {
+    window.removeEventListener("pointermove", mover);
+    window.removeEventListener("pointerup", soltar);
+    if (penPontos.length > 1) {
+      const p0 = penPontos[0], ult = penPontos[penPontos.length - 1];
+      if (penPontos.length > 2 && Math.hypot(p0.x - ult.x, p0.y - ult.y) < 12) fecharCaneta(true);
+    }
+    previewCaneta();
+  };
+  window.addEventListener("pointermove", mover);
+  window.addEventListener("pointerup", soltar);
+  previewCaneta();
+}
+
+function caminhoDaCaneta(fechar) {
+  if (!penPontos || !penPontos.length) return "";
+  let d = `M${penPontos[0].x} ${penPontos[0].y}`;
+  for (let i = 1; i < penPontos.length; i++) {
+    const a = penPontos[i - 1], b = penPontos[i];
+    if (a.cx != null || b.cx != null) {
+      const c1x = a.cx ?? a.x, c1y = a.cy ?? a.y;
+      const c2x = b.cx != null ? 2 * b.x - b.cx : b.x, c2y = b.cy != null ? 2 * b.y - b.cy : b.y;
+      d += ` C${c1x} ${c1y} ${c2x} ${c2y} ${b.x} ${b.y}`;
+    } else d += ` L${b.x} ${b.y}`;
+  }
+  if (fechar) d += " Z";
+  return d;
+}
+
+function previewCaneta() {
+  camadaAlcas.innerHTML = penPontos
+    ? `<path d="${caminhoDaCaneta(false)}" fill="none" stroke="#5CE07A" stroke-width="2" stroke-dasharray="6 4"/>` +
+      penPontos.map((p) => `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#5CE07A"/>` +
+        (p.cx != null ? `<line x1="${p.x}" y1="${p.y}" x2="${p.cx}" y2="${p.cy}" stroke="#7DD3FC" stroke-width="1.5"/>` : "")).join("")
+    : "";
+}
+
+function fecharCaneta(fechado) {
+  if (!penPontos || penPontos.length < 2) { penPontos = null; previewCaneta(); return; }
+  const f = {
+    id: "f" + (app.seq++), tipo: "path", nome: "traco", rot: 0, dx: 0, dy: 0,
+    attrs: { d: caminhoDaCaneta(fechado), fill: fechado ? "#3A3F47" : "none", stroke: "#B9BEC6", "stroke-width": 3, "stroke-linecap": "round", "stroke-linejoin": "round" },
+  };
+  app.formas.push(f);
+  app.sel = f.id;
+  penPontos = null;
+  app.ferramenta = "sel";
+  atualizarBarra();
+  marcarEditado();
+  pintar();
+}
+
+/* ---------- barra de ferramentas ---------- */
+
+function atualizarBarra() {
+  document.querySelectorAll("[data-fer]").forEach((b) => b.classList.toggle("on", b.dataset.fer === app.ferramenta));
+  const dicas = {
+    sel: "Clique para escolher, Shift junta mais formas. Arraste move todas. Ctrl+C copia, Ctrl+V cola em qualquer peca.",
+    rect: "Clique na mesa para largar um retangulo.",
+    circle: "Clique na mesa para largar um circulo.",
+    line: "Clique na mesa para largar uma linha.",
+    pen: "Clique para fixar um ponto; arraste no clique para curvar. Enter fecha, Esc cancela.",
+    text: "Clique para colocar um rotulo e depois edite o texto no painel.",
+    led: "Clique onde fica a luz de ligado da peca.",
+    no: "Escolha um traco da caneta: os pontos dele aparecem em amarelo e voce arrasta cada um.",
+  };
+  q("#ajuda").textContent = dicas[app.ferramenta] || "";
+}
+
+/* ---------- salvar, abrir, exportar ---------- */
+
+function baixar(nome, texto, tipo = "application/json") {
+  const url = URL.createObjectURL(new Blob([texto], { type: tipo }));
+  const a = document.createElement("a");
+  a.href = url; a.download = nome;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+
+const carimbo = () => new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-");
+
+function montarSvgDaPeca(id) {
+  const c = BASE.componentes.find((x) => x.id === id);
+  const t = app.trabalho[id];
+  const formas = t ? t.formas : lerFormas(c.svg);
+  const corpo = formas.map((f) => {
+    if (f.oculta) return "";
+    const el = elementoDe(f);
+    el.removeAttribute("data-forma");
+    el.style.cursor = "";
+    return el.outerHTML;
+  }).join("");
+  return corpo;
+}
+
+function exportarTudo() {
+  const saida = {
+    formato: "gabutron-desenhos",
+    versao: 1,
+    criado: new Date().toISOString(),
+    passo: PASSO,
+    observacao: "Cada componente traz o corpo em SVG e a posicao final dos pinos. Pinos machos precisam estar na grade de 24 para encaixar na protoboard.",
+    componentes: BASE.componentes.map((c) => {
+      const t = app.trabalho[c.id];
+      return {
+        id: c.id, nome: c.nome, editado: !!t,
+        w: t && t.w ? t.w : c.w,
+        h: t && t.h ? t.h : c.h,
+        svg: montarSvgDaPeca(c.id),
+        pinos: (t ? t.pinos : c.pinos).map((p) => ({ id: p.id, n: p.n, x: p.x, y: p.y, r: p.r, lado: p.lado })),
+      };
+    }),
+  };
+  baixar(`desenhos-gabutron-${carimbo()}.json`, JSON.stringify(saida, null, 2));
+  recado(`exportadas ${saida.componentes.length} pecas, ${saida.componentes.filter((c) => c.editado).length} editadas`);
+}
+
+/* ---------- ligacoes da interface ---------- */
+
+montarTela();
+iniciarMesa();
+pintarLista();
+atualizarBarra();
+atualizarConta();
+
+q("#busca").addEventListener("input", (e) => pintarLista(e.target.value));
+document.querySelectorAll("[data-fer]").forEach((b) => b.addEventListener("click", () => {
+  app.ferramenta = b.dataset.fer;
+  penPontos = null;
+  atualizarBarra();
+  previewCaneta();
+}));
+q("#b-grade").addEventListener("click", (e) => { app.grade = !app.grade; e.target.classList.toggle("on", app.grade); aplicarVista(); });
+q("#b-pinos").addEventListener("click", (e) => { app.verPinos = !app.verPinos; e.target.classList.toggle("on", app.verPinos); pintar(); });
+q("#b-mais").addEventListener("click", () => zoom(1.25));
+q("#b-menos").addEventListener("click", () => zoom(0.8));
+q("#b-enq").addEventListener("click", enquadrar);
+
+q("#b-salvar").addEventListener("click", () => {
+  baixar(`progresso-desenhos-${carimbo()}.json`, JSON.stringify({ formato: "gabutron-progresso", versao: 1, trabalho: app.trabalho }, null, 2));
+  recado("progresso salvo em arquivo");
+});
+
+q("#b-abrir").addEventListener("click", () => {
+  const campo = document.createElement("input");
+  campo.type = "file"; campo.accept = "application/json,.json";
+  campo.addEventListener("change", () => {
+    const arq = campo.files && campo.files[0];
+    if (!arq) return;
+    const leitor = new FileReader();
+    leitor.onload = () => {
+      try {
+        const d = JSON.parse(leitor.result);
+        if (d.formato !== "gabutron-progresso") throw new Error("formato");
+        app.trabalho = d.trabalho || {};
+        guardar();
+        pintarLista(q("#busca").value);
+        if (app.atual) abrirComponente(app.atual);
+        recado("progresso carregado");
+      } catch (e) { recado("esse arquivo nao e um progresso do assistente"); }
+    };
+    leitor.readAsText(arq);
+  });
+  campo.click();
+});
+
+/* Copiar e colar formas, inclusive de um componente para outro. A area
+   de transferencia vive na sessao, entao da para abrir outra peca e
+   colar la o mesmo detalhe. */
+q("#b-copiar").addEventListener("click", () => {
+  const grupo = selecionadas();
+  if (!grupo.length) { recado("selecione alguma forma antes de copiar"); return; }
+  app.area = JSON.parse(JSON.stringify(grupo));
+  recado(`${grupo.length} forma(s) na area de transferencia`);
+});
+
+q("#b-colar").addEventListener("click", () => {
+  if (!app.area || !app.area.length) { recado("nada copiado ainda"); return; }
+  if (!app.atual) { recado("abra um componente para colar"); return; }
+  const novas = app.area.map((f) => {
+    const c = JSON.parse(JSON.stringify(f));
+    c.id = "f" + (app.seq++);
+    c.dx = (c.dx || 0) + 16;
+    c.dy = (c.dy || 0) + 16;
+    return c;
+  });
+  app.formas.push(...novas);
+  app.sel = novas[0].id;
+  app.selMulti = novas.slice(1).map((f) => f.id);
+  marcarEditado();
+  pintar();
+  recado(`${novas.length} forma(s) coladas`);
+});
+
+q("#b-exportar").addEventListener("click", exportarTudo);
+
+q("#b-reverter").addEventListener("click", () => {
+  if (!app.atual) return;
+  delete app.trabalho[app.atual];
+  guardar();
+  abrirComponente(app.atual);
+  recado("peca voltou ao desenho original");
+});
+
+recado(`${BASE.componentes.length} componentes carregados — escolha um na lista`);
+</script>
+</body>
+</html>

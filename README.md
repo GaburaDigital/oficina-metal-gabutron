@@ -257,7 +257,7 @@ Os outros campos da missão: `briefing` e `sucesso` são falas do GabuTRON; `dic
 
 ## O que existe na oficina
 
-85 componentes distribuídos em dez gavetas e caixas, todos com pinagem fiel e encaixe real na protoboard.
+86 componentes distribuídos em dez gavetas e caixas, todos com pinagem fiel e encaixe real na protoboard.
 
 | Móvel | Peças | Destaques |
 |---|---|---|
@@ -286,7 +286,7 @@ Peças que dependem de outra para funcionar, como no laboratório de verdade:
 
 **Suporte de pilhas e de bateria de lítio** têm número de slots ajustável nas propriedades, e a tensão acompanha: 1 a 6 pilhas AA (1,5 V cada), 1 a 4 células de lítio (3,7 V cada).
 
-**Fonte de bancada** é um instrumento, como o multímetro: abre um painel onde o aluno ajusta tensão e limite de corrente antes de ligar na carga.
+**Fonte de bancada e multímetro** são instrumentos: peças que vão para a bancada e abrem um painel próprio quando selecionadas. A fonte ajusta tensão e limite de corrente; o multímetro tem os quatro modos e as duas pontas.
 
 **Joystick e encoder** respondem ao toque com a bancada energizada: o manche arrasta nos dois eixos e volta ao centro sozinho, e o encoder gira arrastando para cima e para baixo.
 
@@ -317,7 +317,9 @@ Uma bateria de 9 V, uma chave, um resistor e um LED já formam um circuito compl
 
 ## O multímetro
 
-Quatro modos, os mesmos do aparelho da bancada. Ele abre num painel no canto, o aluno escolhe o modo e vai encostando as pontas nos contatos: a vermelha primeiro, a preta depois.
+O multímetro é uma **peça da caixa da energia**, não um botão da barra: o aluno arrasta o aparelho para a bancada, seleciona e clica em **abrir painel do multímetro**. Depois escolhe o modo e vai encostando as pontas nos contatos, a vermelha primeiro e a preta depois.
+
+Cada ponta encostada desenha um **cabo espiralado** ligando o contato ao aparelho. Além de parecer o de verdade, isso resolve um problema prático: o cabo de medida não se confunde com os jumpers da montagem.
 
 | Modo | O que responde | Exige |
 |---|---|---|
@@ -361,6 +363,14 @@ Cada missão de manutenção chega com a bancada já montada e o defeito plantad
 `ferramentas/assistente-desenho.html`
 
 Ferramenta **isolada**, que não faz parte da aplicação. Serve para redesenhar as peças com calma e exportar o resultado. Abre com dois cliques, sem servidor: os 78 componentes vêm embutidos no próprio arquivo, porque um HTML local não consegue ler JSON externo.
+
+**Mantendo atualizado.** O assistente é gerado a partir do catálogo. Sempre que um componente muda, rode:
+
+```bash
+node ferramentas/gerar-assistente.mjs
+```
+
+Isso reconstrói `assistente-desenho.html` com todas as peças atuais e com os desenhos já revisados como base. O molde da interface fica em `ferramentas/molde-assistente.html`.
 
 **Como funciona.** Escolha a peça na lista da esquerda. O desenho atual é aberto e quebrado em formas editáveis. Cada elemento de primeiro nível vira uma forma; grupos entram como bloco, que dá para mover, girar e reordenar, mas não editar por dentro. Foi a troca que fez a ferramenta caber num arquivo só.
 

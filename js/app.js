@@ -196,23 +196,9 @@ function ligarFerramentas() {
   });
   q("#ponta-chip").addEventListener("click", () => bancada.inverterPontas());
 
-  q("#b-multimetro").addEventListener("click", (e) => {
-    if (multimetro.estado.ativo) { multimetro.fechar(bancada); e.currentTarget.classList.remove("ativo"); return; }
-    if (solda.estado.ativo) { solda.desligar(bancada); q("#b-solda").classList.remove("ativo"); }
-    bancada.escolherFio(null);
-    gavetas.largarFio();
-    pintarChipDaPonta(null);
-    multimetro.abrir(bancada, {
-      aoFechar: () => q("#b-multimetro").classList.remove("ativo"),
-      aoMedir: (r) => { if (r.aviso) robo.dizer(r.aviso, { expressao: "pensando" }); },
-    });
-    e.currentTarget.classList.add("ativo");
-    robo.dizer("Multimetro na mao. Escolha o modo, encoste a ponta vermelha num contato e depois a preta. Continuidade e resistencia so com a bancada desligada.", { expressao: "pensando" });
-  });
-
   q("#b-solda").addEventListener("click", (e) => {
     if (solda.estado.ativo) { solda.desligar(bancada); e.currentTarget.classList.remove("ativo"); return; }
-    if (multimetro.estado.ativo) { multimetro.fechar(bancada); q("#b-multimetro").classList.remove("ativo"); }
+    if (multimetro.estado.ativo) multimetro.fechar(bancada);
     bancada.escolherFio(null);
     gavetas.largarFio();
     pintarChipDaPonta(null);
@@ -247,10 +233,25 @@ function ligarFerramentas() {
 
   q("#b-falar").addEventListener("click", () => { destravarAudio(); robo.repetir(); });
   q("#props").addEventListener("click", (ev) => {
-    const b = ev.target.closest("[data-abrir-fonte]");
-    if (!b) return;
-    const comp = bancada.estado.comps.find((c) => c.id === b.dataset.abrirFonte);
-    if (comp) fonteBancada.abrir(comp, bancada, {});
+    const bf = ev.target.closest("[data-abrir-fonte]");
+    if (bf) {
+      const comp = bancada.estado.comps.find((c) => c.id === bf.dataset.abrirFonte);
+      if (comp) fonteBancada.abrir(comp, bancada, {});
+      return;
+    }
+    const bm = ev.target.closest("[data-abrir-mm]");
+    if (bm) {
+      const comp = bancada.estado.comps.find((c) => c.id === bm.dataset.abrirMm);
+      if (!comp) return;
+      if (solda.estado.ativo) { solda.desligar(bancada); q("#b-solda").classList.remove("ativo"); }
+      bancada.escolherFio(null);
+      gavetas.largarFio();
+      pintarChipDaPonta(null);
+      multimetro.abrir(bancada, {
+        aoMedir: (r) => { if (r.aviso) robo.dizer(r.aviso, { expressao: "pensando" }); },
+      }, comp);
+      robo.dizer("Multimetro aberto. Escolha o modo, encoste a ponta vermelha num contato e depois a preta. Os cabos enrolados mostram onde cada ponta esta.", { expressao: "pensando" });
+    }
   });
 
   q("#props").addEventListener("change", (ev) => {
@@ -602,6 +603,7 @@ function pintarPropriedades(comp) {
     partes.push(`<span style="color:var(--fosforo)">${(n * d.slots.porSlot).toFixed(1)} V</span>`);
   }
   if (d.instrumento) partes.push(`<button class="btn" data-abrir-fonte="${comp.id}">Abrir painel da fonte</button>`);
+  if (d.instrumentoMedida) partes.push(`<button class="btn" data-abrir-mm="${comp.id}">Abrir painel do multimetro</button>`);
   if (d.usb) partes.push(comp.usbLigado !== false
     ? `<span style="color:var(--fosforo)">energia pelo USB</span>`
     : `<span style="color:var(--ambar)">depende do VIN (${d.vinMin} a ${d.vinMax} V)</span>`);

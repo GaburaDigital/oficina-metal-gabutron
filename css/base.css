@@ -4,6 +4,15 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
+/* Arrastar peca, puxar fio e mover a bancada sao gestos de clique-e-
+   arrastar, e o navegador entende isso como selecionar texto. Por isso
+   a selecao fica desligada na interface inteira. A excecao e o que o
+   aluno pode querer copiar: a fala do GabuTRON e os campos de digitar. */
+html { -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+.fala-texto, input, textarea, select, [contenteditable] {
+  -webkit-user-select: text; user-select: text;
+}
+
 html, body {
   height: 100%;
   margin: 0;

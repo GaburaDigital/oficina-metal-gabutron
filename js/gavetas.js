@@ -29,6 +29,15 @@ function render(filtro = "") {
       (c) => c.caixa === m.id && !c.avulsa && (!f || c.nome.toLowerCase().includes(f) || c.id.includes(f))
     );
     if (!pecas.length) continue;
+    // Peca que so funciona junto de outra fica ao lado dela na gaveta.
+    for (const c of [...pecas]) {
+      if (!c.agrupaCom) continue;
+      const i = pecas.indexOf(c);
+      const j = pecas.findIndex((x) => x.id === c.agrupaCom);
+      if (i < 0 || j < 0) continue;
+      pecas.splice(i, 1);
+      pecas.splice(pecas.findIndex((x) => x.id === c.agrupaCom) + 1, 0, c);
+    }
     html += `<details class="gaveta" ${f ? "open" : m.id === "placas" ? "open" : ""}>
       <summary class="gaveta-puxador">${ico(m.icone, 18)}<span>${m.nome}</span><span class="conta">${pecas.length}</span></summary>
       <div class="gaveta-conteudo">

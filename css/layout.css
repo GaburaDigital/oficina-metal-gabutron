@@ -127,7 +127,7 @@
 
 /* propriedades da peca selecionada */
 #props {
-  position: absolute; left: var(--e2); right: 62px; bottom: 88px; z-index: 6;
+  position: absolute; left: var(--e2); right: 62px; bottom: 92px; z-index: 6;
   display: flex; align-items: center; gap: var(--e2); flex-wrap: wrap;
   max-width: calc(100% - 24px);
   padding: 6px var(--e2);
@@ -175,10 +175,14 @@
 #lixeira svg { width: 22px; height: 22px; }
 #lixeira.mirada { border-color: var(--brasa); color: var(--brasa); }
 
+/* Faixa de dica logo abaixo das ferramentas. Antes ela morava na base
+   e ficava permanentemente escondida atras dos botoes de acao. */
 .dica-canto {
-  position: absolute; left: var(--e2); bottom: var(--e2);
+  position: absolute; left: var(--e2); right: 62px; top: 46px;
+  margin: 0;
   color: var(--poeira); font-size: var(--t-micro);
-  pointer-events: none; max-width: 60%;
+  pointer-events: none;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
 /* --- painel do GabuTRON (direita) ------------------------------ */
@@ -315,7 +319,7 @@
 /* chip da ponta da vez: no celular nao existe cursor para acompanhar,
    entao a informacao mora fixa na tela */
 #ponta-chip {
-  position: absolute; left: var(--e2); right: 62px; bottom: 50px; z-index: 6;
+  position: absolute; left: var(--e2); right: 62px; bottom: 52px; z-index: 6;
   display: flex; align-items: center; gap: 6px;
   padding: 5px 9px;
   background: var(--casco); border: 1px solid var(--fosforo);

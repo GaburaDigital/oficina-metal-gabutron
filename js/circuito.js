@@ -71,6 +71,9 @@ export function calcular(comps, fios, energizado = true) {
     if (c.queimado) continue; // peca queimada deixa de conduzir
     (d.ligacoes || []).forEach(([a, b]) => u.juntar(chave(c.id, a), chave(c.id, b)));
     if (c.pressionado) (d.ligacoesFechado || []).forEach(([a, b]) => u.juntar(chave(c.id, a), chave(c.id, b)));
+    // Chave de tres pinos: solta ela nao fica aberta, fica na outra
+    // posicao. E por isso que ela serve para escolher entre dois caminhos.
+    else (d.ligacoesAberto || []).forEach(([a, b]) => u.juntar(chave(c.id, a), chave(c.id, b)));
   }
   const fiosRompidos = [];
   for (const f of fios) {

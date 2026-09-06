@@ -28,6 +28,7 @@ export const MODOS = [
 
 export const estado = {
   ativo: false,
+  peca: null,          // id do multimetro que esta na bancada
   modo: "continuidade",
   proxima: "vermelha",
   pontas: { vermelha: null, preta: null },
@@ -139,19 +140,50 @@ export function limparPontas(bancada) {
   atualizar(bancada);
 }
 
-/* Marcadores das pontas, desenhados por cima da bancada. */
+/* Cabo espiralado. O cabo do multimetro e enrolado de verdade, e aqui
+   isso tem outra funcao: ele nao se confunde com os jumpers da
+   montagem, entao da para ver o que e medida e o que e circuito. */
+function caboEnrolado(a, b) {
+  const dx = b.x - a.x, dy = b.y - a.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const ux = dx / dist, uy = dy / dist;
+  const nx = -uy, ny = ux;
+  const voltas = Math.max(6, Math.round(dist / 34));
+  const raio = 13;
+  let d = `M${a.x} ${a.y}`;
+  for (let k = 1; k <= voltas; k++) {
+    const t0 = (k - 1) / voltas, t1 = k / voltas;
+    const p0 = { x: a.x + dx * t0, y: a.y + dy * t0 };
+    const p1 = { x: a.x + dx * t1, y: a.y + dy * t1 };
+    const lado = k % 2 ? 1 : -1;
+    const c1 = { x: p0.x + ux * (dist / voltas) * 0.2 + nx * raio * lado, y: p0.y + uy * (dist / voltas) * 0.2 + ny * raio * lado };
+    const c2 = { x: p1.x - ux * (dist / voltas) * 0.2 + nx * raio * lado, y: p1.y - uy * (dist / voltas) * 0.2 + ny * raio * lado };
+    d += ` C${c1.x} ${c1.y} ${c2.x} ${c2.y} ${p1.x} ${p1.y}`;
+  }
+  return d;
+}
+
+/* Pontas de prova ligadas ao aparelho que esta na bancada. */
 export function svgPontas(bancada) {
   let s = "";
-  for (const [qual, cor] of [["vermelha", "#E24B4A"], ["preta", "#1B1F26"]]) {
+  const peca = estado.peca ? bancada.estado.comps.find((c) => c.id === estado.peca) : null;
+  for (const [qual, cor, jaque] of [["vermelha", "#E24B4A", "vw"], ["preta", "#1B1F26", "com"]]) {
     const p = estado.pontas[qual];
     if (!p) continue;
     const alvo = bancada.posicaoDePino(p.comp, p.pino);
     if (!alvo) continue;
+
+    if (peca) {
+      const orig = bancada.posicaoDePino(peca.id, jaque);
+      if (orig) s += `<path d="${caboEnrolado(orig, alvo)}" fill="none" stroke="${cor}" stroke-width="5"
+        stroke-linecap="round" opacity=".95" pointer-events="none"/>`;
+    }
+
     s += `<g pointer-events="none">
-      <path d="M${alvo.x} ${alvo.y}L${alvo.x + 44} ${alvo.y - 78}" stroke="${cor}" stroke-width="7" stroke-linecap="round"/>
-      <path d="M${alvo.x + 44} ${alvo.y - 78}L${alvo.x + 60} ${alvo.y - 106}" stroke="${cor}" stroke-width="14" stroke-linecap="round"/>
-      <circle cx="${alvo.x}" cy="${alvo.y}" r="9" fill="none" stroke="${cor}" stroke-width="3"/>
-      <circle cx="${alvo.x}" cy="${alvo.y}" r="3.5" fill="${cor}"/>
+      <path d="M${alvo.x} ${alvo.y}L${alvo.x + 34} ${alvo.y - 62}" stroke="${cor}" stroke-width="8" stroke-linecap="round"/>
+      <path d="M${alvo.x + 34} ${alvo.y - 62}L${alvo.x + 52} ${alvo.y - 94}" stroke="${cor}" stroke-width="16" stroke-linecap="round"/>
+      <circle cx="${alvo.x}" cy="${alvo.y}" r="10" fill="none" stroke="${cor}" stroke-width="3"/>
+      <circle cx="${alvo.x}" cy="${alvo.y}" r="4" fill="${cor}"/>
     </g>`;
   }
   return s;
@@ -159,9 +191,10 @@ export function svgPontas(bancada) {
 
 /* ---------- painel -------------------------------------------- */
 
-export function abrir(bancada, ganchos) {
+export function abrir(bancada, ganchos, peca) {
   aoMudar = ganchos;
   estado.ativo = true;
+  estado.peca = peca ? peca.id : null;
   bancada.estado.modoFerramenta = "multimetro";
 
   // O aparelho fica no painel do GabuTRON, nao flutuando sobre a
@@ -178,6 +211,7 @@ export function abrir(bancada, ganchos) {
 
 export function fechar(bancada) {
   estado.ativo = false;
+  estado.peca = null;
   bancada.estado.modoFerramenta = null;
   limparPontas(bancada);
   if (painel) painel.remove();
@@ -223,6 +257,9 @@ export function atualizar(bancada) {
   const visor = painel.querySelector("#mm-leitura");
   const recado = painel.querySelector("#mm-recado");
   if (visor) visor.innerHTML = r.texto;
+  // O visor da peca na bancada mostra a mesma leitura.
+  const peca = estado.peca ? bancada.estado.comps.find((c) => c.id === estado.peca) : null;
+  if (peca) { peca.leitura = r.texto.replace(/&#\d+;/g, "").trim(); peca.modo = estado.modo; }
   if (recado) recado.innerHTML = r.aviso || "Clique num contato da bancada para encostar a ponta da vez.";
   pintarPontasNoPainel();
   if (aoMudar && aoMudar.aoMedir) aoMudar.aoMedir(r);
