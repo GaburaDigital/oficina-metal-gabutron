@@ -224,6 +224,8 @@ function svgComponente(comp, ocupados) {
     eixoX: comp.eixoX, eixoY: comp.eixoY, passo: comp.passo,
     temCartao: comp.temMidia === "cartao-sd-midia", temMidia: comp.temMidia,
     leitura: comp.leitura, modo: comp.modo,
+    trimpot: comp.trimpot, apertados: comp.apertados, jumperEnable: comp.jumperEnable,
+    script: comp.script,
     ligado: estado.energizado && est.ligado,
     aceso: estado.energizado && est.aceso,
     brilho: est.brilho || 1,
@@ -261,9 +263,22 @@ function svgComponente(comp, ocupados) {
 
   // Area clicavel da peca que se mexe: botao, chave, potenciometro.
   const z = estado.energizado ? d.zonaAcao : null;
-  const acao = z
+  let acao = z
     ? `<circle class="acao" data-comp="${comp.id}" data-acao="${z.acao}" cx="${z.x}" cy="${z.y}" r="${z.r}" fill="transparent"/>`
     : "";
+  if (estado.energizado) {
+    if (d.trimpot)
+      acao += `<circle class="acao" data-comp="${comp.id}" data-acao="trimpot" cx="${d.trimpot.x}" cy="${d.trimpot.y}" r="${d.trimpot.r + 4}" fill="transparent"/>`;
+    for (const b of d.botoes || [])
+      acao += `<circle class="acao" data-comp="${comp.id}" data-acao="botao:${b.id}" cx="${b.x}" cy="${b.y}" r="${b.r + 4}" fill="transparent"/>`;
+    if (d.teclado) {
+      const k = d.teclado;
+      k.teclas.forEach((tec, idx) => {
+        const x = k.x0 + (idx % k.colunas) * k.dx, y = k.y0 + Math.floor(idx / k.colunas) * k.dy;
+        acao += `<rect class="acao" data-comp="${comp.id}" data-acao="botao:t${idx}" x="${x - 30}" y="${y - 24}" width="60" height="48" fill="transparent"/>`;
+      });
+    }
+  }
 
   return `<g class="comp${sel ? " sel" : ""}" data-id="${comp.id}" transform="translate(${comp.x} ${comp.y}) rotate(${comp.rot || 0} ${d.w / 2} ${d.h / 2})">
   ${desenhar(d, inst)}
@@ -361,15 +376,16 @@ function tentarEncaixar(comp) {
     for (const host of estado.comps) {
       if (host.id === comp.id) continue;
       const hd = PORID[host.tipo];
-      if (!hd.encaixe) continue;
-      const tipoOk = hd.encaixe.tipo === comp.tipo || hd.encaixe.tipo === d.encaixavel;
-      if (!tipoOk) continue;
-      const alvoX = host.x + hd.encaixe.x - d.w / 2, alvoY = host.y + hd.encaixe.y - d.h / 2;
-      if (Math.hypot(comp.x - alvoX, comp.y - alvoY) > 140) continue;
-      comp.x = alvoX; comp.y = alvoY;
-      comp.pai = host.id;
-      host.temMidia = comp.tipo;
-      return true;
+      const slots = hd.encaixes || (hd.encaixe ? [hd.encaixe] : []);
+      for (const slot of slots) {
+        if (slot.tipo !== comp.tipo && slot.tipo !== d.encaixavel) continue;
+        const alvoX = host.x + slot.x - d.w / 2, alvoY = host.y + slot.y - d.h / 2;
+        if (Math.hypot(comp.x - alvoX, comp.y - alvoY) > 140) continue;
+        comp.x = alvoX; comp.y = alvoY;
+        comp.pai = host.id;
+        host.temMidia = [...new Set([...(Array.isArray(host.temMidia) ? host.temMidia : host.temMidia ? [host.temMidia] : []), slot.tipo])];
+        return true;
+      }
     }
   }
 
@@ -405,6 +421,21 @@ function tentarEncaixar(comp) {
       });
       if (h) comp.encaixes.push({ pino: p.id, comp: base.id, pinoAlvo: h.id });
     }
+    // Modulo de barra dupla (ESP-01, NRF24L01, ethernet) tem duas
+    // fileiras a um passo de distancia. Na protoboard as duas cairiam
+    // na MESMA coluna, ou seja, em curto. Na bancada real isso tambem
+    // nao entra: esses modulos pedem adaptador ou jumper macho-femea.
+    const nos = comp.encaixes.map((e) => {
+      const bp = PORID[base.tipo].pinos.find((x) => x.id === e.pinoAlvo);
+      return bp && bp.no ? bp.no : e.pinoAlvo;
+    });
+    if (new Set(nos).size < nos.length) {
+      comp.encaixes = [];
+      comp.pai = null;
+      if (ganchos.aoRecusarEncaixe) ganchos.aoRecusarEncaixe(comp);
+      return false;
+    }
+
     if (comp.encaixes.length) {
       comp.pai = base.id;
       acoplarVizinhos(comp);
@@ -476,6 +507,9 @@ export function adicionar(tipo, opcoes = {}) {
     eixoX: d.manche ? 50 : undefined,
     eixoY: d.manche ? 50 : undefined,
     passo: d.passos ? 0 : undefined,
+    trimpot: d.trimpot ? 50 : undefined,
+    apertados: [],
+    jumperEnable: d.jumperEnable ? d.jumperEnable.padrao : undefined,
     usbLigado: d.usb ? true : undefined,
     pressionado: false,
     encaixes: [],
@@ -715,6 +749,18 @@ function aoApertar(ev) {
       comp.pressionado = !comp.pressionado;
       SOM.encaixe();
       recalcular();
+    } else if (zona.dataset.acao === "trimpot") {
+      const dd = PORID[comp.tipo];
+      arrasto = { acaoTrim: comp.id, cx: comp.x + dd.trimpot.x, cy: comp.y + dd.trimpot.y };
+      svg.setPointerCapture(ev.pointerId);
+    } else if (zona.dataset.acao.startsWith("botao:")) {
+      const qual = zona.dataset.acao.slice(6);
+      comp.apertados = [...(comp.apertados || []), qual];
+      SOM.clique();
+      recalcular();
+      if (ganchos.aoApertarBotao) ganchos.aoApertarBotao(comp, qual);
+      arrasto = { acaoTecla: comp.id, qual };
+      svg.setPointerCapture(ev.pointerId);
     } else if (zona.dataset.acao === "manche") {
       const d = PORID[comp.tipo];
       arrasto = { acaoManche: comp.id, cx: comp.x + d.zonaAcao.x, cy: comp.y + d.zonaAcao.y, r: d.zonaAcao.r };
@@ -809,6 +855,16 @@ function aoMover(ev) {
     redesenhar();
     return;
   }
+  if (arrasto && arrasto.acaoTrim) {
+    const comp = achar(arrasto.acaoTrim);
+    const m = telaParaMundo(ev.clientX, ev.clientY);
+    let ang = (Math.atan2(m.y - arrasto.cy, m.x - arrasto.cx) * 180) / Math.PI + 90;
+    if (ang < -180) ang += 360;
+    comp.trimpot = Math.max(0, Math.min(100, Math.round(((ang + 140) / 280) * 100)));
+    recalcular();
+    return;
+  }
+  if (arrasto && arrasto.acaoTecla) return;
   if (arrasto && arrasto.acaoBotao) return;
 
   if (arrasto) {
@@ -879,6 +935,13 @@ function aoSoltar(ev) {
     return;
   }
   if (arrasto && arrasto.acaoPasso) { arrasto = null; return; }
+  if (arrasto && arrasto.acaoTrim) { arrasto = null; return; }
+  if (arrasto && arrasto.acaoTecla) {
+    const comp = achar(arrasto.acaoTecla);
+    if (comp) { comp.apertados = (comp.apertados || []).filter((x) => x !== arrasto.qual); recalcular(); }
+    arrasto = null;
+    return;
+  }
 
   if (arrasto) {
     const comp = achar(arrasto.id);

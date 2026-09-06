@@ -220,6 +220,7 @@ add({
   tensaoLogica: 5, tensaoMaxPino: 5.5,
   limitePino: 40, limiteAlim: 500, limiteTotal: 800,
   usb: true, vinMin: 7, vinMax: 12,
+  botoes: [{ id: "reset", n: "RESET", x: 612, y: 96, r: 22 }],
 });
 add({
   id: "bura32", nome: "Bura32", caixa: "placas", arte: "placa-bura32",
@@ -318,6 +319,8 @@ add({
 add({
   id: "ponteh", nome: "Ponte H L298N", caixa: "energia", arte: "ponte-h", w: 432, h: 336,
   cor: "#B23A32", alimenta: 6, correnteMax: 2000, custo: 30,
+  jumperEnable: { pinos: ["ena", "enb"], padrao: true,
+    rotulo: "jumpers de ENA e ENB ligados ao 5V" },
   pinos: [
     { id: "out1", n: "OUT1", rotulo: "Saida 1 do motor A", x: 48, y: 24, r: "borne", papel: "terminal", lado: "cima" },
     { id: "out2", n: "OUT2", rotulo: "Saida 2 do motor A", x: 96, y: 24, r: "borne", papel: "terminal", lado: "cima" },
@@ -347,7 +350,7 @@ add({
 });
 add({
   id: "capacitor-eletro", nome: "Capacitor eletrolitico", caixa: "pequenos", arte: "radial",
-  w: 96, h: 168, cor: "#20344F", valores: ["10uF", "100uF", "470uF"], polarizado: true,
+  w: 96, h: 168, cor: "#20344F", valores: ["10uF", "100uF", "470uF", "1000uF", "3300uF"], polarizado: true,
   tensaoMax: 16, custo: 2,
   pinos: [
     { id: "p", n: "+", rotulo: "Positivo — perna comprida", x: 24, y: 144, r: "macho", papel: "terminal", lado: "baixo" },
@@ -363,8 +366,9 @@ add({
   ],
 });
 add({
-  id: "diodo", nome: "Diodo 1N4007", caixa: "pequenos", arte: "axial", w: 144, h: 96,
+  id: "diodo", nome: "Diodo", caixa: "pequenos", arte: "axial", w: 144, h: 96,
   cor: "#3A2A20", polarizado: true, custo: 1,
+  valores: ["1N4007 1A-1000V", "1N4001 1A-40V", "1N5408 3A-40V"],
   pinos: [
     { id: "a", n: "A", rotulo: "Anodo — a corrente entra por aqui", x: 24, y: 48, r: "macho", papel: "terminal" },
     { id: "k", n: "K", rotulo: "Catodo — lado da faixa clara", x: 120, y: 48, r: "macho", papel: "terminal" },
@@ -492,6 +496,7 @@ add({
 add({
   id: "irobstaculo", nome: "Sensor de obstaculo IR", caixa: "sensores", arte: "ir-obstaculo",
   w: 264, h: 192, cor: "#1B4E8A", alimenta: 3, correnteTipica: 20, custo: 10,
+  trimpot: { x: 216, y: 60, r: 30, rotulo: "alcance", tipo: "alcance" },
   pinos: [
     { id: "vcc", n: "VCC", rotulo: "Alimentacao de 3,3 ou 5 volts", x: 96, y: 168, r: "macho", papel: "v+", lado: "baixo" },
     { id: "gnd", n: "GND", rotulo: "Terra", x: 120, y: 168, r: "macho", papel: "gnd", lado: "baixo" },
@@ -554,6 +559,11 @@ add({
     { id: "p17", n: "GPIO27", rotulo: "GPIO 27 — a Arubag trabalha em 3,3 volts", x: 264, y: 72, r: "femea", papel: "digital", lado: "baixo" },
     { id: "usbP", n: "5V IN", rotulo: "Entrada de energia USB-C — a placa exige 5 volts firmes", x: 48, y: 288, r: "borne", papel: "v+", entrada: true, vmin: 4.8, vmax: 5.3, lado: "cima" },
     { id: "usbN", n: "GND", rotulo: "Terra da entrada de energia", x: 96, y: 288, r: "borne", papel: "gnd", lado: "cima" }
+  ],
+  botoes: [{ id: "power", n: "PWR", x: 396, y: 264, r: 22 }],
+  encaixes: [
+    { tipo: "cabo-hdmi", x: 264, y: 288, rotulo: "HDMI" },
+    { tipo: "pendrive", x: 384, y: 168, rotulo: "USB" },
   ],
 });
 
@@ -864,14 +874,17 @@ add({
 
 add({
   id: "amplificador", nome: "Amplificador PAM8403", caixa: "som", arte: "modulo",
-  w: 240, h: 192, cor: "#1B4E8A", alimenta: 4.5, correnteTipica: 120, custo: 14,
+  w: 336, h: 216, cor: "#1B4E8A", alimenta: 4.5, correnteTipica: 120, custo: 14,
   pinos: [
-    { id: "vcc", n: "VCC", rotulo: "5 volts", x: 48, y: 168, r: "macho", papel: "v+", lado: "baixo" },
-    { id: "gnd", n: "GND", rotulo: "Terra", x: 72, y: 168, r: "macho", papel: "gnd", lado: "baixo" },
-    { id: "inl", n: "IN L", rotulo: "Entrada de audio da esquerda", x: 96, y: 168, r: "macho", papel: "sinal", lado: "baixo" },
-    { id: "inr", n: "IN R", rotulo: "Entrada de audio da direita", x: 120, y: 168, r: "macho", papel: "sinal", lado: "baixo" },
-    { id: "outl", n: "OUT L", rotulo: "Saida para o alto-falante esquerdo", x: 144, y: 168, r: "macho", papel: "sinal", lado: "baixo" },
-    { id: "outr", n: "OUT R", rotulo: "Saida para o alto-falante direito", x: 168, y: 168, r: "macho", papel: "sinal", lado: "baixo" },
+    { id: "inr", n: "IN R", rotulo: "Entrada de audio da direita", x: 48, y: 192, r: "macho", papel: "sinal", lado: "baixo" },
+    { id: "gnd1", n: "GND", rotulo: "Terra da entrada de audio", x: 72, y: 192, r: "macho", papel: "gnd", lado: "baixo" },
+    { id: "inl", n: "IN L", rotulo: "Entrada de audio da esquerda", x: 96, y: 192, r: "macho", papel: "sinal", lado: "baixo" },
+    { id: "vcc", n: "5V", rotulo: "Alimentacao de 5 volts", x: 144, y: 192, r: "macho", papel: "v+", lado: "baixo" },
+    { id: "gnd2", n: "GND", rotulo: "Terra da alimentacao", x: 168, y: 192, r: "macho", papel: "gnd", lado: "baixo" },
+    { id: "olp", n: "OUT L+", rotulo: "Alto-falante esquerdo, positivo", x: 216, y: 24, r: "borne", papel: "sinal", lado: "cima" },
+    { id: "oln", n: "OUT L-", rotulo: "Alto-falante esquerdo, negativo. NAO e terra: nao ligue no GND", x: 252, y: 24, r: "borne", papel: "sinal", lado: "cima" },
+    { id: "orp", n: "OUT R+", rotulo: "Alto-falante direito, positivo", x: 288, y: 24, r: "borne", papel: "sinal", lado: "cima" },
+    { id: "orn", n: "OUT R-", rotulo: "Alto-falante direito, negativo", x: 324, y: 24, r: "borne", papel: "sinal", lado: "cima" }
   ],
 });
 
@@ -884,32 +897,34 @@ add({
     { id: "tx", n: "TX", rotulo: "Devolve resposta para a placa", x: 96, y: 264, r: "macho", papel: "digital", lado: "baixo" },
     { id: "dacr", n: "DAC_R", rotulo: "Audio da direita, nivel de linha", x: 120, y: 264, r: "macho", papel: "sinal", lado: "baixo" },
     { id: "dacl", n: "DAC_L", rotulo: "Audio da esquerda, nivel de linha", x: 144, y: 264, r: "macho", papel: "sinal", lado: "baixo" },
-    { id: "spk1", n: "SPK1", rotulo: "Alto-falante, terminal 1", x: 168, y: 264, r: "macho", papel: "sinal", lado: "baixo" },
+    { id: "spk1", n: "SPK1", rotulo: "Borne do alto-falante — da para ligar um falante pequeno direto aqui", x: 168, y: 264, r: "borne", papel: "sinal", lado: "baixo" },
     { id: "gnd", n: "GND", rotulo: "Terra", x: 192, y: 264, r: "macho", papel: "gnd", lado: "baixo" },
-    { id: "spk2", n: "SPK2", rotulo: "Alto-falante, terminal 2", x: 216, y: 264, r: "macho", papel: "sinal", lado: "baixo" },
+    { id: "spk2", n: "SPK2", rotulo: "Outro borne do alto-falante", x: 216, y: 264, r: "borne", papel: "sinal", lado: "baixo" },
     { id: "busy", n: "BUSY", rotulo: "Cai para zero enquanto toca", x: 240, y: 264, r: "macho", papel: "digital", lado: "baixo" },
-    { id: "spk1", n: "SPK1", rotulo: "Borne do alto-falante — ligue direto, sem amplificador", x: 264, y: 24, r: "borne", papel: "sinal", lado: "cima" },
-    { id: "spk2", n: "SPK2", rotulo: "Outro borne do alto-falante", x: 312, y: 24, r: "borne", papel: "sinal", lado: "cima" },
+
   ],
 });
 
 add({
-  id: "isd1820", nome: "Gravador de voz ISD1820", caixa: "som", arte: "modulo",
-  w: 264, h: 216, cor: "#B23A32", alimenta: 3, correnteTipica: 50, custo: 26,
+  id: "isd1820", nome: "Gravador de voz ISD1820", caixa: "som", arte: "isd1820",
+  w: 336, h: 216,
+  botoes: [{ id: "rec", n: "REC", x: 60, y: 84, r: 26 }, { id: "playe", n: "PLAY E", x: 150, y: 84, r: 26 }, { id: "playl", n: "PLAY L", x: 240, y: 84, r: 26 }], cor: "#B23A32", alimenta: 3, correnteTipica: 50, custo: 26,
   pinos: [
     { id: "vcc", n: "VCC", rotulo: "De 3 a 5 volts", x: 48, y: 192, r: "macho", papel: "v+", lado: "baixo" },
     { id: "gnd", n: "GND", rotulo: "Terra", x: 72, y: 192, r: "macho", papel: "gnd", lado: "baixo" },
     { id: "rec", n: "REC", rotulo: "Segure para gravar", x: 96, y: 192, r: "macho", papel: "digital", lado: "baixo" },
     { id: "playe", n: "PLAYE", rotulo: "Toca a gravacao inteira com um toque", x: 120, y: 192, r: "macho", papel: "digital", lado: "baixo" },
     { id: "playl", n: "PLAYL", rotulo: "Toca enquanto ficar pressionado", x: 144, y: 192, r: "macho", papel: "digital", lado: "baixo" },
-    { id: "spp", n: "SP+", rotulo: "Alto-falante, positivo", x: 168, y: 192, r: "macho", papel: "sinal", lado: "baixo" },
-    { id: "spn", n: "SP-", rotulo: "Alto-falante, negativo", x: 192, y: 192, r: "macho", papel: "sinal", lado: "baixo" },
+    { id: "ft", n: "FT", rotulo: "Modo de gravacao por gatilho — dispara sem segurar o botao", x: 192, y: 192, r: "macho", papel: "digital", lado: "baixo" },
+    { id: "spp", n: "SP+", rotulo: "Alto-falante, positivo", x: 192, y: 192, r: "borne", papel: "sinal", lado: "baixo" },
+    { id: "spn", n: "SP-", rotulo: "Alto-falante, negativo", x: 240, y: 192, r: "borne", papel: "sinal", lado: "baixo" },
   ],
 });
 
 add({
   id: "ky037", nome: "Sensor de som KY-037", caixa: "sensores", arte: "modulo",
   w: 240, h: 192, cor: "#1B4E8A", alimenta: 4.5, correnteTipica: 15, custo: 12,
+  trimpot: { x: 132, y: 60, r: 28, rotulo: "alcance", tipo: "alcance" },
   pinos: [
     { id: "a0", n: "A0", rotulo: "Nivel do som em valor analogico", x: 48, y: 168, r: "macho", papel: "analog", lado: "baixo" },
     { id: "gnd", n: "GND", rotulo: "Terra", x: 72, y: 168, r: "macho", papel: "gnd", lado: "baixo" },
@@ -958,6 +973,8 @@ add({
 
 add({
   id: "keypad", nome: "Teclado 4x4", caixa: "entradas", arte: "keypad",
+  teclado: { colunas: 4, linhas: 4, x0: 60, y0: 60, dx: 72, dy: 60, r: 26,
+    teclas: ["1","2","3","A","4","5","6","B","7","8","9","C","*","0","#","D"] },
   w: 336, h: 336, cor: "#1B1F26", custo: 12,
   pinos: [
     { id: "l1", n: "L1", rotulo: "Linha 1", x: 48, y: 312, r: "macho", papel: "digital", lado: "baixo" },
@@ -987,6 +1004,7 @@ add({
 add({
   id: "ir-linha", nome: "Sensor seguidor de linha", caixa: "sensores", arte: "modulo",
   w: 240, h: 192, cor: "#1B4E8A", alimenta: 3, correnteTipica: 20, custo: 9,
+  trimpot: { x: 216, y: 60, r: 28, rotulo: "alcance", tipo: "alcance" },
   pinos: [
     { id: "vcc", n: "VCC", rotulo: "De 3,3 a 5 volts", x: 48, y: 168, r: "macho", papel: "v+", lado: "baixo" },
     { id: "gnd", n: "GND", rotulo: "Terra", x: 72, y: 168, r: "macho", papel: "gnd", lado: "baixo" },
@@ -1013,6 +1031,7 @@ add({
 add({
   id: "pir", nome: "Sensor de presenca PIR", caixa: "sensores", arte: "pir",
   w: 240, h: 240, cor: "#1B4E8A", alimenta: 4.5, correnteTipica: 12, custo: 14,
+  trimpot: { x: 60, y: 168, r: 26, rotulo: "alcance", tipo: "alcance" },
   pinos: [
     { id: "vcc", n: "VCC", rotulo: "5 volts", x: 48, y: 216, r: "macho", papel: "v+", lado: "baixo" },
     { id: "gnd", n: "GND", rotulo: "Terra", x: 72, y: 216, r: "macho", papel: "gnd", lado: "baixo" },
@@ -1033,6 +1052,7 @@ add({
 add({
   id: "umidade-solo", nome: "Sensor de umidade do solo", caixa: "sensores", arte: "modulo",
   w: 240, h: 216, cor: "#1B4E8A", alimenta: 3, correnteTipica: 20, custo: 11,
+  trimpot: { x: 216, y: 60, r: 28, rotulo: "sensibilidade", tipo: "sensibilidade" },
   pinos: [
     { id: "vcc", n: "VCC", rotulo: "De 3,3 a 5 volts", x: 48, y: 192, r: "macho", papel: "v+", lado: "baixo" },
     { id: "gnd", n: "GND", rotulo: "Terra", x: 72, y: 192, r: "macho", papel: "gnd", lado: "baixo" },
@@ -1218,6 +1238,7 @@ add({
 add({
   id: "stepdown", nome: "Regulador stepdown", caixa: "energia", arte: "modulo", w: 288, h: 192,
   cor: "#134E3A", ajustavel: [3.3, 5, 9, 12], custo: 12, regulador: true,
+  trimpot: { x: 240, y: 60, r: 28, rotulo: "tensao de saida", tipo: "tensao" },
   pinos: [
     { id: "inp", n: "IN+", rotulo: "Entrada positiva — abaixa a tensao com pouca perda", x: 48, y: 168, r: "macho", papel: "v+", entrada: true, vmin: 1, vmax: 30, lado: "baixo" },
     { id: "inn", n: "IN-", rotulo: "Entrada negativa", x: 96, y: 168, r: "macho", papel: "gnd", lado: "baixo" },
@@ -1229,6 +1250,7 @@ add({
 add({
   id: "stepup", nome: "Regulador stepup", caixa: "energia", arte: "modulo", w: 288, h: 192,
   cor: "#134E3A", ajustavel: [3.3, 5, 9, 12], custo: 12, regulador: true,
+  trimpot: { x: 240, y: 60, r: 28, rotulo: "tensao de saida", tipo: "tensao" },
   pinos: [
     { id: "inp", n: "IN+", rotulo: "Entrada positiva — levanta a tensao acima da entrada", x: 48, y: 168, r: "macho", papel: "v+", entrada: true, vmin: 1, vmax: 30, lado: "baixo" },
     { id: "inn", n: "IN-", rotulo: "Entrada negativa", x: 96, y: 168, r: "macho", papel: "gnd", lado: "baixo" },
@@ -1313,7 +1335,7 @@ add({
 
 add({
   id: "enc28j60", nome: "Modulo ethernet ENC28J60", caixa: "comunicacao", arte: "modulo",
-  w: 312, h: 216, cor: "#1B1F26", alimenta: 3, tensaoMaxPino: 3.6, correnteTipica: 180, custo: 35,
+  w: 336, h: 216, cor: "#1B1F26", alimenta: 3, tensaoMaxPino: 3.6, correnteTipica: 180, custo: 35,
   pinos: [
     { id: "vcc", n: "VCC", rotulo: "3,3 volts", x: 48, y: 192, r: "macho", papel: "v+", lado: "baixo" },
     { id: "gnd", n: "GND", rotulo: "Terra", x: 72, y: 192, r: "macho", papel: "gnd", lado: "baixo" },
@@ -1324,6 +1346,7 @@ add({
     { id: "cs", n: "CS", rotulo: "Selecao do chip", x: 192, y: 192, r: "macho", papel: "spi", lado: "baixo" },
     { id: "rst", n: "RST", rotulo: "Reinicia o modulo", x: 216, y: 192, r: "macho", papel: "digital", lado: "baixo" },
     { id: "int", n: "INT", rotulo: "Avisa que chegou pacote", x: 240, y: 192, r: "macho", papel: "digital", lado: "baixo" },
+    { id: "wol", n: "WOL", rotulo: "Wake on LAN — acorda o circuito quando chega um pacote especial", x: 264, y: 192, r: "macho", papel: "digital", lado: "baixo" },
   ],
 });
 
@@ -1409,6 +1432,91 @@ add({
   ],
 });
 
+
+/* ---------- sensores e modulos novos --------------------------- */
+
+add({
+  id: "sw420", nome: "Sensor de vibracao SW-420", caixa: "sensores", arte: "modulo",
+  w: 264, h: 192, cor: "#1B4E8A", alimenta: 3, correnteTipica: 15, custo: 10,
+  trimpot: { x: 216, y: 60, r: 30, rotulo: "sensibilidade", tipo: "sensibilidade" },
+  pinos: [
+    { id: "vcc", n: "VCC", rotulo: "De 3,3 a 5 volts", x: 72, y: 168, r: "macho", papel: "v+", lado: "baixo" },
+    { id: "gnd", n: "GND", rotulo: "Terra", x: 96, y: 168, r: "macho", papel: "gnd", lado: "baixo" },
+    { id: "do", n: "DO", rotulo: "Vai para alto quando sente tranco ou batida", x: 120, y: 168, r: "macho", papel: "digital", lado: "baixo" },
+  ],
+});
+
+add({
+  id: "piezo-modulo", nome: "Modulo de toque piezo", caixa: "sensores", arte: "modulo",
+  w: 264, h: 192, cor: "#1B4E8A", alimenta: 3, correnteTipica: 8, custo: 9,
+  pinos: [
+    { id: "gnd", n: "-", rotulo: "Terra", x: 72, y: 168, r: "macho", papel: "gnd", lado: "baixo" },
+    { id: "vcc", n: "+", rotulo: "De 3,3 a 5 volts", x: 96, y: 168, r: "macho", papel: "v+", lado: "baixo" },
+    { id: "s", n: "S", rotulo: "Sinal — quanto mais forte a batida, maior o valor", x: 120, y: 168, r: "macho", papel: "analog", lado: "baixo" },
+    { id: "pz1", n: "PZ+", rotulo: "Borne do piezo, positivo", x: 192, y: 24, r: "borne", papel: "terminal", lado: "cima" },
+    { id: "pz2", n: "PZ-", rotulo: "Borne do piezo, negativo", x: 240, y: 24, r: "borne", papel: "terminal", lado: "cima" },
+  ],
+});
+
+add({
+  id: "piezo", nome: "Disco piezo", caixa: "sensores", arte: "piezo", w: 216, h: 240,
+  cor: "#C9A227", custo: 4,
+  pinos: [
+    { id: "p", n: "+", rotulo: "Fio vermelho do piezo — vai no borne PZ+ do modulo", x: 72, y: 216, r: "macho", papel: "terminal", lado: "baixo" },
+    { id: "n", n: "-", rotulo: "Fio preto do piezo", x: 120, y: 216, r: "macho", papel: "terminal", lado: "baixo" },
+  ],
+});
+
+add({
+  id: "velocidade", nome: "Sensor de velocidade", caixa: "sensores", arte: "modulo",
+  w: 288, h: 192, cor: "#1B4E8A", alimenta: 3, correnteTipica: 15, custo: 11,
+  trimpot: { x: 240, y: 60, r: 30, rotulo: "limiar", tipo: "sensibilidade" },
+  pinos: [
+    { id: "ao", n: "AO", rotulo: "Leitura analogica do sensor optico", x: 72, y: 168, r: "macho", papel: "analog", lado: "baixo" },
+    { id: "do", n: "DO", rotulo: "Pulso a cada furo do disco encoder que passa", x: 96, y: 168, r: "macho", papel: "digital", lado: "baixo" },
+    { id: "gnd", n: "GND", rotulo: "Terra", x: 120, y: 168, r: "macho", papel: "gnd", lado: "baixo" },
+    { id: "vcc", n: "VCC", rotulo: "De 3,3 a 5 volts", x: 144, y: 168, r: "macho", papel: "v+", lado: "baixo" },
+  ],
+});
+
+add({
+  id: "tp4056", nome: "Carregador TP4056", caixa: "energia", arte: "modulo",
+  w: 336, h: 216, cor: "#134E3A", regulador: true, correnteMax: 1000, custo: 12,
+  pinos: [
+    { id: "vinp", n: "VIN+", rotulo: "Entrada de carga — 5 volts, do USB ou do painel solar", x: 48, y: 192, r: "macho", papel: "v+", entrada: true, vmin: 4.5, vmax: 6, lado: "baixo" },
+    { id: "vinn", n: "VIN-", rotulo: "Entrada de carga, negativo", x: 72, y: 192, r: "macho", papel: "gnd", lado: "baixo" },
+    { id: "bp", n: "B+", rotulo: "Bateria de litio, positivo — e ela que fica sendo carregada", x: 144, y: 192, r: "macho", papel: "v+", lado: "baixo" },
+    { id: "bn", n: "B-", rotulo: "Bateria de litio, negativo", x: 168, y: 192, r: "macho", papel: "gnd", lado: "baixo" },
+    { id: "outp", n: "OUT+", rotulo: "Saida protegida para o circuito", x: 240, y: 192, r: "macho", papel: "v+", v: 3.7, lado: "baixo" },
+    { id: "outn", n: "OUT-", rotulo: "Saida, negativo", x: 264, y: 192, r: "macho", papel: "gnd", lado: "baixo" },
+  ],
+});
+
+add({
+  id: "lampada12v", nome: "Lampada 12V", caixa: "leds", arte: "lampada", w: 240, h: 288,
+  cor: "#E9C542", alimenta: 9, correnteTipica: 420, bipolar: true, custo: 8,
+  pinos: [
+    { id: "a", n: "1", rotulo: "Terminal da lampada — nao tem polaridade", x: 72, y: 264, r: "macho", papel: "v+", lado: "baixo" },
+    { id: "b", n: "2", rotulo: "Terminal da lampada", x: 168, y: 264, r: "macho", papel: "gnd", lado: "baixo" },
+  ],
+});
+
+add({
+  id: "lcd7", nome: "Tela LCD 7 polegadas", caixa: "leds", arte: "lcd7", w: 600, h: 432,
+  cor: "#1B1F26", alimenta: 4.5, tela: true, correnteTipica: 700, custo: 220,
+  encaixe: { tipo: "cabo-hdmi", x: 168, y: 408, rotulo: "entrada HDMI" },
+  pinos: [
+    { id: "vcc", n: "5V", rotulo: "Alimentacao propria da tela — ela nao se alimenta pelo HDMI", x: 408, y: 408, r: "borne", papel: "v+", lado: "cima" },
+    { id: "gnd", n: "GND", rotulo: "Terra da alimentacao", x: 456, y: 408, r: "borne", papel: "gnd", lado: "cima" },
+  ],
+});
+
+add({
+  id: "cabo-hdmi", nome: "Cabo HDMI curto", caixa: "extras", arte: "cabo-hdmi", w: 336, h: 144,
+  cor: "#1B1F26", custo: 20, inerte: true, encaixavel: "cabo-hdmi",
+  pinos: [],
+});
+
 /* Ponta solta: quando voce clipa uma garra e deixa a outra ponta
    pendurada, ela vira um ponto de ligacao na bancada. Dali saem
    quantos fios voce quiser — a gambiarra classica do laboratorio. */
@@ -1434,6 +1542,22 @@ for (const [id, mov] of Object.entries(PINOS_AJUSTADOS)) {
 for (const [id, t] of Object.entries(TAMANHOS)) {
   const d = C.find((c) => c.id === id);
   if (d) { d.w = t.w; d.h = t.h; }
+}
+
+/* Duas travas contra erro de montagem do catalogo. Elas ja pegaram
+   pino duplicado e pino empurrado para fora do corpo por um desenho
+   novo — os dois quebram o encaixe sem dar nenhum aviso. */
+for (const d of C) {
+  const vistos = new Set();
+  for (const p of d.pinos) {
+    if (vistos.has(p.id)) console.error(`[biblioteca] ${d.id} tem o pino "${p.id}" repetido`);
+    vistos.add(p.id);
+  }
+  const margem = 24;
+  for (const p of d.pinos) {
+    if (p.x + margem > d.w) d.w = Math.ceil((p.x + margem) / P) * P;
+    if (p.y + margem > d.h) d.h = Math.ceil((p.y + margem) / P) * P;
+  }
 }
 
 export const COMPONENTES = C;

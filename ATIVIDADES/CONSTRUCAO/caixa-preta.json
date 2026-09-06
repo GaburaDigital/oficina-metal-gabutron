@@ -1,0 +1,72 @@
+{
+  "id": "caixa-preta",
+  "titulo": "A caixa-preta da nave",
+  "tipo": "construcao",
+  "dificuldade": "intermediario",
+  "minutos": 22,
+  "pontos": 200,
+  "fase": 5,
+  "creditos": 220,
+  "usaScripts": true,
+  "briefing": "Toda nave precisa de uma caixa-preta: um aparelho burro que so anota o que aconteceu. O nosso vai gravar temperatura, umidade e trancos no cartao de memoria. O sensor de vibracao tem um trimpot: gire ate ele acusar batida de verdade e nao o zumbido do proprio ventilador. Sensibilidade demais e tao inutil quanto sensibilidade de menos.",
+  "objetivos": [
+    {
+      "id": "sd",
+      "texto": "Modulo de cartao SD energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "cartao-sd"
+      }
+    },
+    {
+      "id": "dht",
+      "texto": "Sensor DHT energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "dht"
+      }
+    },
+    {
+      "id": "vibra",
+      "texto": "Sensor de vibracao energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "sw420"
+      }
+    },
+    {
+      "id": "spi",
+      "texto": "Cartao SD no barramento SPI da placa",
+      "regra": {
+        "tipo": "pinoEm",
+        "componente": "cartao-sd",
+        "pino": "sck",
+        "papelAlvo": "spi"
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "Os tres modulos dividem a mesma alimentacao de 5 volts e o mesmo GND. Comece por isso.",
+    "SCK, MOSI e MISO do cartao vao nos pinos de SPI da placa: 13, 11 e 12 na GaburINO.",
+    "Com a bancada ligada, gire o trimpot do SW-420 e veja a sensibilidade mudar no proprio modulo.",
+    "No Deck de scripts existe a Caixa-preta da nave: escolha e veja o conjunto trabalhando."
+  ],
+  "erroComum": "Esquecer que o modulo de cartao precisa de 5 volts mas fala em 3,3. Modulo bom ja traz o conversor.",
+  "sucesso": "Gravador de bordo pronto. Aparelho burro, memoria longa: e assim que se descobre o que deu errado depois.",
+  "componentesLiberados": [
+    "gaburino",
+    "cartao-sd",
+    "cartao-sd-midia",
+    "dht",
+    "sw420",
+    "protoboard",
+    "resistor"
+  ]
+}

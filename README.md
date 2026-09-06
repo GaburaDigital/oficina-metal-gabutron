@@ -257,7 +257,7 @@ Os outros campos da missão: `briefing` e `sucesso` são falas do GabuTRON; `dic
 
 ## O que existe na oficina
 
-86 componentes distribuídos em dez gavetas e caixas, todos com pinagem fiel e encaixe real na protoboard.
+94 componentes distribuídos em dez gavetas e caixas, todos com pinagem fiel e encaixe real na protoboard.
 
 | Móvel | Peças | Destaques |
 |---|---|---|
@@ -314,6 +314,26 @@ Três componentes respondem ao toque, e isso permite montar circuito sem nenhuma
 | Potenciômetro | arraste o botão redondo | o cursor gira e a corrente muda de verdade |
 
 Uma bateria de 9 V, uma chave, um resistor e um LED já formam um circuito completo e funcional. É a montagem mais simples possível, e agora ela existe na bancada.
+
+## O Deck de scripts
+
+O painel **Firmware** ganhou duas abas. **Ajuste manual** é o que já existia: o aluno define pino a pino. **Deck de scripts** traz 17 programas prontos, filtrados pela placa que está na bancada.
+
+Escolher um script não mostra código. Mostra a **lista de ligações que ele espera encontrar** — e é essa lista que o aluno confere contra a própria montagem. Se algo faltar, o circuito não reage, e isso é de propósito: o script confia na montagem.
+
+| Placa | Scripts |
+|---|---|
+| Todas | Blink, Servo vai e vem, Distância no LCD |
+| GaburINO | Seguidor de linha, Mão robótica, Plantação inteligente, Mini elevador |
+| MicroBURA | Servo pelos botões, Bateria com piezo, Jogo da cobrinha |
+| Bura32 | Casa inteligente, Mesa CNC, Estabilização de drone |
+| Tema espacial | Caixa-preta da nave, Farol solar do casco, Rádio pirata, Sonar de atracagem |
+
+Missões podem marcar `usaScripts` no catálogo: quando o aluno abre o Firmware nelas, o painel já entra direto no deck.
+
+## Módulos que não entram na protoboard
+
+ESP-01, ENC28J60 e NRF24L01 têm barra de dois pinos separados por um passo. Na protoboard as duas fileiras cairiam na mesma coluna, ou seja, em curto — e isso vale no laboratório de verdade também. A bancada recusa o encaixe e o GabuTRON explica que esses módulos pedem jumper macho-fêmea ou placa adaptadora.
 
 ## O multímetro
 
@@ -382,6 +402,7 @@ Isso reconstrói `assistente-desenho.html` com todas as peças atuais e com os d
 | Rótulo | texto editável, com tamanho e alinhamento |
 | Luz de ligado | marca onde fica o LED indicador da peça |
 | Remodelar | mostra os pontos de um traço da caneta e permite arrastar cada um |
+| Áreas vivas | marca o que a bancada anima por cima: eixo de giro, luz, som, tela e zonas de toque |
 | Copiar e colar | leva formas de um componente para outro (Ctrl+C, Ctrl+V) |
 | Painel direito | preenchimento, traço, espessura, transparência, rotação, deslocamento |
 | Camadas | ordem de empilhamento, subir, descer, ao topo, ao fundo, ocultar |

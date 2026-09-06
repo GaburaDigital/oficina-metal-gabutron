@@ -131,6 +131,10 @@ export function calcular(comps, fios, energizado = true) {
       else if (d.instrumento && p.papel === "v+") vFixa = c.tensao ?? d.faixaTensao.padrao;
       // Fonte de tomada e reguladores ajustaveis.
       else if ((p.id === "vout" || p.id === "outp") && c.tensaoSaida) vFixa = c.tensaoSaida;
+      // Stepdown e stepup: quem manda na saida e o trimpot, como no
+      // modulo real. Ajuste antes de ligar a carga.
+      if (d.trimpot && d.trimpot.tipo === "tensao" && p.id === "outp")
+        vFixa = Number((1.2 + ((c.trimpot ?? 50) / 100) * 10.8).toFixed(1));
       const limite = d.instrumento ? (c.limite ?? d.faixaCorrente.padrao) * 1000 : (d.correnteMax ?? d.limiteAlim ?? 3000);
       if (vFixa != null) { registrarFonte(r, c, d, p, vFixa, limite); continue; }
 
@@ -206,7 +210,10 @@ export function calcular(comps, fios, energizado = true) {
       }
       if (!referenciaOk) continue;
 
-      const alto = (pid) => (tensao.get(no(c.id, pid)) ?? 0) > 2;
+      // Com os jumpers colocados, ENA e ENB ficam presos no 5V da
+      // propria ponte: e o atalho que quase toda placa vem de fabrica.
+      const comJumper = c.jumperEnable !== false && d.jumperEnable;
+      const alto = (pid) => (comJumper && d.jumperEnable.pinos.includes(pid)) || (tensao.get(no(c.id, pid)) ?? 0) > 2;
       const saidas = {};
       const canal = (en, i1, i2, o1, o2) => {
         if (!alto(en)) return;
@@ -456,7 +463,9 @@ export function calcular(comps, fios, energizado = true) {
         avisar("aviso", c.id, "A ponte H tem alimentacao de motor mas o GND dela nao esta ligado no GND da placa de controle. Sem essa referencia comum, os sinais IN nao significam nada para ela.");
       const enaSolto = !c.__saidas && vmot >= (d.alimenta || 6) && terraOk;
       if (enaSolto)
-        avisar("aviso", c.id, "A ponte H esta alimentada, mas nenhuma saida ligou. Confira o ENA em nivel alto e IN1 e IN2 em estados diferentes: iguais entre si e o mesmo que freio.");
+        avisar("aviso", c.id, c.jumperEnable === false
+          ? "A ponte H esta alimentada, mas nenhuma saida ligou. Sem os jumpers, ENA e ENB precisam de PWM vindo da placa, e IN1 e IN2 em estados diferentes."
+          : "A ponte H esta alimentada, mas nenhuma saida ligou. IN1 e IN2 iguais entre si e o mesmo que freio: coloque um alto e o outro baixo.");
     }
 
     if (d.regulador && !c.__vinOk && !c.queimado) {

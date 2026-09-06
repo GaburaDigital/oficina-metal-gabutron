@@ -8,7 +8,7 @@
 
 const cache = new Map();
 
-export const catalogo = { componentes: [], construcao: [], manutencao: [], curiosidades: [] };
+export const catalogo = { componentes: [], construcao: [], manutencao: [], hacking: [], curiosidades: [] };
 export const textosComponente = new Map();
 export let curiosidadesExtras = [];
 

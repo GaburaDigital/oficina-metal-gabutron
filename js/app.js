@@ -87,11 +87,20 @@ function iniciarInterface() {
         ? `Fio selecionado. Delete remove. Botao direito tambem.`
         : "Arraste uma peca da paleta. Passe o mouse num pino para ver o que ele e.";
     },
+    aoRecusarEncaixe: (comp) => {
+      robo.dizer(`${PORID[comp.tipo].nome} tem duas fileiras de pinos separadas por um passo so. Na protoboard as duas cairiam na mesma coluna, ou seja, em curto. Esse tipo de modulo pede jumper macho-femea ou uma placa adaptadora — e assim tambem no laboratorio de verdade.`, { expressao: "pensando" });
+    },
     aoEncaixar: (comp, n) => {
       robo.dizer(`${PORID[comp.tipo].nome} encaixado em ${n} furo${n > 1 ? "s" : ""}. Os furos ocupados ficam amarelos.`, { expressao: "satisfeito" });
     },
     aoInverter: (ponta) => robo.dizer(`Ponta da vez: ${ponta}. ${NOME_CONTATO[ponta]}.`, { expressao: "pensando" }),
     aoUsarFerramenta: usarFerramenta,
+    aoApertarBotao: (comp, qual) => {
+      const d = PORID[comp.tipo];
+      const b = (d.botoes || []).find((x) => x.id === qual);
+      if (b && qual === "reset") robo.dizer(`${d.nome} reiniciada. Tudo que estava rodando comecou de novo.`, { expressao: "pensando", falar: false });
+      else if (b) robo.dizer(`Botao ${b.n} da ${d.nome} pressionado.`, { expressao: "neutro", falar: false });
+    },
     aoMudarPonta: pintarChipDaPonta,
     svgFerramenta: () => (multimetro.estado.ativo ? multimetro.svgPontas(bancada) : "") + (solda.estado.ativo ? solda.svgFerro(bancada) : ""),
     aoArrastar: (x, y) => q("#lixeira").classList.toggle("mirada", sobreLixeira(x, y)),
@@ -168,7 +177,8 @@ function ligarFerramentas() {
 
   q("#b-firmware").addEventListener("click", () => {
     SOM.clique();
-    firmware.abrir(bancada.estado.comps, () => bancada.recalcular());
+    const m = missoes.sessao.missao;
+    firmware.abrir(bancada.estado.comps, () => bancada.recalcular(), m && m.usaScripts ? "deck" : "manual");
   });
 
   q("#m-livre").addEventListener("click", () => trocarModo("livre"));

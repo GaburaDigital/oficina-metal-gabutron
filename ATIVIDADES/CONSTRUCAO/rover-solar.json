@@ -1,0 +1,93 @@
+{
+  "id": "rover-solar",
+  "titulo": "Rover que se recarrega no sol",
+  "tipo": "construcao",
+  "dificuldade": "intermediario",
+  "minutos": 25,
+  "pontos": 210,
+  "fase": 5,
+  "creditos": 260,
+  "usaScripts": true,
+  "briefing": "O rover de superficie precisa passar semanas fora sem ninguem trocar pilha. A solucao e velha e funciona: painel solar carrega a bateria de litio, a bateria alimenta o circuito. Repare na ordem, porque quase todo mundo erra: o painel NAO alimenta o rover. O painel alimenta o CARREGADOR, o carregador cuida da bateria, e e a saida do carregador que alimenta o resto. Sem esse meio de campo a bateria estufa ou some com a carga quando passa uma nuvem.",
+  "objetivos": [
+    {
+      "id": "painel",
+      "texto": "Painel solar na entrada do carregador",
+      "regra": {
+        "tipo": "mesmoNo",
+        "a": {
+          "componente": "celula-solar",
+          "pino": "a"
+        },
+        "b": {
+          "componente": "tp4056",
+          "pino": "vinp"
+        }
+      }
+    },
+    {
+      "id": "bateria",
+      "texto": "Bateria de litio nos bornes B+ e B-",
+      "regra": {
+        "tipo": "mesmoNo",
+        "a": {
+          "componente": "suporte-litio",
+          "pino": "vout"
+        },
+        "b": {
+          "componente": "tp4056",
+          "pino": "bp"
+        }
+      }
+    },
+    {
+      "id": "saida",
+      "texto": "Circuito alimentado pela SAIDA do carregador",
+      "regra": {
+        "tipo": "mesmoNo",
+        "a": {
+          "componente": "tp4056",
+          "pino": "outp"
+        },
+        "b": {
+          "componente": "stepup",
+          "pino": "inp"
+        }
+      }
+    },
+    {
+      "id": "placa",
+      "texto": "Placa de controle viva",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "gaburino"
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "Comece pelo carregador. Painel no VIN, bateria no B, circuito no OUT. Essa e a ordem.",
+    "A bateria de litio entrega 3,7 volts. A placa quer 5. Quem resolve isso e o stepup.",
+    "Gire o trimpot do stepup ate o visor mostrar 5 volts, ANTES de ligar a placa.",
+    "Ligue o painel direto na placa e voce vai ver o que acontece quando a luz varia."
+  ],
+  "erroComum": "Ligar o painel solar direto no circuito. Funciona no sol forte e morre na primeira sombra.",
+  "sucesso": "Painel, carregador, bateria, conversor, circuito. Essa corrente de cinco elos e o que faz um rover durar meses.",
+  "componentesLiberados": [
+    "gaburino",
+    "celula-solar",
+    "tp4056",
+    "suporte-litio",
+    "stepup",
+    "protoboard",
+    "led",
+    "resistor",
+    "ldr"
+  ]
+}

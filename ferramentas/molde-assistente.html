@@ -113,6 +113,7 @@ footer .ok{color:var(--fosforo)}
     <button data-fer="led">Luz de ligado</button>
     <button id="b-grade" class="on">Grade</button>
     <button id="b-pinos" class="on">Pinos</button>
+    <button id="b-marcas" class="on">Areas vivas</button>
     <button id="b-copiar">Copiar</button>
     <button id="b-colar">Colar</button>
   </div>
@@ -174,6 +175,7 @@ const app = {
   vista: { x: 40, y: 40, k: 1 },
   grade: true,
   verPinos: true,
+  verMarcas: true,
   seq: 1,
   trabalho: {},       // id -> { formas, pinos } ja editados
 };
@@ -326,7 +328,8 @@ function pintar(soMesa) {
   camadaFormas.innerHTML = "";
   for (const f of app.formas) camadaFormas.appendChild(elementoDe(f));
 
-  camadaPinos.innerHTML = app.verPinos ? app.pinos.map((p) => {
+  camadaPinos.innerHTML = app.verMarcas ? marcasDaPeca(d) : "";
+  camadaPinos.innerHTML += app.verPinos ? app.pinos.map((p) => {
     const forma = p.r === "macho"
       ? `<rect class="pino-alca" data-pino="${p.id}" x="${p.x - 7}" y="${p.y - 7}" width="14" height="14" rx="2" fill="#D5D9DE" stroke="#6C727B"/>`
       : p.r === "femea"
@@ -346,6 +349,33 @@ function pintar(soMesa) {
     pintarProps();
     devolverFoco();
   }
+}
+
+/* Marcas do que se mexe, acende, soa ou mostra algo. Elas nao entram
+   no desenho exportado: existem so para voce posicionar as formas em
+   volta sem quebrar a animacao que a bancada aplica por cima. */
+function marcasDaPeca(d) {
+  const m = (BASE.marcas || {})[d.id];
+  if (!m) return "";
+  let s = "";
+  const alvo = (x, y, cor, rot) =>
+    `<g pointer-events="none" opacity=".9">
+      <circle cx="${x}" cy="${y}" r="16" fill="none" stroke="${cor}" stroke-width="2" stroke-dasharray="5 4"/>
+      <path d="M${x - 22} ${y}h44M${x} ${y - 22}v44" stroke="${cor}" stroke-width="1.5"/>
+      <text x="${x}" y="${y - 26}" font-family="monospace" font-size="11" fill="${cor}" text-anchor="middle">${rot}</text>
+    </g>`;
+  for (const e of m.eixos || []) s += alvo(e.x, e.y, "#E9C542", "eixo de giro");
+  for (const l of m.luzes || []) s += alvo(l.x, l.y, "#5CE07A", "luz");
+  for (const z of m.acoes || []) s += `<g pointer-events="none">
+      <circle cx="${z.x}" cy="${z.y}" r="${z.r}" fill="none" stroke="#7DD3FC" stroke-width="2" stroke-dasharray="7 5"/>
+      <text x="${z.x}" y="${z.y - z.r - 6}" font-family="monospace" font-size="11" fill="#7DD3FC" text-anchor="middle">${z.rotulo}</text>
+    </g>`;
+  for (const t of m.telas || []) s += `<g pointer-events="none">
+      <rect x="${t.x}" y="${t.y}" width="${t.w}" height="${t.h}" fill="none" stroke="#C77DFF" stroke-width="2" stroke-dasharray="7 5"/>
+      <text x="${t.x + t.w / 2}" y="${t.y - 6}" font-family="monospace" font-size="11" fill="#C77DFF" text-anchor="middle">area de tela</text>
+    </g>`;
+  for (const so of m.sons || []) s += alvo(so.x, so.y, "#E0703C", "som");
+  return s;
 }
 
 function pintarAlcas() {
@@ -965,6 +995,7 @@ document.querySelectorAll("[data-fer]").forEach((b) => b.addEventListener("click
 }));
 q("#b-grade").addEventListener("click", (e) => { app.grade = !app.grade; e.target.classList.toggle("on", app.grade); aplicarVista(); });
 q("#b-pinos").addEventListener("click", (e) => { app.verPinos = !app.verPinos; e.target.classList.toggle("on", app.verPinos); pintar(); });
+q("#b-marcas").addEventListener("click", (e) => { app.verMarcas = !app.verMarcas; e.target.classList.toggle("on", app.verMarcas); pintar(); });
 q("#b-mais").addEventListener("click", () => zoom(1.25));
 q("#b-menos").addEventListener("click", () => zoom(0.8));
 q("#b-enq").addEventListener("click", enquadrar);

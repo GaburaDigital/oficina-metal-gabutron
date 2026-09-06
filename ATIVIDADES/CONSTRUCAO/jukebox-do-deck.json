@@ -1,0 +1,93 @@
+{
+  "id": "jukebox-do-deck",
+  "titulo": "Jukebox do deck de carga",
+  "tipo": "construcao",
+  "dificuldade": "hacker",
+  "minutos": 30,
+  "pontos": 280,
+  "fase": 5,
+  "creditos": 320,
+  "usaScripts": true,
+  "briefing": "A tripulacao esta revoltada com o silencio. Monte o som do deck: cartao de memoria com as musicas no modulo MP3, saida passando pelo amplificador, alto-falantes nos bornes, e o bluetooth para escolherem a faixa do proprio comunicador. Um aviso sobre o amplificador: os bornes OUT- NAO sao terra. Ligar OUT- no GND e o jeito mais rapido de matar um PAM8403, e eu ja matei tres.",
+  "objetivos": [
+    {
+      "id": "cartao",
+      "texto": "Cartao de memoria encaixado no modulo MP3",
+      "regra": {
+        "tipo": "existe",
+        "componente": "cartao-sd-midia"
+      }
+    },
+    {
+      "id": "audio",
+      "texto": "Saida de audio do MP3 na entrada do amplificador",
+      "regra": {
+        "tipo": "mesmoNo",
+        "a": {
+          "componente": "dfplayer",
+          "pino": "dacl"
+        },
+        "b": {
+          "componente": "amplificador",
+          "pino": "inl"
+        }
+      }
+    },
+    {
+      "id": "falante",
+      "texto": "Alto-falante nos bornes OUT do amplificador",
+      "regra": {
+        "tipo": "mesmoNo",
+        "a": {
+          "componente": "amplificador",
+          "pino": "olp"
+        },
+        "b": {
+          "componente": "altofalante",
+          "pino": "a"
+        }
+      }
+    },
+    {
+      "id": "amp-vivo",
+      "texto": "Amplificador energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "amplificador"
+      }
+    },
+    {
+      "id": "bluetooth",
+      "texto": "Modulo bluetooth alimentado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "hc06"
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "Ordem do sinal: cartao, MP3, amplificador, alto-falante. Monte nessa sequencia e fica facil de conferir.",
+    "O amplificador tem DOIS terras de proposito: um para o audio e outro para a alimentacao. Use os dois.",
+    "OUT L- e OUT R- sao saidas, nao terra. Se voce ligar no GND, o chip esquenta e morre.",
+    "O RX do DFPlayer pede resistor de 1k em serie. E o detalhe que ninguem le no manual."
+  ],
+  "erroComum": "Ligar OUT- do amplificador no GND. Ele funciona por alguns minutos e depois nao volta mais.",
+  "sucesso": "Som no deck. E voce entendeu a diferenca entre saida diferencial e terra, que e a licao escondida dessa missao.",
+  "componentesLiberados": [
+    "gaburino",
+    "dfplayer",
+    "cartao-sd-midia",
+    "amplificador",
+    "altofalante",
+    "hc06",
+    "protoboard",
+    "resistor"
+  ]
+}

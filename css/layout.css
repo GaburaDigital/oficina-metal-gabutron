@@ -356,3 +356,17 @@
 @media (min-width: 901px) {
   #acoes-toque { opacity: .85; }
 }
+
+/* Em tela bem estreita o titulo nao cabe e ficava cortado. Some o
+   texto e o icone cresce: a marca continua reconhecivel. */
+@media (max-width: 560px) {
+  .marca b { display: none; }
+  .marca svg { width: 34px; height: 34px; }
+  #barra-topo { gap: var(--e2); padding: 0 var(--e2); }
+  .modos { margin-left: var(--e2); }
+  .modos .btn { font-size: 11px; padding: 5px 7px; }
+}
+@media (max-width: 400px) {
+  .marca svg { width: 30px; height: 30px; }
+  .painel-estado { gap: 5px; }
+}

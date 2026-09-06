@@ -698,6 +698,57 @@ ${txt("SD", 84, 130, 26, "#CFE4EE")}
 ${txt("16 GB", 84, 160, 13, "#9FC4E8")}`;
 }
 
+
+function piezo(d, i) {
+  return `
+<circle cx="108" cy="108" r="90" fill="#C9A227" stroke="#8A6B14" stroke-width="4"/>
+<circle cx="108" cy="108" r="62" fill="#D5D9DE"/>
+<circle cx="108" cy="108" r="30" fill="#C9A227"/>
+${txt("PIEZO", 108, 114, 15, "#6E5410")}
+<path d="M72 198v18" stroke="#E24B4A" stroke-width="7" stroke-linecap="round"/>
+<path d="M120 198v18" stroke="#2A2E36" stroke-width="7" stroke-linecap="round"/>`;
+}
+
+function lampada(d, i) {
+  const on = i.ligado;
+  return `
+${on ? `<circle cx="120" cy="108" r="126" fill="#E9C542" opacity=".22"/><circle cx="120" cy="108" r="96" fill="#E9C542" opacity=".3"/>` : ""}
+<circle cx="120" cy="108" r="84" fill="${on ? "#F5E08A" : "#3A3F47"}" stroke="#8A8F98" stroke-width="4"/>
+<path d="M96 132v-24a24 24 0 0148 0v24" fill="none" stroke="${on ? "#FFFFFF" : "#6C727B"}" stroke-width="5"/>
+<rect x="84" y="186" width="72" height="54" rx="6" fill="#8A8F98"/>
+${Array.from({ length: 4 }, (_, k) => `<path d="M84 ${196 + k * 12}h72" stroke="#6C727B" stroke-width="3"/>`).join("")}
+${txt("12V", 120, 228, 14, "#2A2E36")}
+<path d="M72 240v24M168 240v24" stroke="#B9BEC6" stroke-width="6" stroke-linecap="round"/>`;
+}
+
+function lcd7(d, i) {
+  const on = i.ligado;
+  return `
+<rect width="600" height="432" rx="12" fill="#1B1F26" stroke="#05060A" stroke-width="4"/>
+<rect x="24" y="24" width="552" height="336" rx="6" fill="${on ? "#12324A" : "#0A0C11"}"/>
+${on ? txt("ARUBAG PI &#183; deck de engenharia", 300, 168, 30, "#7DD3FC") + txt("1024 x 600", 300, 216, 20, "#4E7FA8") : txt("sem sinal", 300, 200, 22, "#3A414D")}
+${txt("LCD 7\" HDMI", 300, 392, 15, "#8A8F98")}`;
+}
+
+function caboHdmi(d, i) {
+  return `
+<rect x="12" y="48" width="84" height="48" rx="5" fill="#2A2E36" stroke="#101318" stroke-width="3"/>
+<rect x="240" y="48" width="84" height="48" rx="5" fill="#2A2E36" stroke="#101318" stroke-width="3"/>
+<path d="M96 72h144" stroke="#1B1F26" stroke-width="18" stroke-linecap="round"/>
+<path d="M96 72h144" stroke="#3A3F47" stroke-width="10" stroke-linecap="round"/>
+${txt("HDMI", 168, 116, 13, "#8A8F98")}`;
+}
+
+function isd1820(d, i) {
+  const on = i.ligado;
+  return `
+<rect width="${d.w}" height="${d.h}" rx="7" fill="#B23A32" stroke="#05060A" stroke-width="2"/>
+<rect x="240" y="120" width="72" height="40" rx="6" fill="#1B1F26"/>
+${txt("MIC", 276, 146, 13, "#C9CDD3")}
+${txt("ISD1820", 108, 146, 16, "#F2F2EE")}
+${ledAlim(300, 36, on)}`;
+}
+
 /* ---------- despacho ------------------------------------------ */
 
 const MAPA = {
@@ -713,7 +764,7 @@ const MAPA = {
   "motor-passo": motorPasso, sonda, "expansao-servo": expansaoServo,
   "suporte-litio": suporteLitio, "fonte-bancada": fonteBancada,
   joystick, encoder, dfplayer, moeda, borracha, "cartao-midia": cartaoMidia,
-  "multimetro-peca": multimetroPeca,
+  "multimetro-peca": multimetroPeca, piezo, lampada, lcd7, "cabo-hdmi": caboHdmi, isd1820,
   pendrive, "caixa-som": caixaSom, clipe,
 };
 
@@ -784,12 +835,64 @@ function camadaViva(def, inst, arte) {
     s += txt("passo " + passo, def.w / 2, def.h - 44, 13, "#7DD3FC");
   }
 
+  // Trimpot: o parafusinho azul que quase todo modulo tem. Quando a
+  // bancada esta ligada, mostramos o que ele esta ajustando — sem isso
+  // o aluno gira sem saber para que serve.
+  if (def.trimpot) {
+    const t = def.trimpot;
+    const giro = i.trimpot ?? 50;
+    const ang = -140 + giro * 2.8;
+    s += `<rect x="${t.x - t.r}" y="${t.y - t.r}" width="${t.r * 2}" height="${t.r * 2}" rx="4" fill="#1B4E8A" stroke="#0A2A56" stroke-width="2"/>
+      <circle cx="${t.x}" cy="${t.y}" r="${t.r * 0.66}" fill="#C9CDD3"/>
+      <g transform="rotate(${ang} ${t.x} ${t.y})"><rect x="${t.x - 2.5}" y="${t.y - t.r * 0.62}" width="5" height="${t.r * 0.9}" fill="#2A2E36"/></g>`;
+    if (i.ligado) {
+      const rot = t.tipo === "tensao"
+        ? `${(1.2 + (giro / 100) * 10.8).toFixed(1)} V`
+        : `${t.rotulo} ${Math.round(giro)}%`;
+      s += txt(rot, t.x, t.y + t.r + 20, 12, "#5CE07A");
+      if (t.tipo === "alcance")
+        s += `<path d="M${def.w / 2} ${def.h * 0.12}a${20 + giro} ${20 + giro} 0 010 ${def.h * 0.4}"
+              fill="none" stroke="#5CE07A" stroke-width="2" stroke-dasharray="6 5" opacity=".7"/>`;
+    }
+  }
+
+  // Botoes fisicos da peca: RESET, EN, BOOT, A, B, REC...
+  for (const b of def.botoes || []) {
+    const ap = (i.apertados || []).includes(b.id);
+    s += `<circle cx="${b.x}" cy="${b.y + (ap ? 3 : 0)}" r="${b.r}" fill="${ap ? "#5A2320" : "#8A2C28"}" stroke="#4A1614" stroke-width="3"/>
+      <circle cx="${b.x}" cy="${b.y + (ap ? 3 : 0)}" r="${b.r * 0.6}" fill="${ap ? "#6E2A26" : "#A33832"}"/>`;
+    s += txt(b.n, b.x, b.y + b.r + 16, 11, "#C9CDD3");
+  }
+
+  // Teclado: as teclas ficam clicaveis, mantendo a aparencia.
+  if (def.teclado) {
+    const k = def.teclado;
+    const ap = i.apertados || [];
+    k.teclas.forEach((tec, idx) => {
+      const x = k.x0 + (idx % k.colunas) * k.dx, y = k.y0 + Math.floor(idx / k.colunas) * k.dy;
+      const on = ap.includes("t" + idx);
+      s += `<rect x="${x - 30}" y="${y - 24}" width="60" height="48" rx="6"
+        fill="${on ? "#5CE07A" : "none"}" opacity="${on ? 0.35 : 0}" pointer-events="none"/>`;
+    });
+  }
+
+  // Ponte H com os jumpers de ENA e ENB colocados.
+  if (def.jumperEnable && i.jumperEnable) {
+    for (const pid of def.jumperEnable.pinos) {
+      const p = def.pinos.find((x) => x.id === pid);
+      if (!p) continue;
+      s += `<rect x="${p.x - 11}" y="${p.y - 22}" width="22" height="30" rx="4" fill="#E9C542" stroke="#8A6B14" stroke-width="2"/>`;
+      s += txt("J", p.x, p.y - 4, 12, "#4A3A08");
+    }
+    s += txt("ENA e ENB com jumper", def.w / 2, def.h - 6, 12, "#E9C542");
+  }
+
   // Slot de midia: sem a marca, ninguem descobre onde encaixa.
-  if (def.encaixe) {
-    const e = def.encaixe;
+  for (const e of def.encaixes || (def.encaixe ? [def.encaixe] : [])) {
+    const cheio = (i.temMidia || []).includes ? (i.temMidia || []).includes(e.tipo) : i.temMidia === e.tipo;
     s += `<rect x="${e.x - 46}" y="${e.y - 26}" width="92" height="52" rx="5"
-            fill="${i.temMidia ? "#1B4E8A" : "#0A0C11"}" stroke="#5CE07A" stroke-width="2" stroke-dasharray="${i.temMidia ? "0" : "7 5"}"/>`;
-    s += txt(i.temMidia ? "encaixado" : e.rotulo, e.x, e.y + 44, 11, i.temMidia ? "#5CE07A" : "#8A8F98");
+            fill="${cheio ? "#1B4E8A" : "#0A0C11"}" stroke="#5CE07A" stroke-width="2" stroke-dasharray="${cheio ? "0" : "7 5"}"/>`;
+    s += txt(cheio ? "encaixado" : e.rotulo, e.x, e.y + 44, 11, cheio ? "#5CE07A" : "#8A8F98");
   }
 
   if (def.arte === "led" && i.aceso) {

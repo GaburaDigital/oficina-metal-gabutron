@@ -1,0 +1,82 @@
+{
+  "id": "grampo-no-barramento",
+  "titulo": "Grampo no barramento",
+  "tipo": "hacking",
+  "dificuldade": "hacker",
+  "minutos": 25,
+  "pontos": 260,
+  "fase": 5,
+  "creditos": 140,
+  "briefing": "Suspeito que o painel de controle esta mentindo sobre a temperatura do reator. Vamos grampear o barramento I2C e ver o que passa por ele. I2C e uma linha compartilhada: qualquer um pendurado nela escuta tudo. Isso e uma facilidade quando voce projeta e um problema quando alguem mal-intencionado tem acesso fisico. Use cabos jacare para nao desmontar nada, e o multimetro para provar que voce nao derrubou o barramento.",
+  "objetivos": [
+    {
+      "id": "sensor",
+      "texto": "Sensor original no barramento",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "mpu6050"
+      }
+    },
+    {
+      "id": "grampo",
+      "texto": "Segundo aparelho pendurado na MESMA linha SDA",
+      "regra": {
+        "tipo": "mesmoNo",
+        "a": {
+          "componente": "mpu6050",
+          "pino": "sda"
+        },
+        "b": {
+          "componente": "lcdi2c",
+          "pino": "sda"
+        }
+      }
+    },
+    {
+      "id": "scl",
+      "texto": "E na mesma linha SCL",
+      "regra": {
+        "tipo": "mesmoNo",
+        "a": {
+          "componente": "mpu6050",
+          "pino": "scl"
+        },
+        "b": {
+          "componente": "lcdi2c",
+          "pino": "scl"
+        }
+      }
+    },
+    {
+      "id": "mediu",
+      "texto": "Confirmar com o multimetro que o barramento continua vivo",
+      "regra": {
+        "tipo": "usouFerramenta",
+        "modo": "tensao"
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "Em I2C, todo mundo divide os mesmos dois fios. Grampear e so pendurar mais um na mesma dupla.",
+    "Garra jacare morde pino macho e pad sem desmontar nada. E por isso que ela e a ferramenta do grampo.",
+    "Cada aparelho no barramento precisa de um endereco diferente, senao os dois falam junto e ninguem entende.",
+    "Meca a tensao em SDA e SCL: se cairem para perto de zero, voce travou a linha em vez de escutar."
+  ],
+  "erroComum": "Pendurar o grampo e derrubar o barramento inteiro, avisando a nave de que alguem mexeu.",
+  "sucesso": "Grampo instalado sem derrubar a linha. Guarde a licao: barramento compartilhado e comodo para quem projeta e generoso com quem espiona.",
+  "componentesLiberados": [
+    "gaburino",
+    "mpu6050",
+    "lcdi2c",
+    "multimetro",
+    "protoboard",
+    "resistor"
+  ]
+}

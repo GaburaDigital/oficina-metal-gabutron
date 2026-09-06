@@ -1,0 +1,67 @@
+{
+  "id": "porta-dos-fundos",
+  "titulo": "A porta dos fundos do almoxarifado",
+  "tipo": "hacking",
+  "dificuldade": "facil",
+  "minutos": 15,
+  "pontos": 160,
+  "fase": 5,
+  "creditos": 90,
+  "briefing": "O almoxarifado tranca com fechadura eletrica e o chefe levou a chave para casa. Nao vamos arrombar nada: vamos usar o que a propria fechadura oferece. O rele tem tres contatos, e um deles e o NF, o normalmente fechado. Enquanto a bobina esta desligada, NF conduz. Monte um circuito que acende a lampada usando o NF em vez do NA e entenda por que todo alarme decente usa esse contato: se faltar energia, ele denuncia sozinho.",
+  "objetivos": [
+    {
+      "id": "rele",
+      "texto": "Rele energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "rele"
+      }
+    },
+    {
+      "id": "nf",
+      "texto": "Carga ligada no contato NF, nao no NA",
+      "regra": {
+        "tipo": "mesmoNo",
+        "a": {
+          "componente": "rele",
+          "pino": "nc"
+        },
+        "b": {
+          "componente": "lampada12v",
+          "pino": "a"
+        }
+      }
+    },
+    {
+      "id": "acende",
+      "texto": "Lampada acesa com a bobina desligada",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "lampada12v"
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "COM e por onde a corrente da carga entra. NF e por onde ela sai enquanto a bobina esta parada.",
+    "A lampada de 12 volts precisa da propria fonte: o lado da carga e isolado do lado de controle.",
+    "Coloque o IN do rele em nivel baixo e veja o que acontece com o NF.",
+    "Depois inverta para o NA e compare. E a mesma peca, comportamento oposto."
+  ],
+  "erroComum": "Achar que NA e NF sao a mesma coisa. Sao opostos, e essa diferenca e o coracao de qualquer alarme.",
+  "sucesso": "Contato normalmente fechado. Agora voce sabe por que cortar a energia de um alarme e a pior forma de desliga-lo.",
+  "componentesLiberados": [
+    "gaburino",
+    "rele",
+    "lampada12v",
+    "fonte-tomada",
+    "protoboard",
+    "resistor"
+  ]
+}

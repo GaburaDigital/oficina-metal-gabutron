@@ -196,6 +196,46 @@
       "curiosidade": "O cabo do multimetro e enrolado por um motivo pratico: assim ele estica quando voce precisa alcancar o outro lado da bancada e recolhe sozinho depois. Aqui na oficina isso tambem ajuda a diferenciar o que e medida do que e circuito.",
       "uso": "Descobrir se o fio esta inteiro, se a tensao chegou, se a corrente esta certa e se a peca ainda vive. E a ferramenta que separa quem conserta de quem troca peca no chute.",
       "tecnico": "A ponta preta vai sempre no COM, e ela e a referencia de toda medida. A vermelha vai no borne de tensao, resistencia e corrente. Continuidade e resistencia so com o circuito DESLIGADO. Corrente exige o aparelho em serie, ou seja, as duas pontas nos dois terminais da mesma peca."
+    },
+    "sw420": {
+      "curiosidade": "Dentro dele ha uma molinha em volta de um pino. Quando o modulo treme, a mola encosta no pino e fecha contato. E um sensor de vibracao feito com o principio de um chocalho.",
+      "uso": "Alarme de bicicleta, caixa-preta, deteccao de batida, robo que percebe que caiu.",
+      "tecnico": "De 3,3 a 5 volts, saida digital. O trimpot ajusta a partir de que tranco ele acusa. Sensibilidade alta demais dispara com o proprio motor do projeto."
+    },
+    "piezo": {
+      "curiosidade": "O mesmo disco funciona nos dois sentidos: aperte e ele gera tensao, aplique tensao e ele vibra. E o mesmo componente do buzzer, usado ao contrario.",
+      "uso": "Bateria eletronica, sensor de batida, detector de passos, instrumento de brinquedo.",
+      "tecnico": "Gera picos de tensao que podem passar de 20 volts numa batida forte, e por isso ele nao vai direto num pino: vai no modulo, que tem resistor e limitador."
+    },
+    "piezo-modulo": {
+      "curiosidade": "Esse modulo existe justamente porque o piezo cru gera tensao demais. Ele e o intermediario que traduz a batida para algo que a placa aguente ler.",
+      "uso": "Bateria com piezo, sensor de toque em superficie, contador de impactos.",
+      "tecnico": "O disco vai nos bornes PZ. A saida S e analogica: quanto mais forte a batida, maior o valor. Alimente em 3,3 ou 5 volts, com GND comum."
+    },
+    "velocidade": {
+      "curiosidade": "Ele conta furos. Um disco com fendas gira entre o emissor e o receptor, e cada fenda vira um pulso. Contando pulsos por segundo voce sabe a rotacao.",
+      "uso": "Medir velocidade de roda, contar voltas de motor, odometro de carrinho, tacometro.",
+      "tecnico": "Saida digital com um pulso por fenda e saida analogica com o nivel bruto. O trimpot ajusta o limiar entre claro e escuro."
+    },
+    "tp4056": {
+      "curiosidade": "Esse modulinho de dois reais faz o trabalho delicado de carregar litio: corrente constante no comeco, tensao constante no fim, e corte quando enche. Litio mal carregado incha.",
+      "uso": "Qualquer projeto com bateria recarregavel: rover solar, lanterna, robo movel, controle sem fio.",
+      "tecnico": "VIN recebe 5 volts. B+ e B- vao na celula de litio. OUT alimenta o circuito, ja com protecao. Nunca alimente o circuito direto do B: sem a protecao, uma descarga profunda mata a celula."
+    },
+    "lampada12v": {
+      "curiosidade": "Lampada de filamento e um resistor que ficou tao quente que passou a brilhar. Ela desperdica quase toda a energia em calor, e e exatamente por isso que serve para ensinar potencia.",
+      "uso": "Carga de teste para rele, iluminacao de maquete, farol de rover, demonstracao de corrente alta.",
+      "tecnico": "Nao tem polaridade. Puxa por volta de 400 mA em 12 volts, muito acima de qualquer pino: ela SEMPRE passa por rele ou driver, com fonte propria."
+    },
+    "lcd7": {
+      "curiosidade": "Sete polegadas por HDMI e a tela mais parecida com um computador de verdade que cabe num projeto de sala. E ela nao se alimenta pelo cabo de video: precisa de energia propria.",
+      "uso": "Painel do Arubag Pi, quiosque, console de bordo, estacao de monitoramento.",
+      "tecnico": "HDMI leva video e som, nao energia. A tela pede 5 volts firmes e ate 700 mA, e por isso alimenta-la pela mesma fonte da placa costuma dar tela piscando."
+    },
+    "cabo-hdmi": {
+      "curiosidade": "O conector HDMI tem dezenove vias num espaco minusculo. Cabo ruim nao mostra imagem pior: nao mostra imagem nenhuma. Com video digital, ou funciona ou nao funciona.",
+      "uso": "Ligar a tela de 7 polegadas no Arubag Pi.",
+      "tecnico": "Encaixa nas duas pontas, sem fio solto. Nao leva alimentacao: a tela continua precisando da fonte dela."
     }
   }
 }

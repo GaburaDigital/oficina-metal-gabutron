@@ -13,6 +13,7 @@
 import { PORID } from "./biblioteca.js";
 import { ico } from "./icones.js";
 import { SOM } from "./som.js";
+import { scriptsDe, acharScript, aplicar } from "./scripts.js";
 
 const MODOS = [
   { id: "desligado", nome: "desligado", dica: "pino solto, alta impedancia" },
@@ -23,8 +24,10 @@ const MODOS = [
 ];
 
 let veu = null;
+let aba = "manual";
 
-export function abrir(comps, aoMudar) {
+export function abrir(comps, aoMudar, abaInicial) {
+  aba = abaInicial || aba;
   const placas = comps.filter((c) => (PORID[c.tipo] || {}).alimentada);
   veu = document.createElement("div");
   veu.className = "veu";
@@ -33,8 +36,13 @@ export function abrir(comps, aoMudar) {
   <div class="janela-topo">${ico("placa", 18)}<h2>Firmware de teste</h2>
     <button class="btn btn-icone" id="x-fw" aria-label="Fechar">${ico("fechar", 16)}</button>
   </div>
+  <div class="abas-firmware">
+    <button class="btn ${aba === "manual" ? "ativo" : ""}" data-aba="manual">Ajuste manual</button>
+    <button class="btn ${aba === "deck" ? "ativo" : ""}" data-aba="deck">Deck de scripts</button>
+  </div>
   <div class="janela-corpo">
-    ${placas.length ? placas.map((c) => bloco(c)).join("") : `<p style="color:var(--poeira)">Nenhuma placa de controle na bancada. Pegue uma na gaveta das placas.</p>`}
+    ${!placas.length ? `<p style="color:var(--poeira)">Nenhuma placa de controle na bancada. Pegue uma na gaveta das placas.</p>`
+      : aba === "manual" ? placas.map((c) => bloco(c)).join("") : placas.map((c) => deck(c)).join("")}
   </div>
   <div class="janela-base">
     <button class="btn" id="fw-zerar">Desligar todos os pinos</button>
@@ -71,9 +79,69 @@ function bloco(comp) {
   </div>`;
 }
 
+/* Deck de scripts: em vez de mexer pino a pino, o aluno escolhe um
+   programa pronto. O que interessa aqui nao e o codigo — e a lista de
+   ligacoes que ele precisa ter feito para o script funcionar. */
+function deck(comp) {
+  const d = PORID[comp.tipo];
+  const lista = scriptsDe(comp.tipo);
+  const atual = comp.script;
+  return `<div class="grupo">
+    <h3>${d.nome}</h3>
+    ${!lista.length ? `<p style="color:var(--poeira)">Nenhum script para esta placa ainda.</p>` : ""}
+    <div class="grade-scripts">
+      ${lista.map((s) => `<button class="cartao-script ${atual === s.id ? "on" : ""}" data-script="${comp.id}|${s.id}">
+        <b>${s.nome}</b><small>${s.resumo}</small>
+        <span class="pecas-script">${(s.pede || []).map((p) => (PORID[p] || {}).nome || p).join(" &#183; ")}</span>
+      </button>`).join("")}
+    </div>
+    ${atual ? blocoLigacoes(acharScript(atual)) : ""}
+    ${atual ? `<button class="btn" data-parar="${comp.id}">Parar o script e voltar ao manual</button>` : ""}
+  </div>`;
+}
+
+function blocoLigacoes(s) {
+  if (!s) return "";
+  return `<div class="ligacoes-script">
+    <h3>Ligacoes que este script espera</h3>
+    <ul>${s.ligacoes.map((l) => `<li>${l}</li>`).join("")}</ul>
+    <p>Se alguma faltar, o circuito nao vai reagir. E de proposito: o script confia na sua montagem.</p>
+  </div>`;
+}
+
 function ligar(comps, aoMudar) {
   const achar = (id) => comps.find((c) => c.id === id);
   const fechar = () => { if (veu) veu.remove(); veu = null; };
+
+  veu.querySelectorAll("[data-aba]").forEach((b) => b.addEventListener("click", () => {
+    aba = b.dataset.aba;
+    fechar();
+    SOM.clique();
+    abrir(comps, aoMudar, aba);
+  }));
+
+  veu.querySelectorAll("[data-script]").forEach((b) => b.addEventListener("click", () => {
+    const [cid, sid] = b.dataset.script.split("|");
+    const c = achar(cid);
+    const s = acharScript(sid);
+    if (!c || !s) return;
+    aplicar(c, s);
+    SOM.sucesso();
+    fechar();
+    aoMudar();
+    abrir(comps, aoMudar, "deck");
+  }));
+
+  veu.querySelectorAll("[data-parar]").forEach((b) => b.addEventListener("click", () => {
+    const c = achar(b.dataset.parar);
+    if (!c) return;
+    c.script = null;
+    c.firmware = {};
+    SOM.desliga();
+    fechar();
+    aoMudar();
+    abrir(comps, aoMudar, "deck");
+  }));
 
   veu.addEventListener("click", (e) => { if (e.target === veu) fechar(); });
   veu.querySelector("#x-fw").addEventListener("click", fechar);
@@ -105,7 +173,7 @@ function ligar(comps, aoMudar) {
   });
 
   veu.querySelector("#fw-zerar").addEventListener("click", () => {
-    comps.forEach((c) => { c.firmware = {}; });
+    comps.forEach((c) => { c.firmware = {}; c.script = null; });
     fechar();
     SOM.desliga();
     aoMudar();

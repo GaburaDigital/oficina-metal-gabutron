@@ -1,6 +1,6 @@
 {
   "projeto": "Oficina do Metal GabuTRON",
-  "versao": 4,
+  "versao": 5,
   "atualizado": "2026-09-02",
   "comoUsar": "Este arquivo e o indice do conteudo. Para adicionar material: 1) coloque o .json na pasta certa dentro de ATIVIDADES; 2) escreva uma linha aqui apontando para ele. O campo fase diz a partir de qual fase do projeto a missao pode ser jogada. O site le so este arquivo ao abrir e busca a missao inteira quando o aluno clica nela, por isso o menu carrega rapido mesmo com centenas de exercicios.",
   "conteudos": {
@@ -118,6 +118,60 @@
           "suporteaa"
         ],
         "fase": 4
+      },
+      {
+        "id": "rover-solar",
+        "titulo": "Rover que se recarrega no sol",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/rover-solar.json",
+        "tipo": "construcao",
+        "dificuldade": "intermediario",
+        "minutos": 25,
+        "pontos": 210,
+        "resumo": "Painel solar, carregador e bateria: energia que dura semanas.",
+        "componentes": [
+          "gaburino",
+          "celula-solar",
+          "tp4056",
+          "suporte-litio",
+          "stepup"
+        ],
+        "fase": 5,
+        "usaScripts": true
+      },
+      {
+        "id": "jukebox-do-deck",
+        "titulo": "Jukebox do deck de carga",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/jukebox-do-deck.json",
+        "tipo": "construcao",
+        "dificuldade": "hacker",
+        "minutos": 30,
+        "pontos": 280,
+        "resumo": "Cartao, MP3, amplificador e alto-falante. E os bornes OUT- que nao sao terra.",
+        "componentes": [
+          "dfplayer",
+          "amplificador",
+          "altofalante",
+          "hc06"
+        ],
+        "fase": 5,
+        "usaScripts": true
+      },
+      {
+        "id": "caixa-preta",
+        "titulo": "A caixa-preta da nave",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/caixa-preta.json",
+        "tipo": "construcao",
+        "dificuldade": "intermediario",
+        "minutos": 22,
+        "pontos": 200,
+        "resumo": "Grava temperatura, umidade e trancos no cartao de memoria.",
+        "componentes": [
+          "cartao-sd",
+          "dht",
+          "sw420"
+        ],
+        "fase": 5,
+        "usaScripts": true
       }
     ],
     "manutencao": [
@@ -184,6 +238,55 @@
           "suporteaa"
         ],
         "fase": 4
+      }
+    ],
+    "hacking": [
+      {
+        "id": "porta-dos-fundos",
+        "titulo": "A porta dos fundos do almoxarifado",
+        "arquivo": "ATIVIDADES/HACKING/porta-dos-fundos.json",
+        "tipo": "hacking",
+        "dificuldade": "facil",
+        "minutos": 15,
+        "pontos": 160,
+        "resumo": "O contato NF do rele e por que todo alarme usa ele.",
+        "componentes": [
+          "rele",
+          "lampada12v"
+        ],
+        "fase": 5
+      },
+      {
+        "id": "grampo-no-barramento",
+        "titulo": "Grampo no barramento",
+        "arquivo": "ATIVIDADES/HACKING/grampo-no-barramento.json",
+        "tipo": "hacking",
+        "dificuldade": "hacker",
+        "minutos": 25,
+        "pontos": 260,
+        "resumo": "Pendurar um aparelho no I2C sem derrubar a linha.",
+        "componentes": [
+          "mpu6050",
+          "lcdi2c",
+          "multimetro"
+        ],
+        "fase": 5
+      },
+      {
+        "id": "gambiarra-de-emergencia",
+        "titulo": "Gambiarra de emergencia",
+        "arquivo": "ATIVIDADES/HACKING/gambiarra-de-emergencia.json",
+        "tipo": "hacking",
+        "dificuldade": "novato",
+        "minutos": 12,
+        "pontos": 120,
+        "resumo": "Sem jumper na nave: clipe de papel, moeda e o multimetro para provar.",
+        "componentes": [
+          "clipe",
+          "moeda",
+          "led"
+        ],
+        "fase": 5
       }
     ]
   }

@@ -218,11 +218,24 @@ export function encerrarTreino() {
 
 let veu = null;
 
+let filtroAtual = "todas";
+
+const CASA_FILTRO = {
+  todas: () => true,
+  novato: (m) => m.dificuldade === "novato",
+  facil: (m) => m.dificuldade === "facil",
+  intermediario: (m) => m.dificuldade === "intermediario",
+  hacker: (m) => m.dificuldade === "hacker",
+  construcao: (m) => m.tipo === "construcao",
+  manutencao: (m) => m.tipo === "manutencao",
+  hacking: (m) => m.tipo === "hacking",
+};
+
 export function abrirSeletor(aoEscolher) {
-  const lista = [...(catalogo.construcao || []), ...(catalogo.manutencao || [])]
-    .filter((m) => (m.fase || 2) <= 4);
-  const futuras = [...(catalogo.construcao || []), ...(catalogo.manutencao || [])]
-    .filter((m) => (m.fase || 2) > 4);
+  const todas = [...(catalogo.construcao || []), ...(catalogo.manutencao || []), ...(catalogo.hacking || [])]
+    .filter((m) => (m.fase || 2) <= 5);
+  const lista = todas.filter(CASA_FILTRO[filtroAtual] || CASA_FILTRO.todas);
+  const futuras = [];
 
   veu = document.createElement("div");
   veu.className = "veu";
@@ -232,8 +245,13 @@ export function abrirSeletor(aoEscolher) {
     <button class="btn btn-icone" id="x-mis" aria-label="Fechar">${ico("fechar", 16)}</button>
   </div>
   <div class="janela-corpo">
+    <div class="filtros-missao">
+      ${[["todas", "todas"], ["novato", "novato"], ["facil", "facil"], ["intermediario", "intermediario"],
+         ["hacker", "hacker"], ["construcao", "construcao"], ["manutencao", "manutencao"], ["hacking", "hacking"]]
+        .map(([id, r]) => `<button class="btn ${filtroAtual === id ? "ativo" : ""}" data-filtro="${id}">${r}</button>`).join("")}
+    </div>
     ${lista.length ? `<div class="grade-missoes">${lista.map(cartao).join("")}</div>`
-      : `<p style="color:var(--poeira)">Nenhuma missao no catalogo ainda.</p>`}
+      : `<p style="color:var(--poeira)">Nenhuma missao neste filtro.</p>`}
     ${futuras.length ? `<div class="grupo" style="margin-top:18px"><h3>Chegam nas proximas fases</h3>
       <ul style="color:var(--poeira);font-size:12px;padding-left:18px">
         ${futuras.map((m) => `<li>${m.titulo} — precisa da ponte H com saidas ativas</li>`).join("")}
@@ -267,6 +285,13 @@ export function abrirSeletor(aoEscolher) {
   veu.addEventListener("click", (e) => { if (e.target === veu) fechar(); });
   veu.querySelector("#x-mis").addEventListener("click", fechar);
   veu.querySelector("#mis-livre").addEventListener("click", () => { fechar(); aoEscolher(null); });
+
+  veu.querySelectorAll("[data-filtro]").forEach((b) => b.addEventListener("click", () => {
+    filtroAtual = b.dataset.filtro;
+    SOM.clique();
+    fechar();
+    abrirSeletor(aoEscolher);
+  }));
 
   veu.querySelector("#tr-comecar").addEventListener("click", async () => {
     const filtros = {
@@ -306,7 +331,7 @@ function cartao(m) {
       <i class="etq etq-${m.dificuldade}">${m.dificuldade}</i>
       <i class="etq">${m.minutos} min</i>
       <i class="etq">${m.pontos} pts</i>
-      <i class="etq">${m.tipo === "manutencao" ? "manutencao" : "construcao"}</i>
+      <i class="etq ${m.tipo === "hacking" ? "etq-hacking" : ""}">${m.tipo}</i>
     </span>
     <small>${m.resumo || ""}</small>
   </button>`;

@@ -1,16 +1,15 @@
 /* ============================================================
    ARTE — desenhos revisados no assistente de desenho.
 
-   Este arquivo é GERADO: ele vem do "Exportar tudo" da ferramenta em
+   Este arquivo e GERADO pelo "Exportar tudo" da ferramenta em
    ferramentas/assistente-desenho.html. Para atualizar o visual de uma
-   peça, edite lá e substitua este arquivo. Não mexa nele à mão.
+   peca, edite la e substitua este arquivo. Nao mexa nele a mao.
 
-   O corpo aqui é estático. O que muda com a energia (brilho do LED,
-   luz de ligado, ondas de som, tela acesa, motor girando) continua
-   sendo desenhado por cima, em js/desenhos.js. É por isso que existe
-   o campo "luzes": ele marca onde a peça acende.
+   O corpo aqui e estatico. O que muda com a energia (brilho do LED,
+   luz de ligado, tela acesa, onda de som, motor girando, botao
+   afundando) continua sendo desenhado por cima, em js/desenhos.js.
 
-   Origem: desenhos-gabutron-2026-09-05, 54 peças editadas.
+   Origem: desenhos-gabutron-2026-09-06, 68 pecas editadas.
    ============================================================ */
 
 export const ARTE = {
@@ -24,16 +23,25 @@ export const ARTE = {
     svg: `<rect width="480" height="216" rx="8" fill="#2A2E36" stroke="#101318" stroke-width="3"></rect><path d="M96 0h288v34H96z" fill="#0F5A46"></path><text x="240" y="24" font-family="monospace" font-size="12" font-weight="500" fill="#9FD8C6" text-anchor="middle">encaixa embaixo da MicroBURA</text><text x="240" y="88" font-family="monospace" font-size="20" font-weight="500" fill="#E8E8E4" text-anchor="middle">EXPANSAO DE PINOS</text><text x="240" y="116" font-family="monospace" font-size="13" font-weight="500" fill="#8A8F98" text-anchor="middle">libera P3 a P20 em pinos machos</text><rect x="24" y="132" width="432" height="14" rx="3" fill="#101318"></rect>`,
   },
   "protoboard": {
-    svg: `<rect width="765" height="481" rx="8" fill="#E6E4DC" stroke="#B9B6AC" stroke-width="3" transform="translate(2 2)"></rect><rect x="0" y="252" width="768" height="24" fill="#D5D2C7"></rect><path d="M10 10h748" stroke="#E24B4A" stroke-width="3"></path><path d="M10 62h748" stroke="#3F5FB0" stroke-width="3"></path><path d="M10 394h748" stroke="#E24B4A" stroke-width="3" transform="translate(2 22)"></path><path d="M10 446h748" stroke="#3F5FB0" stroke-width="3" transform="translate(2 24)"></path><text x="24" y="106" font-family="monospace" font-size="12" font-weight="500" fill="#8A8780" text-anchor="middle">1</text><text x="24" y="412" font-family="monospace" font-size="12" font-weight="500" fill="#8A8780" text-anchor="middle">1</text><text x="144" y="106" font-family="monospace" font-size="12" font-weight="500" fill="#8A8780" text-anchor="middle">6</text><text x="144" y="412" font-family="monospace" font-size="12" font-weight="500" fill="#8A8780" text-anchor="middle">6</text><text x="264" y="106" font-family="monospace" font-size="12" font-weight="500" fill="#8A8780" text-anchor="middle">11</text><text x="264" y="412" font-family="monospace" font-size="12" font-weight="500" fill="#8A8780" text-anchor="middle">11</text><text x="384" y="106" font-family="monospace" font-size="12" font-weight="500" fill="#8A8780" text-anchor="middle">16</text><text x="384" y="412" font-family="monospace" font-size="12" font-weight="500" fill="#8A8780" text-anchor="middle">16</text><text x="504" y="106" font-family="monospace" font-size="12" font-weight="500" fill="#8A8780" text-anchor="middle">21</text><text x="504" y="412" font-family="monospace" font-size="12" font-weight="500" fill="#8A8780" text-anchor="middle">21</text><text x="624" y="106" font-family="monospace" font-size="12" font-weight="500" fill="#8A8780" text-anchor="middle">26</text><text x="624" y="412" font-family="monospace" font-size="12" font-weight="500" fill="#8A8780" text-anchor="middle">26</text><text x="708" y="269" font-family="monospace" font-size="12" font-weight="500" fill="#8A8780" text-anchor="end">400 pontos</text>`,
+    svg: `<rect width="765" height="481" rx="8" fill="#E6E4DC" stroke="#B9B6AC" stroke-width="3" transform="translate(2 2)"></rect><rect x="0" y="236" width="768" height="24" fill="#D5D2C7"></rect><path d="M10 10h748" stroke="#E24B4A" stroke-width="3"></path><path d="M10 62h748" stroke="#3F5FB0" stroke-width="3"></path><path d="M10 394h748" stroke="#E24B4A" stroke-width="3" transform="translate(2 22)"></path><path d="M10 446h748" stroke="#3F5FB0" stroke-width="3" transform="translate(2 24)"></path><text x="24" y="106" font-family="monospace" font-size="12" font-weight="500" fill="#8A8780" text-anchor="middle">1</text><text x="24" y="412" font-family="monospace" font-size="12" font-weight="500" fill="#8A8780" text-anchor="middle">1</text><text x="144" y="106" font-family="monospace" font-size="12" font-weight="500" fill="#8A8780" text-anchor="middle">6</text><text x="144" y="412" font-family="monospace" font-size="12" font-weight="500" fill="#8A8780" text-anchor="middle">6</text><text x="264" y="106" font-family="monospace" font-size="12" font-weight="500" fill="#8A8780" text-anchor="middle">11</text><text x="264" y="412" font-family="monospace" font-size="12" font-weight="500" fill="#8A8780" text-anchor="middle">11</text><text x="384" y="106" font-family="monospace" font-size="12" font-weight="500" fill="#8A8780" text-anchor="middle">16</text><text x="384" y="412" font-family="monospace" font-size="12" font-weight="500" fill="#8A8780" text-anchor="middle">16</text><text x="504" y="106" font-family="monospace" font-size="12" font-weight="500" fill="#8A8780" text-anchor="middle">21</text><text x="504" y="412" font-family="monospace" font-size="12" font-weight="500" fill="#8A8780" text-anchor="middle">21</text><text x="624" y="106" font-family="monospace" font-size="12" font-weight="500" fill="#8A8780" text-anchor="middle">26</text><text x="624" y="412" font-family="monospace" font-size="12" font-weight="500" fill="#8A8780" text-anchor="middle">26</text><text x="708" y="269" font-family="monospace" font-size="12" font-weight="500" fill="#8A8780" text-anchor="end">400 pontos</text>`,
+  },
+  "motor-passo": {
+    svg: `<rect x="6" y="106" width="273" height="39" rx="4" fill="#9c9eac" stroke="none" stroke-width="2"></rect><circle cx="146" cy="114" r="114" fill="#9ba0ab" stroke="none" stroke-width="2" transform="translate(-5 6)"></circle><circle cx="144" cy="120" r="96" fill="#B9BEC6" stroke="#7C828C" stroke-width="4"></circle><circle cx="144" cy="120" r="46" fill="#9BA1AA" transform="translate(-3 -38)"></circle><circle cx="144" cy="120" r="19" fill="#cfb220" transform="translate(-4 -41)"></circle><rect x="30" y="216" width="152" height="37" rx="6" fill="#2A2E36" transform="translate(40 1)"></rect><text x="144" y="240" font-family="monospace" font-size="14" font-weight="500" fill="#B9BEC6" text-anchor="middle">28BYJ-48</text><rect x="141" y="75" width="16" height="9" rx="4" fill="#8b631d" stroke="none" stroke-width="2"></rect><path d="M212 289 L211 249" fill="none" stroke="#ee2343" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" transform="translate(-116 -1)"></path><path d="M212 289 L211 249" fill="none" stroke="#648bec" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" transform="translate(-92 -1)"></path><path d="M212 289 L211 249" fill="none" stroke="#ec92c0" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" transform="translate(-68 -1)"></path><path d="M212 289 L211 249" fill="none" stroke="#e7d02a" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" transform="translate(-44 -1)"></path><path d="M212 289 L211 249" fill="none" stroke="#e68a2c" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" transform="translate(-20 -1)"></path>`,
   },
   "bateria9v": {
     svg: `<rect x="12" y="0" width="144" height="186" rx="10" fill="#2A2E36" stroke="#101318" stroke-width="3"></rect><text x="84" y="82" font-family="monospace" font-size="38" font-weight="500" fill="#E9C542" text-anchor="middle">9V</text><text x="84" y="116" font-family="monospace" font-size="14" font-weight="500" fill="#8A8F98" text-anchor="middle">ALCALINA</text><rect x="21" y="153" width="141" height="20" rx="4" fill="#3A3F47" stroke="#1c2121" stroke-width="2" transform="translate(-7 11)"></rect>`,
+  },
+  "suporteaa": {
+    svg: `<rect width="309" height="209" rx="7" fill="#1B1F26" stroke="#05060A" stroke-width="2"></rect><rect x="20" y="14" width="248" height="28" rx="9" fill="#3A3F47" stroke="#101318" stroke-width="2"></rect><text x="144" y="34" font-family="monospace" font-size="13" font-weight="500" fill="#B9BEC6" text-anchor="middle">AA</text><rect x="20" y="50" width="248" height="28" rx="9" fill="#3A3F47" stroke="#101318" stroke-width="2"></rect><text x="144" y="70" font-family="monospace" font-size="13" font-weight="500" fill="#B9BEC6" text-anchor="middle">AA</text><rect x="20" y="86" width="248" height="28" rx="9" fill="#3A3F47" stroke="#101318" stroke-width="2"></rect><text x="144" y="106" font-family="monospace" font-size="13" font-weight="500" fill="#B9BEC6" text-anchor="middle">AA</text><rect x="20" y="122" width="248" height="28" rx="9" fill="#3A3F47" stroke="#101318" stroke-width="2"></rect><text x="144" y="142" font-family="monospace" font-size="13" font-weight="500" fill="#B9BEC6" text-anchor="middle">AA</text><text x="300" y="60" font-family="monospace" font-size="15" font-weight="500" fill="#E24B4A" text-anchor="middle">6.0 V</text><text x="300" y="84" font-family="monospace" font-size="11" font-weight="500" fill="#8A8F98" text-anchor="middle">4 pilhas</text><path d="M240 168v24" stroke="#E24B4A" stroke-width="8" stroke-linecap="round" transform="translate(0 21)"></path><path d="M288 168v24" stroke="#2A2E36" stroke-width="8" stroke-linecap="round" transform="translate(0 20)"></path>`,
   },
   "fonte-protoboard": {
     svg: `<rect width="288" height="144" rx="7" fill="#134E3A" stroke="#05060A" stroke-width="2"></rect><text x="144" y="52" font-family="monospace" font-size="15" font-weight="500" fill="#F2F2EE" text-anchor="middle">FONTE DE PROTOBOARD</text><text x="144" y="84" font-family="monospace" font-size="20" font-weight="500" fill="#5CE07A" text-anchor="middle">5 V</text><rect x="36" y="96" width="52" height="18" rx="3" fill="#a6a61c"></rect><circle cx="252" cy="40" r="6" fill="#4A1E1E"></circle>`,
   },
   "rele": {
     svg: `<rect width="264" height="192" rx="7" fill="#1B4E8A" stroke="#05060A" stroke-width="2"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="246" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="132" y="92" font-family="monospace" font-size="16" font-weight="500" fill="#F2F2EE" text-anchor="middle">Modulo rele</text><circle cx="230" cy="122" r="6" fill="#4A1E1E"></circle>`,
+  },
+  "rele3v": {
+    svg: `<rect width="288" height="192" rx="7" fill="#1B4E8A" stroke="#05060A" stroke-width="2"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="270" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="144" y="92" font-family="monospace" font-size="16" font-weight="500" fill="#F2F2EE" text-anchor="middle" transform="translate(-2 0)">Modulo rele 3V</text><circle cx="254" cy="122" r="6" fill="#4A1E1E"></circle>`,
   },
   "ponteh": {
     svg: `<rect width="432" height="336" rx="8" fill="#B23A32" stroke="#6E211B" stroke-width="3"></rect><rect x="24" y="8" width="42" height="86" rx="4" fill="#1B1F26" transform="translate(0 90)"></rect><rect x="168" y="8" width="134" height="33" rx="4" fill="#1B1F26" transform="translate(89 0)"></rect><rect x="312" y="8" width="40" height="84" rx="4" fill="#1B1F26" transform="translate(60 99)"></rect><rect x="150" y="96" width="132" height="120" rx="4" fill="#8A8F98" transform="translate(1 -18)"></rect><rect x="158" y="100" width="9" height="112" fill="#6C727B" transform="translate(0 -15)"></rect><rect x="179" y="100" width="9" height="112" fill="#6C727B" transform="translate(0 -17)"></rect><rect x="200" y="100" width="9" height="112" fill="#6C727B" transform="translate(1 -15)"></rect><rect x="221" y="100" width="9" height="112" fill="#6C727B" transform="translate(4 -15)"></rect><rect x="242" y="100" width="9" height="112" fill="#6C727B" transform="translate(5 -15)"></rect><rect x="263" y="100" width="9" height="112" fill="#6C727B" transform="translate(7 -16)"></rect><text x="216" y="240" font-family="monospace" font-size="12" font-weight="500" fill="#F0C9C5" text-anchor="middle" transform="translate(5 -166)">dissipador</text><rect x="40" y="120" width="86" height="51" rx="4" fill="#1B1F26" transform="translate(136 132)"></rect><text x="78" y="164" font-family="monospace" font-size="14" font-weight="500" fill="#E8E8E4" text-anchor="middle" transform="translate(140 119)">L298N</text><text x="348" y="140" font-family="monospace" font-size="20" font-weight="500" fill="#F2F2EE" text-anchor="middle" transform="translate(-122 81)">PONTE H</text><circle cx="348" cy="180" r="6" fill="#4A1E1E" transform="translate(-69 60)"></circle><rect x="120" y="290" width="192" height="16" rx="3" fill="#1B1F26" transform="translate(-108 -273)"></rect><text x="84" y="66" font-family="monospace" font-size="13" font-weight="500" fill="#F0C9C5" text-anchor="middle" transform="translate(-42 13)">motor A</text><text x="360" y="66" font-family="monospace" font-size="13" font-weight="500" fill="#F0C9C5" text-anchor="middle" transform="translate(30 18)">motor B</text>`,
@@ -53,39 +61,45 @@ export const ARTE = {
   "ledrgb": {
     svg: `<path d="M120 151 L121 193" fill="none" stroke="#B9BEC6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path><path d="M120 151 L121 193" fill="none" stroke="#B9BEC6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" transform="translate(-24 0)"></path><path d="M120 151 L121 193" fill="none" stroke="#B9BEC6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" transform="translate(-50 1)"></path><path d="M120 151 L121 193" fill="none" stroke="#B9BEC6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" transform="translate(-73 1)"></path><rect width="156" height="123" rx="7" fill="#12151C" stroke="#05060A" stroke-width="2" transform="translate(8 30)"></rect><path d="M44 84a40 40 0 0180 0v26H44z" fill="#F2F2EE" opacity="0.55"></path><rect x="38" y="106" width="92" height="12" rx="3" fill="#E8E8E4" opacity=".8"></rect><circle cx="66" cy="72" r="9" fill="#5A2A2A"></circle><circle cx="84" cy="62" r="9" fill="#255036"></circle><circle cx="102" cy="72" r="9" fill="#243B58"></circle><text x="84" y="146" font-family="monospace" font-size="11" font-weight="500" fill="#F2F2EE" text-anchor="middle" transform="translate(0 -15)">LED RGB</text><text x="84" y="164" font-family="monospace" font-size="11" font-weight="500" fill="#8A8F98" text-anchor="middle" transform="translate(1 -20)">catodo comum</text>`,
   },
+  "lcdi2c": {
+    svg: `<rect width="456" height="216" rx="7" fill="#14472F" stroke="#05060A" stroke-width="2"></rect><rect x="36" y="24" width="384" height="120" rx="4" fill="#123B2A"></rect><text x="120" y="190" font-family="monospace" font-size="14" font-weight="500" fill="#9FD8C6" text-anchor="middle">LCD 16x2 I2C</text><circle cx="412" cy="176" r="6" fill="#4A1E1E"></circle>`,
+  },
   "buzzer": {
     svg: `<path d="M95 112 L96 168" fill="none" stroke="#B9BEC6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" transform="translate(-48 0)"></path><path d="M95 112 L96 168" fill="none" stroke="#B9BEC6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="72" cy="66" r="60" fill="#0B0D11" stroke="#2A2E36" stroke-width="3"></circle><circle cx="72" cy="66" r="10" fill="#2A2E36"></circle><text x="46" y="118" font-family="monospace" font-size="18" font-weight="500" fill="#E8E8E4" text-anchor="middle">+</text>`,
   },
   "ldr": {
     svg: `<circle cx="36" cy="60" r="34" fill="#E9DFC0" stroke="#8A6B2A" stroke-width="3"></circle><path d="M14 60q11-16 22 0t22 0" fill="none" stroke="#3A2A10" stroke-width="4"></path><path d="M24 94v50M48 94v50" stroke="#B9BEC6" stroke-width="4"></path>`,
   },
+  "ultrassonico": {
+    svg: `<rect width="336" height="192" rx="7" fill="#1B4E8A" stroke="#05060A" stroke-width="2"></rect><circle cx="84" cy="80" r="56" fill="#8A8F98" stroke="#565C66" stroke-width="4"></circle><circle cx="252" cy="80" r="56" fill="#8A8F98" stroke="#565C66" stroke-width="4"></circle><text x="84" y="88" font-family="monospace" font-size="22" font-weight="500" fill="#31363E" text-anchor="middle">T</text><text x="252" y="88" font-family="monospace" font-size="22" font-weight="500" fill="#31363E" text-anchor="middle">R</text><rect x="150" y="48" width="36" height="64" rx="4" fill="#0A1E33"></rect><text x="168" y="152" font-family="monospace" font-size="14" font-weight="500" fill="#CFE4EE" text-anchor="middle">HC-SR04</text><circle cx="300" cy="152" r="6" fill="#4A1E1E"></circle>`,
+  },
   "irobstaculo": {
     svg: `<rect width="264" height="192" rx="7" fill="#1B4E8A" stroke="#05060A" stroke-width="2"></rect><g><g xmlns="http://www.w3.org/2000/svg"> <path d="M40 62a24 24 0 0148 0v24H40z" fill="#2A2E36"></path> <rect x="36" y="84" width="56" height="10" rx="3" fill="#2A2E36"></rect> <text x="64" y="116" font-family="monospace" font-size="11" font-weight="500" fill="#CFE4EE" text-anchor="middle">emissor</text> </g></g><g><g xmlns="http://www.w3.org/2000/svg"> <path d="M120 62a24 24 0 0148 0v24h-48z" fill="#7DA9E0" opacity="0.6"></path> <rect x="116" y="84" width="56" height="10" rx="3" fill="#7DA9E0" opacity="0.6"></rect> <text x="144" y="116" font-family="monospace" font-size="11" font-weight="500" fill="#CFE4EE" text-anchor="middle">receptor</text> </g></g><rect x="188" y="48" width="56" height="40" rx="4" fill="#1B1F26"></rect><text x="216" y="108" font-family="monospace" font-size="11" font-weight="500" fill="#CFE4EE" text-anchor="middle">ajuste</text><text x="132" y="148" font-family="monospace" font-size="15" font-weight="500" fill="#F2F2EE" text-anchor="middle">SENSOR IR</text><circle cx="228" cy="148" r="6" fill="#4A1E1E"></circle>`,
   },
   "servo180": {
-    svg: `<rect x="24" y="60" width="192" height="132" rx="6" fill="#1E58A8" stroke="#0A2A56" stroke-width="3"></rect><rect x="6" y="92" width="228" height="26" fill="#1E58A8"></rect><circle cx="18" cy="105" r="7" fill="#8A8F98"></circle><path d="M14 105h8" stroke="#2A2E36" stroke-width="2"></path><circle cx="222" cy="105" r="7" fill="#8A8F98"></circle><path d="M218 105h8" stroke="#2A2E36" stroke-width="2"></path><text x="140" y="150" font-family="monospace" font-size="15" font-weight="500" fill="#CFE4EE" text-anchor="middle">SG90</text><path d="M216 96h48" stroke="#3A3F47" stroke-width="7" transform="translate(-1 51)"></path><path d="M216 120h48" stroke="#E24B4A" stroke-width="7" transform="translate(0 48)"></path><path d="M216 144h48" stroke="#E9C542" stroke-width="7" transform="translate(0 42)"></path><rect x="240" y="84" width="30" height="72" rx="4" fill="#2A2E36" transform="translate(20 40)"></rect><text x="140" y="150" font-family="monospace" font-size="15" font-weight="500" fill="#CFE4EE" text-anchor="middle" transform="translate(1 31)">180º</text><circle cx="57" cy="54" r="24" fill="#1e4cad" stroke="#05060A" stroke-width="2" transform="translate(12 7)"></circle><g transform="translate(-14 7)"><g xmlns="http://www.w3.org/2000/svg" transform="rotate(0 84 48)"><rect x="74" y="4" width="20" height="48" rx="3" fill="#F2F2EE" stroke="#8A8F98" stroke-width="2"></rect></g></g><rect x="61" y="7" width="57" height="20" rx="4" fill="#f7f7f8" stroke="#32343d" stroke-width="2" transform="translate(-37 1)"></rect>`,
+    svg: `<rect x="24" y="60" width="192" height="132" rx="6" fill="#1E58A8" stroke="#0A2A56" stroke-width="3"></rect><rect x="6" y="92" width="228" height="26" fill="#1E58A8"></rect><circle cx="18" cy="105" r="7" fill="#8A8F98"></circle><path d="M14 105h8" stroke="#2A2E36" stroke-width="2"></path><circle cx="222" cy="105" r="7" fill="#8A8F98"></circle><path d="M218 105h8" stroke="#2A2E36" stroke-width="2"></path><text x="140" y="150" font-family="monospace" font-size="15" font-weight="500" fill="#CFE4EE" text-anchor="middle">SG90</text><path d="M216 96h48" stroke="#3A3F47" stroke-width="7" transform="translate(-1 51)"></path><path d="M216 120h48" stroke="#E24B4A" stroke-width="7" transform="translate(0 48)"></path><path d="M216 144h48" stroke="#E9C542" stroke-width="7" transform="translate(0 42)"></path><rect x="240" y="84" width="30" height="72" rx="4" fill="#2A2E36" transform="translate(20 40)"></rect><text x="140" y="150" font-family="monospace" font-size="15" font-weight="500" fill="#CFE4EE" text-anchor="middle" transform="translate(1 31)">180º</text><circle cx="57" cy="54" r="24" fill="#1e58a8" stroke="#161d58" stroke-width="2" transform="translate(12 7)"></circle><path d="M61 42 L75 42 L88 52 L88 69 L77 81 L62 81 L0 65 L0 53 L61 42 Z" fill="#9aa3b1" stroke="#B9BEC6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(1 0)"></path><circle cx="67" cy="59" r="7" fill="#b9bdc7" stroke="none" stroke-width="2" transform="translate(1 2)"></circle>`,
   },
   "motordc": {
     svg: `<rect x="12" y="18" width="138" height="134" rx="66" fill="#9BA1AA" stroke="#565C66" stroke-width="3" transform="translate(27 5)"></rect><rect x="196" y="66" width="34" height="36" rx="4" fill="#6C727B" transform="translate(-25 3)"></rect><path d="M228 84h48" stroke="#C9CDD3" stroke-width="10" transform="translate(-24 3)"></path><circle cx="108" cy="84" r="38" fill="#6C727B"></circle><g><g xmlns="http://www.w3.org/2000/svg" transform="rotate(0 108 84)"><path d="M108 50v68M74 84h68" stroke="#D5D9DE" stroke-width="6"></path></g></g><text x="108" y="142" font-family="monospace" font-size="14" font-weight="500" fill="#31363E" text-anchor="middle">MOTOR DC</text><text x="288" y="130" font-family="monospace" font-size="15" font-weight="500" fill="#E24B4A" text-anchor="middle">+</text><text x="336" y="130" font-family="monospace" font-size="15" font-weight="500" fill="#8A8F98" text-anchor="middle">-</text><path d="M117 157 L116 171 L289 168 L288 148" fill="none" stroke="#ea2806" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></path><path d="M99 156 L97 184 L337 181 L336 144" fill="none" stroke="#055ff0" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></path>`,
   },
   "arubagpi": {
-    svg: `<rect width="456" height="312" rx="10" fill="#1B6B3A" stroke="#0B3D20" stroke-width="3"></rect><rect x="60" y="30" width="228" height="60" rx="4" fill="#0B3D20"></rect><text x="174" y="66" font-family="monospace" font-size="13" font-weight="500" fill="#9FD8C6" text-anchor="middle" transform="translate(3 48)">barra de 40 pinos</text><rect x="150" y="120" width="150" height="110" rx="6" fill="#101318"></rect><text x="225" y="172" font-family="monospace" font-size="26" font-weight="500" fill="#E8E8E4" text-anchor="middle">Arubag Pi</text><text x="225" y="202" font-family="monospace" font-size="16" font-weight="500" fill="#8A8F98" text-anchor="middle">95x</text><rect x="330" y="120" width="110" height="46" rx="4" fill="#B9BEC6"></rect><text x="385" y="150" font-family="monospace" font-size="14" font-weight="500" fill="#31363E" text-anchor="middle">USB</text><rect x="330" y="180" width="110" height="46" rx="4" fill="#2A2E36"></rect><text x="385" y="210" font-family="monospace" font-size="13" font-weight="500" fill="#B9BEC6" text-anchor="middle">HDMI</text><rect x="24" y="132" width="72" height="90" rx="6" fill="#2A2E36"></rect><text x="60" y="184" font-family="monospace" font-size="15" font-weight="500" fill="#B9BEC6" text-anchor="middle">SD</text><text x="225" y="258" font-family="monospace" font-size="13" font-weight="500" fill="#9FD8C6" text-anchor="middle">logica de 3,3 V</text><circle cx="420" cy="60" r="6" fill="#4A1E1E"></circle>`,
+    svg: `<rect width="456" height="312" rx="10" fill="#1B6B3A" stroke="#0B3D20" stroke-width="3"></rect><rect x="60" y="30" width="228" height="60" rx="4" fill="#0B3D20"></rect><text x="174" y="66" font-family="monospace" font-size="13" font-weight="500" fill="#9FD8C6" text-anchor="middle" transform="translate(180 -39)">barra de 40 pinos</text><rect x="150" y="120" width="150" height="110" rx="6" fill="#101318"></rect><text x="225" y="172" font-family="monospace" font-size="26" font-weight="500" fill="#E8E8E4" text-anchor="middle">Arubag Pi</text><text x="225" y="202" font-family="monospace" font-size="16" font-weight="500" fill="#8A8F98" text-anchor="middle">95x</text><rect x="330" y="120" width="110" height="46" rx="4" fill="#B9BEC6"></rect><text x="385" y="150" font-family="monospace" font-size="14" font-weight="500" fill="#31363E" text-anchor="middle">USB</text><rect x="330" y="180" width="110" height="46" rx="4" fill="#2A2E36"></rect><text x="385" y="210" font-family="monospace" font-size="13" font-weight="500" fill="#B9BEC6" text-anchor="middle">HDMI</text><rect x="24" y="132" width="72" height="90" rx="6" fill="#2A2E36"></rect><text x="60" y="184" font-family="monospace" font-size="15" font-weight="500" fill="#B9BEC6" text-anchor="middle">SD</text><text x="225" y="258" font-family="monospace" font-size="13" font-weight="500" fill="#9FD8C6" text-anchor="middle">logica de 3,3 V</text><circle cx="420" cy="60" r="6" fill="#4A1E1E"></circle>`,
   },
   "fenolite": {
     svg: `<rect width="457" height="297" rx="6" fill="#C9A227" stroke="#8A6B14" stroke-width="3"></rect><rect x="6" y="6" width="444" height="276" rx="4" fill="#B8912A" opacity=".55"></rect><text x="228" y="278" font-family="monospace" font-size="12" font-weight="500" fill="#5A4408" text-anchor="middle" transform="translate(3 10)">cada ilha e isolada — so a solda liga</text>`,
   },
   "indutor": {
-    svg: `<circle cx="78" cy="34" r="35" fill="#673e0e" stroke="none" stroke-width="2" transform="translate(4 2)"></circle><path d="M48 96 L49 35 C49 35 51 11 80 3 C109 -5 113 39 111 45 C109 51 96 69 80 65 C64 61 56 50 56 46 C56 42 52 20 69 13 C86 6 99 17 100 27 C101 37 104 44 98 49 C92 54 82 59 75 53 C68 47 62 41 65 33 C68 25 72 18 79 18 C86 18 90 22 91 28 C92 34 93 42 88 43 C83 44 72 41 74 36 C76 31 73 28 80 27 C87 26 85 33 84 34" fill="none" stroke="#894b00" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path><path d="M120 96 C120 96 119 33 114 26 C109 19 96 -7 69 7" fill="none" stroke="#B9BEC6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>`,
+    svg: `<circle cx="78" cy="34" r="35" fill="#673e0e" stroke="none" stroke-width="2" transform="translate(4 2)"></circle><path d="M48 96 L49 35 C49 35 51 11 80 3 C109 -5 113 39 111 45 C109 51 96 69 80 65 C64 61 56 50 56 46 C56 42 52 20 69 13 C86 6 99 17 100 27 C101 37 104 44 98 49 C92 54 82 59 75 53 C68 47 62 41 65 33 C68 25 72 18 79 18 C86 18 90 22 91 28 C92 34 93 42 88 43 C83 44 72 41 74 36 C76 31 73 28 80 27 C87 26 85 33 84 34" fill="none" stroke="#894b00" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path><path d="M120 96 C120 96 119 33 114 26 C109 19 96 -7 69 7" fill="none" stroke="#8d4a00" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path>`,
   },
   "zener": {
-    svg: `<rect x="19" y="38" width="99" height="30" rx="4" fill="#5d2228" stroke="#b9bdc7" stroke-width="2" transform="translate(4 -6)"></rect><path d="M108 34 L108 57" fill="none" stroke="#B9BEC6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" transform="translate(-1 1)"></path><path d="M23 48 L0 49" fill="none" stroke="#B9BEC6" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" transform="translate(-2 0)"></path><path d="M123 47 L143 48" fill="none" stroke="#B9BEC6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></path>`,
+    svg: `<rect x="19" y="38" width="99" height="30" rx="4" fill="#5d2228" stroke="#b9bdc7" stroke-width="2" transform="translate(4 -6)"></rect><path d="M108 34 L108 57" fill="none" stroke="#B9BEC6" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 2)"></path><path d="M23 48 L0 49" fill="none" stroke="#B9BEC6" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" transform="translate(-2 0)"></path><path d="M123 47 L143 48" fill="none" stroke="#B9BEC6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></path>`,
   },
   "laser": {
-    svg: `<rect width="216" height="168" rx="7" fill="#8A2C28" stroke="#05060A" stroke-width="2" transform="translate(1 -1)"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="198" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="108" y="80" font-family="monospace" font-size="16" font-weight="500" fill="#F2F2EE" text-anchor="middle" transform="translate(0 25)">Diodo laser</text><circle cx="182" cy="110" r="6" fill="#4A1E1E"></circle><circle cx="89" cy="25" r="21" fill="#603942" stroke="#05060A" stroke-width="2" transform="translate(20 42)"></circle><rect x="88" y="26" width="42" height="46" rx="4" fill="#653242" stroke="#05060A" stroke-width="2"></rect><circle cx="89" cy="25" r="22" fill="#603942" stroke="#05060A" stroke-width="2" transform="translate(20 1)"></circle><circle cx="109" cy="23" r="6" fill="#4A1E1E" stroke="#05060A" stroke-width="1"></circle>`,
+    svg: `<rect width="216" height="168" rx="7" fill="#8A2C28" stroke="#05060A" stroke-width="2" transform="translate(1 -1)"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="198" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="108" y="80" font-family="monospace" font-size="16" font-weight="500" fill="#F2F2EE" text-anchor="middle" transform="translate(0 25)">Diodo laser</text><circle cx="182" cy="110" r="6" fill="#4A1E1E"></circle><circle cx="89" cy="25" r="21" fill="#603942" stroke="#05060A" stroke-width="2" transform="translate(20 42)"></circle><rect x="88" y="26" width="42" height="46" rx="4" fill="#653242" stroke="#05060A" stroke-width="2"></rect><circle cx="89" cy="25" r="22" fill="#603942" stroke="#05060A" stroke-width="2" transform="translate(20 1)"></circle><circle cx="109" cy="23" r="6" fill="#4A1E1E" stroke="#05060A" stroke-width="1" data-luz="1"></circle>`,
     luzes: [{"x":109,"y":23}],
   },
   "lcd16": {
-    svg: `<rect width="384" height="216" rx="7" fill="#14472F" stroke="#05060A" stroke-width="2"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="366" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="192" y="104" font-family="monospace" font-size="16" font-weight="500" fill="#F2F2EE" text-anchor="middle" transform="translate(-1 -82)">Display LCD 16 pinos</text><circle cx="350" cy="134" r="6" fill="#4A1E1E"></circle><rect x="46" y="51" width="291" height="108" rx="4" fill="#1e2919" stroke="none" stroke-width="2" transform="translate(-12 -10)"></rect>`,
+    svg: `<rect width="384" height="216" rx="7" fill="#14472F" stroke="#05060A" stroke-width="2"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="366" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="192" y="104" font-family="monospace" font-size="16" font-weight="500" fill="#F2F2EE" text-anchor="middle" transform="translate(-1 -82)">Display LCD 16 pinos</text><circle cx="350" cy="134" r="6" fill="#4A1E1E"></circle><rect x="36" y="24" width="313" height="115" rx="4" fill="#123B2A" transform="translate(-16 16)"></rect>`,
   },
   "tft": {
     svg: `<rect width="432" height="264" rx="7" fill="#1B1F26" stroke="#05060A" stroke-width="2"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="414" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="216" y="128" font-family="monospace" font-size="16" font-weight="500" fill="#F2F2EE" text-anchor="middle" transform="translate(-6 -100)">Tela TFT touch 2.4</text><circle cx="398" cy="158" r="6" fill="#4A1E1E"></circle><rect x="48" y="57" width="323" height="137" rx="4" fill="#3A3F47" stroke="#05060A" stroke-width="2"></rect>`,
@@ -97,7 +111,16 @@ export const ARTE = {
     svg: `<path d="M97 112 L96 170" fill="none" stroke="#B9BEC6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" transform="translate(-48 0)"></path><path d="M97 112 L96 170" fill="none" stroke="#B9BEC6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="72" cy="66" r="60" fill="#0B0D11" stroke="#2A2E36" stroke-width="3"></circle><circle cx="72" cy="66" r="10" fill="#2A2E36"></circle><text x="46" y="118" font-family="monospace" font-size="18" font-weight="500" fill="#E8E8E4" text-anchor="middle">+</text><text x="46" y="118" font-family="monospace" font-size="18" font-weight="500" fill="#E8E8E4" text-anchor="middle" transform="translate(51 -6)">P</text>`,
   },
   "altofalante": {
-    svg: `<circle cx="132" cy="110" r="104" fill="#3A3F47" stroke="#1B1F26" stroke-width="4"></circle><circle cx="132" cy="110" r="72" fill="#2A2E36"></circle><circle cx="132" cy="110" r="30" fill="#565C66"></circle><circle cx="132" cy="110" r="12" fill="#8A8F98"></circle><circle cx="222" cy="110" r="7" fill="#1B1F26"></circle><circle cx="132" cy="200" r="7" fill="#1B1F26"></circle><circle cx="42" cy="110" r="7" fill="#1B1F26"></circle><circle cx="132" cy="20" r="7" fill="#1B1F26"></circle><text x="132" y="210" font-family="monospace" font-size="14" font-weight="500" fill="#B9BEC6" text-anchor="middle" transform="translate(3 -50)">8 &amp;#937;</text><path d="M198 190 L215 204 C215 204 217 241 217 240" fill="none" stroke="#ec092b" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></path><path d="M214 175 L263 200 L264 240" fill="none" stroke="#B9BEC6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>`,
+    svg: `<circle cx="132" cy="110" r="104" fill="#3A3F47" stroke="#1B1F26" stroke-width="4"></circle><circle cx="132" cy="110" r="72" fill="#2A2E36"></circle><circle cx="132" cy="110" r="30" fill="#565C66"></circle><circle cx="132" cy="110" r="12" fill="#8A8F98"></circle><circle cx="222" cy="110" r="7" fill="#1B1F26"></circle><circle cx="132" cy="200" r="7" fill="#1B1F26"></circle><circle cx="42" cy="110" r="7" fill="#1B1F26"></circle><circle cx="132" cy="20" r="7" fill="#1B1F26"></circle><text x="132" y="210" font-family="monospace" font-size="14" font-weight="500" fill="#B9BEC6" text-anchor="middle" transform="translate(3 -50)">8 Ω</text><path d="M198 190 L215 204 C215 204 217 241 217 240" fill="none" stroke="#ec092b" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></path><path d="M214 175 L263 200 L264 240" fill="none" stroke="#B9BEC6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>`,
+  },
+  "amplificador": {
+    svg: `<rect width="240" height="192" rx="7" fill="#1B4E8A" stroke="#05060A" stroke-width="2"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="222" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="120" y="92" font-family="monospace" font-size="16" font-weight="500" fill="#F2F2EE" text-anchor="middle">Amplificador PAM8403</text><circle cx="206" cy="122" r="6" fill="#4A1E1E"></circle>`,
+  },
+  "dfplayer": {
+    svg: `<rect width="336" height="288" rx="7" fill="#1B1F26" stroke="#05060A" stroke-width="2"></rect><rect x="96" y="24" width="144" height="96" rx="6" fill="#0A0C11" stroke="#3A3F47" stroke-width="3"></rect><text x="168" y="78" font-family="monospace" font-size="13" font-weight="500" fill="#7C828C" text-anchor="middle">cartao SD</text><text x="168" y="168" font-family="monospace" font-size="16" font-weight="500" fill="#F2F2EE" text-anchor="middle">DFPlayer Mini</text><text x="168" y="194" font-family="monospace" font-size="13" font-weight="500" fill="#8A8F98" text-anchor="middle">MP3</text><circle cx="300" cy="168" r="6" fill="#4A1E1E"></circle>`,
+  },
+  "isd1820": {
+    svg: `<rect width="264" height="216" rx="7" fill="#B23A32" stroke="#05060A" stroke-width="2"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="246" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="132" y="104" font-family="monospace" font-size="16" font-weight="500" fill="#F2F2EE" text-anchor="middle">Gravador de voz ISD1820</text><circle cx="230" cy="134" r="6" fill="#4A1E1E"></circle>`,
   },
   "ky037": {
     svg: `<rect width="240" height="192" rx="7" fill="#c72344" stroke="#05060A" stroke-width="2"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="222" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="120" y="92" font-family="monospace" font-size="16" font-weight="500" fill="#F2F2EE" text-anchor="middle" transform="translate(-2 16)">Sensor de som KY-037</text><circle cx="206" cy="122" r="6" fill="#4A1E1E"></circle><circle cx="109" cy="26" r="24" fill="#3A3F47" stroke="#05060A" stroke-width="2" transform="translate(12 22)"></circle><circle cx="109" cy="26" r="24" fill="#3A3F47" stroke="#05060A" stroke-width="2" transform="translate(12 15)"></circle>`,
@@ -115,7 +138,7 @@ export const ARTE = {
     svg: `<rect width="240" height="192" rx="7" fill="#0b376a" stroke="#05060A" stroke-width="2"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="222" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="120" y="92" font-family="monospace" font-size="16" font-weight="500" fill="#F2F2EE" text-anchor="middle" transform="translate(-1 13)">Sensor seguidor de linha</text><circle cx="206" cy="122" r="6" fill="#4A1E1E"></circle><rect x="61" y="18" width="114" height="42" rx="4" fill="#1e2229" stroke="#05060A" stroke-width="2"></rect><circle cx="85" cy="36" r="14" fill="#0f0f10" stroke="#05060A" stroke-width="2" transform="translate(2 3)"></circle><circle cx="85" cy="36" r="14" fill="#0f0f10" stroke="#05060A" stroke-width="2" transform="translate(65 3)"></circle>`,
   },
   "tcs3200": {
-    svg: `<rect width="288" height="216" rx="7" fill="#292a2e" stroke="#05060A" stroke-width="2"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="270" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="144" y="104" font-family="monospace" font-size="10" font-weight="500" fill="#F2F2EE" text-anchor="middle" transform="translate(-5 -85)">Sensor de cor TCS3200</text><circle cx="254" cy="134" r="6" fill="#4A1E1E" transform="translate(13 57)"></circle><circle cx="42" cy="40" r="24" fill="#9aa5b7" stroke="#05060A" stroke-width="2" transform="translate(-6 9)"></circle><path d="M38 36 C38 36 57 36 49 54" fill="none" stroke="#B9BEC6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(-1 -2)"></path><circle cx="42" cy="40" r="24" fill="#9aa5b7" stroke="#05060A" stroke-width="2" transform="translate(201 10)"></circle><circle cx="42" cy="40" r="24" fill="#9aa5b7" stroke="#05060A" stroke-width="2" transform="translate(-6 96)"></circle><circle cx="42" cy="40" r="24" fill="#9aa5b7" stroke="#05060A" stroke-width="2" transform="translate(201 98)"></circle><path d="M38 36 C38 36 57 36 49 54" fill="none" stroke="#B9BEC6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(208 0)"></path><path d="M38 36 C38 36 57 36 49 54" fill="none" stroke="#B9BEC6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(209 88)"></path><path d="M38 36 C38 36 57 36 49 54" fill="none" stroke="#B9BEC6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(1 86)"></path>`,
+    svg: `<rect width="288" height="216" rx="7" fill="#292a2e" stroke="#05060A" stroke-width="2"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="270" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="144" y="104" font-family="monospace" font-size="10" font-weight="500" fill="#F2F2EE" text-anchor="middle" transform="translate(-2 -40)">Sensor de cor TCS3200</text><circle cx="254" cy="134" r="6" fill="#4A1E1E" transform="translate(-18 -39)"></circle><circle cx="42" cy="40" r="24" fill="#9aa5b7" stroke="#05060A" stroke-width="2" transform="translate(-6 9)"></circle><path d="M38 36 C38 36 57 36 49 54" fill="none" stroke="#B9BEC6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(-1 -2)"></path><circle cx="42" cy="40" r="24" fill="#9aa5b7" stroke="#05060A" stroke-width="2" transform="translate(201 10)"></circle><circle cx="42" cy="40" r="24" fill="#9aa5b7" stroke="#05060A" stroke-width="2" transform="translate(-6 96)"></circle><circle cx="42" cy="40" r="24" fill="#9aa5b7" stroke="#05060A" stroke-width="2" transform="translate(201 98)"></circle><path d="M38 36 C38 36 57 36 49 54" fill="none" stroke="#B9BEC6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(208 0)"></path><path d="M38 36 C38 36 57 36 49 54" fill="none" stroke="#B9BEC6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(209 88)"></path><path d="M38 36 C38 36 57 36 49 54" fill="none" stroke="#B9BEC6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(1 86)"></path><rect x="114" y="78" width="56" height="52" rx="4" fill="#111213" stroke="#05060A" stroke-width="2" transform="translate(5 -3)"></rect><path d="M124 84 L169 84" fill="none" stroke="#B9BEC6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 5)"></path><path d="M124 84 L169 84" fill="none" stroke="#B9BEC6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 17)"></path><path d="M124 84 L169 84" fill="none" stroke="#B9BEC6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(1 29)"></path><path d="M132 82 L132 118" fill="none" stroke="#B9BEC6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path><path d="M132 82 L132 118" fill="none" stroke="#B9BEC6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(13 0)"></path><path d="M132 82 L132 118" fill="none" stroke="#B9BEC6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(28 0)"></path>`,
   },
   "pir": {
     svg: `<rect width="240" height="240" rx="7" fill="#1B4E8A" stroke="#05060A" stroke-width="2"></rect><path d="M42 128a78 78 0 01156 0z" fill="#F2F2EE" opacity=".92"></path><path d="M42 128a78 78 0 01156 0" fill="none" stroke="#B9BEC6" stroke-width="3"></path><path d="M68 128v-41" stroke="#C9CDD3" stroke-width="2"></path><path d="M94 128v-56" stroke="#C9CDD3" stroke-width="2"></path><path d="M120 128v-70" stroke="#C9CDD3" stroke-width="2"></path><path d="M146 128v-56" stroke="#C9CDD3" stroke-width="2"></path><path d="M172 128v-41" stroke="#C9CDD3" stroke-width="2"></path><text x="120" y="168" font-family="monospace" font-size="15" font-weight="500" fill="#CFE4EE" text-anchor="middle">PIR</text><circle cx="200" cy="168" r="6" fill="#4A1E1E"></circle>`,
@@ -127,28 +150,28 @@ export const ARTE = {
     svg: `<rect width="238" height="216" rx="7" fill="#1B4E8A" stroke="#05060A" stroke-width="2" transform="translate(1 0)"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="222" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="120" y="104" font-family="monospace" font-size="14" font-weight="500" fill="#F2F2EE" text-anchor="middle" transform="translate(-1 50)">Sensor de umidade do solo</text><circle cx="206" cy="134" r="6" fill="#4A1E1E" transform="translate(3 -11)"></circle><rect x="30" y="60" width="55" height="52" rx="4" fill="#0648b2" stroke="#05060A" stroke-width="2"></rect><circle cx="54" cy="94" r="17" fill="#214073" stroke="#05060A" stroke-width="2" transform="translate(3 -9)"></circle><path d="M50 86 L66 86" fill="none" stroke="#B9BEC6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(-1 0)"></path><path d="M57 75 L57 94" fill="none" stroke="#B9BEC6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 2)"></path><rect x="126" y="71" width="70" height="37" rx="4" fill="#3A3F47" stroke="#05060A" stroke-width="2" transform="translate(-14 -2)"></rect><path d="M125 59 L125 68" fill="none" stroke="#0a0a0a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path><path d="M125 59 L125 68" fill="none" stroke="#0a0a0a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(20 0)"></path><path d="M125 59 L125 68" fill="none" stroke="#0a0a0a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(42 0)"></path><path d="M125 59 L125 68" fill="none" stroke="#0a0a0a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 48)"></path><path d="M125 59 L125 68" fill="none" stroke="#0a0a0a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(22 48)"></path><path d="M125 59 L125 68" fill="none" stroke="#0a0a0a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(45 49)"></path>`,
   },
   "mpu6050": {
-    svg: `<rect width="288" height="216" rx="7" fill="#115cdf" stroke="#05060A" stroke-width="2" transform="translate(2 1)"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="270" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="144" y="104" font-family="monospace" font-size="16" font-weight="500" fill="#F2F2EE" text-anchor="middle" transform="translate(-17 39)">Acelerometro MPU-6050</text><circle cx="254" cy="134" r="6" fill="#4A1E1E"></circle><rect x="115" y="68" width="72" height="48" rx="4" fill="#3A3F47" stroke="#05060A" stroke-width="2" transform="translate(-9 -19)"></rect><path d="M122 48 L122 33" fill="none" stroke="#030303" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path><path d="M122 48 L122 33" fill="none" stroke="#030303" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(21 0)"></path><path d="M122 48 L122 33" fill="none" stroke="#030303" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(42 0)"></path><path d="M122 48 L122 33" fill="none" stroke="#030303" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(-1 65)"></path><path d="M122 48 L122 33" fill="none" stroke="#030303" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(23 65)"></path><path d="M122 48 L122 33" fill="none" stroke="#030303" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(45 66)"></path>`,
+    svg: `<rect width="288" height="216" rx="7" fill="#115cdf" stroke="#05060A" stroke-width="2" transform="translate(2 1)"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="270" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="144" y="104" font-family="monospace" font-size="16" font-weight="500" fill="#F2F2EE" text-anchor="middle" transform="translate(-17 39)">Acelerometro MPU-6050</text><circle cx="254" cy="134" r="6" fill="#4A1E1E"></circle><rect x="115" y="68" width="72" height="48" rx="4" fill="#3A3F47" stroke="#05060A" stroke-width="2" transform="translate(-9 -19)"></rect><path d="M122 48 L122 33" fill="none" stroke="#030303" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path><path d="M122 48 L122 33" fill="none" stroke="#030303" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(21 0)"></path><path d="M122 48 L122 33" fill="none" stroke="#030303" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(42 0)"></path><path d="M122 48 L122 33" fill="none" stroke="#030303" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(-1 65)"></path><path d="M122 48 L122 33" fill="none" stroke="#030303" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(23 65)"></path><path d="M122 48 L122 33" fill="none" stroke="#030303" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(45 66)"></path><rect x="57" y="60" width="31" height="21" rx="4" fill="#3A3F47" stroke="#05060A" stroke-width="2" transform="translate(-7 -19)"></rect><rect x="57" y="60" width="31" height="21" rx="4" fill="#3A3F47" stroke="#05060A" stroke-width="2" transform="translate(-7 15)"></rect><rect x="57" y="60" width="31" height="21" rx="4" fill="#c8b037" stroke="#05060A" stroke-width="2" transform="translate(142 -4)"></rect>`,
   },
   "motordc-reducao": {
-    svg: `<rect x="12" y="18" width="180" height="132" rx="66" fill="#9BA1AA" stroke="#565C66" stroke-width="3" transform="translate(20 -1)"></rect><rect x="196" y="66" width="27" height="36" rx="4" fill="#6C727B" transform="translate(8 1)"></rect><path d="M228 84h48" stroke="#C9CDD3" stroke-width="10"></path><circle cx="108" cy="84" r="38" fill="#6C727B" transform="translate(23 -4)"></circle><g transform="translate(25 -3)"><g xmlns="http://www.w3.org/2000/svg" transform="rotate(0 108 84)"><path d="M108 50v68M74 84h68" stroke="#D5D9DE" stroke-width="6"></path></g></g><text x="108" y="142" font-family="monospace" font-size="14" font-weight="500" fill="#31363E" text-anchor="middle" transform="translate(25 -4)">MOTOR DC</text><text x="288" y="130" font-family="monospace" font-size="15" font-weight="500" fill="#E24B4A" text-anchor="middle">+</text><text x="336" y="130" font-family="monospace" font-size="15" font-weight="500" fill="#8A8F98" text-anchor="middle">-</text><rect x="93" y="11" width="77" height="141" rx="4" fill="#e8e817" stroke="#536312" stroke-width="3.5" transform="translate(-81 1)"></rect><path d="M73 154 L73 168 L288 165 L288 148" fill="none" stroke="#e52706" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></path><path d="M55 155 L56 192 L337 192 L337 146" fill="none" stroke="#B9BEC6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>`,
+    svg: `<rect x="12" y="18" width="180" height="132" rx="66" fill="#9BA1AA" stroke="#565C66" stroke-width="3" transform="translate(20 -1)"></rect><rect x="196" y="66" width="27" height="36" rx="4" fill="#6C727B" transform="translate(8 1)"></rect><path d="M228 84h48" stroke="#C9CDD3" stroke-width="10"></path><circle cx="108" cy="84" r="38" fill="#6C727B" transform="translate(23 -4)"></circle><g transform="translate(25 -3)"><g xmlns="http://www.w3.org/2000/svg" transform="rotate(0 108 84)"><path d="M108 50v68M74 84h68" stroke="#D5D9DE" stroke-width="6"></path></g></g><text x="108" y="142" font-family="monospace" font-size="14" font-weight="500" fill="#31363E" text-anchor="middle" transform="translate(25 -4)">MOTOR DC</text><text x="288" y="130" font-family="monospace" font-size="15" font-weight="500" fill="#E24B4A" text-anchor="middle">+</text><text x="336" y="130" font-family="monospace" font-size="15" font-weight="500" fill="#8A8F98" text-anchor="middle">-</text><rect x="93" y="11" width="77" height="141" rx="4" fill="#e8e817" stroke="#536312" stroke-width="3.5" transform="translate(-81 1)"></rect><path d="M73 154 L73 168 L288 165 L288 148" fill="none" stroke="#e52706" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></path><path d="M55 155 L56 192 L337 192 L337 146" fill="none" stroke="#175fd3" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></path>`,
   },
   "motor-drone": {
-    svg: `<rect x="12" y="18" width="152" height="139" rx="66" fill="#918383" stroke="#565C66" stroke-width="3" transform="translate(-1 -15)"></rect><rect x="196" y="66" width="14" height="56" rx="4" fill="#6C727B" transform="translate(-42 -17)"></rect><path d="M228 84h48" stroke="#C9CDD3" stroke-width="10" transform="translate(-61 -6)"></path><circle cx="108" cy="84" r="38" fill="#6C727B" transform="translate(-24 -22)"></circle><g transform="translate(-23 -21)"><g xmlns="http://www.w3.org/2000/svg" transform="rotate(0 108 84)"><path d="M108 50v68M74 84h68" stroke="#D5D9DE" stroke-width="6"></path></g></g><text x="108" y="142" font-family="monospace" font-size="14" font-weight="500" fill="#31363E" text-anchor="middle" transform="translate(-19 -24)">MOTOR DC</text><text x="288" y="130" font-family="monospace" font-size="15" font-weight="500" fill="#E24B4A" text-anchor="middle" transform="translate(-96 1)">+</text><text x="336" y="130" font-family="monospace" font-size="15" font-weight="500" fill="#8A8F98" text-anchor="middle" transform="translate(-120 -1)">-</text><path d="M100 143 L100 159 L192 161 L192 146" fill="none" stroke="#e02606" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></path><path d="M82 142 L83 174 L216 173 L217 147" fill="none" stroke="#B9BEC6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>`,
+    svg: `<rect x="12" y="18" width="152" height="139" rx="66" fill="#918383" stroke="#565C66" stroke-width="3" transform="translate(-1 -15)"></rect><rect x="196" y="66" width="14" height="56" rx="4" fill="#6C727B" transform="translate(-42 -17)"></rect><path d="M228 84h48" stroke="#C9CDD3" stroke-width="10" transform="translate(-61 -6)"></path><circle cx="108" cy="84" r="38" fill="#6C727B" transform="translate(-24 -22)"></circle><g transform="translate(-23 -21)"><g xmlns="http://www.w3.org/2000/svg" transform="rotate(0 108 84)"><path d="M108 50v68M74 84h68" stroke="#D5D9DE" stroke-width="6"></path></g></g><text x="108" y="142" font-family="monospace" font-size="14" font-weight="500" fill="#31363E" text-anchor="middle" transform="translate(-19 -24)">MOTOR DC</text><text x="288" y="130" font-family="monospace" font-size="15" font-weight="500" fill="#E24B4A" text-anchor="middle" transform="translate(-96 1)">+</text><text x="336" y="130" font-family="monospace" font-size="15" font-weight="500" fill="#8A8F98" text-anchor="middle" transform="translate(-120 -1)">-</text><path d="M100 143 L100 159 L192 161 L192 146" fill="none" stroke="#e02606" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></path><path d="M82 142 L83 174 L216 173 L217 147" fill="none" stroke="#1659c5" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></path>`,
   },
   "bomba": {
-    svg: `<rect x="48" y="72" width="144" height="132" rx="14" fill="#1B4E8A" stroke="#0A2A56" stroke-width="3"></rect><rect x="96" y="12" width="48" height="66" rx="8" fill="#2A6BB0"></rect><path d="M120 12v-6" stroke="#8A8F98" stroke-width="6"></path><circle cx="120" cy="138" r="42" fill="#2A6BB0"></circle><g><g xmlns="http://www.w3.org/2000/svg" transform="rotate(0 120 138)"><path d="M120 108v60M90 138h60" stroke="#CFE4EE" stroke-width="6"></path></g></g><text x="120" y="196" font-family="monospace" font-size="13" font-weight="500" fill="#CFE4EE" text-anchor="middle">submersa</text><path d="M139 204 L139 228 L241 226 L241 196" fill="none" stroke="#ff2600" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></path><path d="M120 204 L120 243 L265 243 L264 195" fill="none" stroke="#B9BEC6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>`,
+    svg: `<rect x="48" y="72" width="144" height="132" rx="14" fill="#1B4E8A" stroke="#0A2A56" stroke-width="3"></rect><rect x="96" y="12" width="48" height="65" rx="8" fill="#2A6BB0" transform="translate(-1 2)"></rect><path d="M120 12v-6" stroke="#8A8F98" stroke-width="6" transform="translate(0 3)"></path><circle cx="120" cy="138" r="42" fill="#2A6BB0"></circle><g><g xmlns="http://www.w3.org/2000/svg" transform="rotate(0 120 138)"><path d="M120 108v60M90 138h60" stroke="#CFE4EE" stroke-width="6"></path></g></g><text x="120" y="196" font-family="monospace" font-size="13" font-weight="500" fill="#CFE4EE" text-anchor="middle">submersa</text><path d="M139 204 L139 228 L241 226 L241 196" fill="none" stroke="#ff2600" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></path><path d="M120 204 L120 243 L265 243 L264 195" fill="none" stroke="#09295d" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></path>`,
   },
   "vibracao": {
     svg: `<rect width="240" height="168" rx="7" fill="#1B1F26" stroke="#05060A" stroke-width="2"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="222" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="120" y="80" font-family="monospace" font-size="16" font-weight="500" fill="#F2F2EE" text-anchor="middle" transform="translate(-23 26)">Motor de vibracao</text><circle cx="206" cy="110" r="6" fill="#4A1E1E"></circle><circle cx="91" cy="15" r="36" fill="#3A3F47" stroke="#05060A" stroke-width="2" transform="translate(35 28)"></circle><circle cx="122" cy="39" r="24" fill="#3A3F47" stroke="#05060A" stroke-width="2" transform="translate(4 4)"></circle>`,
   },
   "servo360": {
-    svg: `<rect x="24" y="60" width="192" height="132" rx="6" fill="#1E58A8" stroke="#0A2A56" stroke-width="3"></rect><rect x="6" y="92" width="228" height="26" fill="#1E58A8"></rect><circle cx="18" cy="105" r="7" fill="#8A8F98"></circle><path d="M14 105h8" stroke="#2A2E36" stroke-width="2"></path><circle cx="222" cy="105" r="7" fill="#8A8F98"></circle><path d="M218 105h8" stroke="#2A2E36" stroke-width="2"></path><text x="140" y="150" font-family="monospace" font-size="15" font-weight="500" fill="#CFE4EE" text-anchor="middle">SG90</text><path d="M216 96h48" stroke="#3A3F47" stroke-width="7" transform="translate(0 52)"></path><path d="M216 120h48" stroke="#E24B4A" stroke-width="7" transform="translate(0 47)"></path><path d="M216 144h48" stroke="#E9C542" stroke-width="7" transform="translate(0 41)"></path><rect x="240" y="84" width="30" height="72" rx="4" fill="#2A2E36" transform="translate(17 43)"></rect><text x="140" y="150" font-family="monospace" font-size="15" font-weight="500" fill="#CFE4EE" text-anchor="middle" transform="translate(1 32)">360º</text><circle cx="67" cy="51" r="24" fill="#1352a4" stroke="#192e80" stroke-width="2" transform="translate(9 9)"></circle><g transform="translate(-8 6)"><g xmlns="http://www.w3.org/2000/svg" transform="rotate(0 84 48)"><rect x="74" y="4" width="20" height="48" rx="3" fill="#F2F2EE" stroke="#8A8F98" stroke-width="2"></rect></g></g><rect x="55" y="12" width="97" height="17" rx="4" fill="#fafafa" stroke="#05060A" stroke-width="2" transform="translate(-27 -2)"></rect>`,
+    svg: `<rect x="24" y="60" width="192" height="132" rx="6" fill="#1E58A8" stroke="#0A2A56" stroke-width="3"></rect><rect x="6" y="92" width="228" height="26" fill="#1E58A8"></rect><circle cx="18" cy="105" r="7" fill="#8A8F98"></circle><path d="M14 105h8" stroke="#2A2E36" stroke-width="2"></path><circle cx="222" cy="105" r="7" fill="#8A8F98"></circle><path d="M218 105h8" stroke="#2A2E36" stroke-width="2"></path><text x="140" y="150" font-family="monospace" font-size="15" font-weight="500" fill="#CFE4EE" text-anchor="middle">SG90</text><path d="M216 96h48" stroke="#3A3F47" stroke-width="7" transform="translate(0 52)"></path><path d="M216 120h48" stroke="#E24B4A" stroke-width="7" transform="translate(0 47)"></path><path d="M216 144h48" stroke="#E9C542" stroke-width="7" transform="translate(0 41)"></path><rect x="240" y="84" width="30" height="72" rx="4" fill="#2A2E36" transform="translate(17 43)"></rect><text x="140" y="150" font-family="monospace" font-size="15" font-weight="500" fill="#CFE4EE" text-anchor="middle" transform="translate(1 32)">360º</text><circle cx="67" cy="51" r="24" fill="#1352a4" stroke="#192e80" stroke-width="2" transform="translate(9 9)"></circle><path d="M61 42 L75 42 L129 52 L129 68 L77 81 L62 81 L0 65 L0 53 L61 42 Z" fill="#9aa3b1" stroke="#B9BEC6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(7 -2)"></path><circle cx="67" cy="59" r="7" fill="#b9bdc7" stroke="none" stroke-width="2" transform="translate(7 0)"></circle>`,
   },
   "servo-torque180": {
-    svg: `<rect x="24" y="60" width="209" height="151" rx="6" fill="#202228" stroke="#303030" stroke-width="3" transform="translate(-1 0)"></rect><rect x="6" y="92" width="250" height="31" fill="#202128" transform="translate(-3 -2)"></rect><circle cx="18" cy="105" r="7" fill="#8A8F98" transform="translate(-6 0)"></circle><path d="M14 105h8" stroke="#2A2E36" stroke-width="2" transform="translate(-5 1)"></path><circle cx="222" cy="105" r="7" fill="#8A8F98" transform="translate(18 1)"></circle><path d="M218 105h8" stroke="#2A2E36" stroke-width="2" transform="translate(18 1)"></path><text x="140" y="150" font-family="monospace" font-size="15" font-weight="500" fill="#CFE4EE" text-anchor="middle">MG996R</text><path d="M216 96h48" stroke="#3A3F47" stroke-width="7" transform="translate(17 71)"></path><path d="M216 120h48" stroke="#E24B4A" stroke-width="7" transform="translate(17 66)"></path><path d="M216 144h48" stroke="#E9C542" stroke-width="7" transform="translate(16 61)"></path><rect x="240" y="84" width="26" height="58" rx="4" fill="#2A2E36" transform="translate(20 72)"></rect><circle cx="85" cy="62" r="28" fill="#202128" stroke="#2b2b2c" stroke-width="2"></circle><g><g xmlns="http://www.w3.org/2000/svg" transform="rotate(0 84 48)"><rect x="74" y="4" width="20" height="48" rx="3" fill="#F2F2EE" stroke="#8A8F98" stroke-width="2"></rect></g></g><rect x="50" y="17" width="91" height="23" rx="4" fill="#f7f7f7" stroke="#3c3c3e" stroke-width="2" transform="translate(-46 -13)"></rect><text x="140" y="150" font-family="monospace" font-size="15" font-weight="500" fill="#CFE4EE" text-anchor="middle" transform="translate(0 44)">MG996R</text>`,
+    svg: `<rect x="24" y="60" width="209" height="151" rx="6" fill="#202228" stroke="#303030" stroke-width="3" transform="translate(-1 0)"></rect><rect x="6" y="92" width="250" height="31" fill="#202128" transform="translate(-3 -2)"></rect><circle cx="18" cy="105" r="7" fill="#8A8F98" transform="translate(-6 0)"></circle><path d="M14 105h8" stroke="#2A2E36" stroke-width="2" transform="translate(-5 1)"></path><circle cx="222" cy="105" r="7" fill="#8A8F98" transform="translate(18 1)"></circle><path d="M218 105h8" stroke="#2A2E36" stroke-width="2" transform="translate(18 1)"></path><text x="140" y="150" font-family="monospace" font-size="15" font-weight="500" fill="#CFE4EE" text-anchor="middle">MG996R</text><path d="M216 96h48" stroke="#3A3F47" stroke-width="7" transform="translate(17 71)"></path><path d="M216 120h48" stroke="#E24B4A" stroke-width="7" transform="translate(17 66)"></path><path d="M216 144h48" stroke="#E9C542" stroke-width="7" transform="translate(16 61)"></path><rect x="240" y="84" width="26" height="58" rx="4" fill="#2A2E36" transform="translate(20 72)"></rect><circle cx="85" cy="62" r="28" fill="#202128" stroke="#2b2b2c" stroke-width="2"></circle><text x="140" y="150" font-family="monospace" font-size="15" font-weight="500" fill="#CFE4EE" text-anchor="middle" transform="translate(0 44)">180º</text><path d="M61 42 L75 42 L88 52 L88 69 L77 81 L62 81 L0 65 L0 53 L61 42 Z" fill="#9aa3b1" stroke="#B9BEC6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(14 -1)"></path><circle cx="67" cy="59" r="7" fill="#b9bdc7" stroke="none" stroke-width="2" transform="translate(14 1)"></circle>`,
   },
   "servo-torque360": {
-    svg: `<rect x="24" y="60" width="211" height="149" rx="6" fill="#27292b" stroke="#212121" stroke-width="3"></rect><rect x="6" y="92" width="245" height="25" fill="#27292b" transform="translate(-1 0)"></rect><circle cx="18" cy="105" r="7" fill="#8A8F98"></circle><path d="M14 105h8" stroke="#2A2E36" stroke-width="2"></path><circle cx="222" cy="105" r="7" fill="#8A8F98" transform="translate(17 0)"></circle><path d="M218 105h8" stroke="#2A2E36" stroke-width="2" transform="translate(17 0)"></path><text x="140" y="150" font-family="monospace" font-size="15" font-weight="500" fill="#CFE4EE" text-anchor="middle">MG996R</text><path d="M216 96h48" stroke="#3A3F47" stroke-width="7" transform="translate(20 65)"></path><path d="M216 120h48" stroke="#E24B4A" stroke-width="7" transform="translate(20 63)"></path><path d="M216 144h48" stroke="#E9C542" stroke-width="7" transform="translate(20 60)"></path><rect x="240" y="84" width="25" height="69" rx="4" fill="#2A2E36" transform="translate(22 61)"></rect><text x="140" y="150" font-family="monospace" font-size="15" font-weight="500" fill="#CFE4EE" text-anchor="middle" transform="translate(1 41)">360º</text><circle cx="80" cy="75" r="28" fill="#27292b" stroke="#1f1f23" stroke-width="2" transform="translate(3 -10)"></circle><g><g xmlns="http://www.w3.org/2000/svg" transform="rotate(0 84 48)"><rect x="74" y="4" width="20" height="48" rx="3" fill="#F2F2EE" stroke="#8A8F98" stroke-width="2"></rect></g></g><rect x="19" y="8" width="132" height="22" rx="4" fill="#f4f5f5" stroke="#05060A" stroke-width="2" transform="translate(0 -6)"></rect>`,
+    svg: `<rect x="24" y="60" width="211" height="149" rx="6" fill="#27292b" stroke="#212121" stroke-width="3"></rect><rect x="6" y="92" width="245" height="25" fill="#27292b" transform="translate(-1 0)"></rect><circle cx="18" cy="105" r="7" fill="#8A8F98"></circle><path d="M14 105h8" stroke="#2A2E36" stroke-width="2"></path><circle cx="222" cy="105" r="7" fill="#8A8F98" transform="translate(17 0)"></circle><path d="M218 105h8" stroke="#2A2E36" stroke-width="2" transform="translate(17 0)"></path><text x="140" y="150" font-family="monospace" font-size="15" font-weight="500" fill="#CFE4EE" text-anchor="middle">MG996R</text><path d="M216 96h48" stroke="#3A3F47" stroke-width="7" transform="translate(20 65)"></path><path d="M216 120h48" stroke="#E24B4A" stroke-width="7" transform="translate(20 63)"></path><path d="M216 144h48" stroke="#E9C542" stroke-width="7" transform="translate(20 60)"></path><rect x="240" y="84" width="25" height="69" rx="4" fill="#2A2E36" transform="translate(22 61)"></rect><text x="140" y="150" font-family="monospace" font-size="15" font-weight="500" fill="#CFE4EE" text-anchor="middle" transform="translate(1 41)">360º</text><circle cx="80" cy="75" r="28" fill="#27292b" stroke="#1f1f23" stroke-width="2" transform="translate(3 -10)"></circle><path d="M61 42 L75 42 L129 52 L129 68 L77 81 L62 81 L0 65 L0 53 L61 42 Z" fill="#9aa3b1" stroke="#B9BEC6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(15 3)"></path><circle cx="67" cy="59" r="7" fill="#b9bdc7" stroke="none" stroke-width="2" transform="translate(15 5)"></circle>`,
   },
   "uln2003": {
     svg: `<rect width="240" height="240" rx="7" fill="#294527" stroke="#05060A" stroke-width="2" transform="translate(1 0)"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="222" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="120" y="116" font-family="monospace" font-size="12" font-weight="500" fill="#F2F2EE" text-anchor="middle" transform="translate(2 57)">Driver ULN2003 + motor de passo</text><circle cx="206" cy="146" r="6" fill="#4A1E1E"></circle><rect x="78" y="32" width="71" height="111" rx="4" fill="#252a32" stroke="#05060A" stroke-width="2" transform="translate(8 -4)"></rect><path d="M158 44 L175 44" fill="none" stroke="#0a0a0a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" transform="translate(2 0)"></path><path d="M158 44 L175 44" fill="none" stroke="#0a0a0a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" transform="translate(1 34)"></path><path d="M158 44 L175 44" fill="none" stroke="#0a0a0a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" transform="translate(1 71)"></path><path d="M158 44 L175 44" fill="none" stroke="#0a0a0a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" transform="translate(-91 -1)"></path><path d="M158 44 L175 44" fill="none" stroke="#0a0a0a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" transform="translate(-91 37)"></path><path d="M158 44 L175 44" fill="none" stroke="#0a0a0a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" transform="translate(-91 72)"></path>`,
@@ -157,21 +180,36 @@ export const ARTE = {
     svg: `<rect width="456" height="264" rx="7" fill="#134E3A" stroke="#05060A" stroke-width="2"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="438" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="228" y="128" font-family="monospace" font-size="16" font-weight="500" fill="#F2F2EE" text-anchor="middle">Expansao de 16 servos</text><circle cx="422" cy="158" r="6" fill="#4A1E1E"></circle>`,
   },
   "ams1117": {
-    svg: `<rect width="240" height="168" rx="7" fill="#1B1F26" stroke="#05060A" stroke-width="2"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="222" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="120" y="80" font-family="monospace" font-size="16" font-weight="500" fill="#F2F2EE" text-anchor="middle">Regulador 5V AMS1117</text><circle cx="160" cy="94" r="6" fill="#4A1E1E" stroke="#05060A" stroke-width="1"></circle>`,
+    svg: `<rect width="240" height="168" rx="7" fill="#1B1F26" stroke="#05060A" stroke-width="2"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="222" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="120" y="80" font-family="monospace" font-size="16" font-weight="500" fill="#F2F2EE" text-anchor="middle">Regulador 5V AMS1117</text><circle cx="160" cy="94" r="6" fill="#4A1E1E" stroke="#05060A" stroke-width="1" data-luz="1"></circle>`,
     luzes: [{"x":160,"y":94}],
   },
   "stepdown": {
-    svg: `<rect width="288" height="192" rx="7" fill="#13274e" stroke="#05060A" stroke-width="2"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="270" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="144" y="92" font-family="monospace" font-size="16" font-weight="500" fill="#F2F2EE" text-anchor="middle">Regulador stepdown</text><circle cx="203" cy="118" r="6" fill="#4A1E1E" stroke="#05060A" stroke-width="1"></circle>`,
+    svg: `<rect width="288" height="192" rx="7" fill="#13274e" stroke="#05060A" stroke-width="2"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="270" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="144" y="92" font-family="monospace" font-size="16" font-weight="500" fill="#F2F2EE" text-anchor="middle">Regulador stepdown</text><circle cx="203" cy="118" r="6" fill="#4A1E1E" stroke="#05060A" stroke-width="1" data-luz="1"></circle>`,
     luzes: [{"x":203,"y":118}],
   },
   "stepup": {
     svg: `<rect width="288" height="192" rx="7" fill="#131d4e" stroke="#05060A" stroke-width="2"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="270" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="144" y="92" font-family="monospace" font-size="16" font-weight="500" fill="#F2F2EE" text-anchor="middle" transform="translate(-2 10)">Regulador stepup</text>`,
   },
+  "fonte-tomada": {
+    svg: `<rect width="288" height="192" rx="7" fill="#1B1F26" stroke="#05060A" stroke-width="2"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="270" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="144" y="92" font-family="monospace" font-size="16" font-weight="500" fill="#F2F2EE" text-anchor="middle">Fonte de tomada</text>`,
+  },
   "bateria-recarregavel": {
-    svg: `<rect width="288" height="192" rx="7" fill="#7c7e7d" stroke="#05060A" stroke-width="2"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="270" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="144" y="92" font-family="monospace" font-size="16" font-weight="500" fill="#F2F2EE" text-anchor="middle">Bateria recarregavel 5V</text>`,
+    svg: `<rect width="231" height="128" rx="7" fill="#7c7e7d" stroke="#05060A" stroke-width="2"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="270" cy="18" r="7" fill="#0A0C11" opacity=".5" transform="translate(-54 -1)"></circle><text x="144" y="92" font-family="monospace" font-size="14" font-weight="500" fill="#F2F2EE" text-anchor="middle" transform="translate(-29 16)">Bateria recarregavel 5V</text><path d="M231 113 L242 112 L241 136 L97 137 L97 169" fill="none" stroke="#ea1031" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></path><path d="M230 98 L256 98 L254 149 L143 150 L144 169" fill="none" stroke="#135acd" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></path>`,
   },
   "hc06": {
     svg: `<rect width="224" height="192" rx="7" fill="#034502" stroke="#05060A" stroke-width="2"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="222" cy="18" r="7" fill="#0A0C11" opacity=".5" transform="translate(-14 0)"></circle><text x="120" y="92" font-family="monospace" font-size="12" font-weight="500" fill="#F2F2EE" text-anchor="middle" transform="translate(-18 35)">Modulo bluetooth HC-06</text><circle cx="206" cy="122" r="6" fill="#4A1E1E"></circle><rect x="75" y="44" width="88" height="76" rx="4" fill="#484b51" stroke="#05060A" stroke-width="2" transform="translate(-13 -9)"></rect><path d="M145 30 L145 15 L128 15 L128 31 L112 31 L111 14 L94 13 L94 30 L76 29 L77 13 L61 13 L60 30" fill="none" stroke="#B9BEC6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>`,
+  },
+  "esp01": {
+    svg: `<rect width="229" height="216" rx="7" fill="#3b3f45" stroke="#05060A" stroke-width="2"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="270" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="144" y="104" font-family="monospace" font-size="13" font-weight="500" fill="#F2F2EE" text-anchor="middle" transform="translate(-23 -30)">Modulo wifi ESP-01</text><circle cx="254" cy="134" r="6" fill="#4A1E1E" transform="translate(-231 -33)"></circle><rect x="67" y="100" width="45" height="43" rx="4" fill="#2f3032" stroke="#05060A" stroke-width="2" transform="translate(-2 -15)"></rect><rect x="67" y="100" width="45" height="43" rx="4" fill="#2f3032" stroke="#05060A" stroke-width="2" transform="translate(58 -17)"></rect><path d="M161 47 L49 48 L48 10 L68 9 L69 29 L90 29 L90 9 L108 8 L109 28 L127 27 L127 8 L143 6 L143 28 L160 29 L161 8 L212 9" fill="none" stroke="#d5c458" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" transform="translate(-1 6)"></path>`,
+  },
+  "enc28j60": {
+    svg: `<rect width="312" height="216" rx="7" fill="#0f3e8f" stroke="#05060A" stroke-width="2"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="294" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="156" y="104" font-family="monospace" font-size="16" font-weight="500" fill="#F2F2EE" text-anchor="middle" transform="translate(1 -74)">Modulo ethernet ENC28J60</text><circle cx="278" cy="134" r="6" fill="#4A1E1E" transform="translate(-168 65)"></circle><rect x="98" y="79" width="47" height="80" rx="4" fill="#3A3F47" stroke="#05060A" stroke-width="2" transform="translate(-11 -12)"></rect><rect x="163" y="56" width="177" height="111" rx="4" fill="#959ca7" stroke="#05060A" stroke-width="2"></rect>`,
+  },
+  "nrf24l01": {
+    svg: `<rect width="288" height="216" rx="7" fill="#1B1F26" stroke="#05060A" stroke-width="2"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="270" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><text x="144" y="104" font-family="monospace" font-size="16" font-weight="500" fill="#F2F2EE" text-anchor="middle" transform="translate(1 -76)">Modulo de radio NRF24L01</text><circle cx="254" cy="134" r="6" fill="#4A1E1E" transform="translate(-233 62)"></circle><rect x="77" y="167" width="78" height="25" rx="4" fill="#737578" stroke="#4a4b4f" stroke-width="2"></rect><rect x="139" y="112" width="63" height="60" rx="4" fill="#242628" stroke="#05060A" stroke-width="2" transform="translate(-38 -38)"></rect><path d="M198 137 L198 60 L167 58 L271 58 L271 76 L223 74 L223 92 L271 91 L271 108 L225 109 L226 125 L271 125 L269 195" fill="none" stroke="#ab8c1c" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"></path>`,
+  },
+  "cartao-sd": {
+    svg: `<rect width="225" height="239" rx="7" fill="#144cad" stroke="#05060A" stroke-width="2"></rect><circle cx="18" cy="18" r="7" fill="#0A0C11" opacity=".5"></circle><circle cx="222" cy="18" r="7" fill="#0A0C11" opacity=".5" transform="translate(-12 -3)"></circle><text x="120" y="92" font-family="monospace" font-size="16" font-weight="500" fill="#F2F2EE" text-anchor="middle" transform="translate(-2 77)">Modulo cartao SD</text><circle cx="206" cy="122" r="6" fill="#4A1E1E" transform="translate(-184 49)"></circle><rect x="64" y="75" width="31" height="40" rx="4" fill="#2a2b2d" stroke="#3c3e49" stroke-width="2" transform="translate(-4 22)"></rect><rect x="64" y="75" width="35" height="22" rx="4" fill="#2a2b2d" stroke="#3c3e49" stroke-width="2" transform="translate(69 36)"></rect><rect x="116" y="61" width="114" height="90" rx="4" fill="#7288ac" stroke="#616470" stroke-width="2" transform="translate(-58 -70)"></rect><path d="M159 74 L159 89" fill="none" stroke="#626271" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path><path d="M159 74 L159 89" fill="none" stroke="#626271" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" transform="translate(-10 0)"></path><path d="M159 74 L159 89" fill="none" stroke="#626271" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" transform="translate(-21 0)"></path><path d="M159 74 L159 89" fill="none" stroke="#626271" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" transform="translate(-32 0)"></path><path d="M159 74 L159 89" fill="none" stroke="#626271" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" transform="translate(-44 0)"></path>`,
   },
   "caixa-bluetooth": {
     svg: `<rect x="24" y="24" width="288" height="192" rx="20" fill="#1B1F26" stroke="#05060A" stroke-width="3"></rect><circle cx="120" cy="120" r="60" fill="#2A2E36" stroke="#3A3F47" stroke-width="3"></circle><circle cx="120" cy="120" r="22" fill="#565C66"></circle><circle cx="228" cy="120" r="36" fill="#2A2E36" stroke="#3A3F47" stroke-width="3"></circle><text x="168" y="200" font-family="monospace" font-size="14" font-weight="500" fill="#7DD3FC" text-anchor="middle">bluetooth</text>`,
@@ -179,10 +217,11 @@ export const ARTE = {
   "clipe": {
     svg: `<path d="M24 48h108a24 24 0 010 0" fill="none" stroke="#B9BEC6" stroke-width="7" stroke-linecap="round" transform="translate(16 4)"></path><path d="M40 34h92a14 14 0 010 28H52a14 14 0 010-28h74" fill="none" stroke="#C9CDD3" stroke-width="7" stroke-linecap="round"></path><text x="84" y="88" font-family="monospace" font-size="12" font-weight="500" fill="#8A8F98" text-anchor="middle" transform="translate(11 -9)">clipe</text>`,
   },
+  "multimetro": {
+    svg: `<rect width="336" height="456" rx="18" fill="#E0703C" stroke="#8A421C" stroke-width="4"></rect><rect x="24" y="24" width="288" height="108" rx="8" fill="#0F1A12" stroke="#0A0C11" stroke-width="3"></rect><text x="168" y="96" font-family="monospace" font-size="34" font-weight="500" fill="#7CFF9B" text-anchor="middle">---</text><circle cx="168" cy="264" r="86" fill="#2A2E36" stroke="#1B1F26" stroke-width="4"></circle><circle cx="168" cy="264" r="30" fill="#3A3F47"></circle><g><g xmlns="http://www.w3.org/2000/svg" transform="rotate(-60 168 264)"> <rect x="160" y="186" width="16" height="80" rx="5" fill="#E8E8E4"></rect></g></g><text x="96" y="200" font-family="monospace" font-size="15" font-weight="500" fill="#2A1608" text-anchor="middle" transform="translate(-9 0)">V...</text><text x="240" y="200" font-family="monospace" font-size="15" font-weight="500" fill="#2A1608" text-anchor="middle" transform="translate(10 4)">V~</text><text x="254" y="300" font-family="monospace" font-size="17" font-weight="500" fill="#2A1608" text-anchor="middle" transform="translate(13 16)">Ω</text><text x="92" y="320" font-family="monospace" font-size="14" font-weight="500" fill="#2A1608" text-anchor="middle" transform="translate(-9 9)">mA</text><text x="168" y="388" font-family="monospace" font-size="16" font-weight="500" fill="#4A2410" text-anchor="middle">MULTIMETRO</text><circle cx="96" cy="432" r="16" fill="#1B1F26" stroke="#0A0C11" stroke-width="3"></circle><circle cx="216" cy="432" r="16" fill="#8A2C28" stroke="#4A1614" stroke-width="3"></circle>`,
+  },
 };
 
-/* Pinos que o desenho novo colocou em outro lugar. Aplicado sobre o
-   modelo tecnico em biblioteca.js, sem mexer nas definicoes. */
 export const PINOS_AJUSTADOS = {
   "microbura": {
     "batP": {
@@ -442,6 +481,16 @@ export const PINOS_AJUSTADOS = {
       "y": 192
     }
   },
+  "suporteaa": {
+    "p": {
+      "x": 240,
+      "y": 216
+    },
+    "n": {
+      "x": 288,
+      "y": 216
+    }
+  },
   "fonte-protoboard": {
     "vout": {
       "x": 24,
@@ -630,6 +679,84 @@ export const PINOS_AJUSTADOS = {
       "y": 240
     }
   },
+  "amplificador": {
+    "vcc": {
+      "x": 24,
+      "y": 168
+    },
+    "gnd": {
+      "x": 48,
+      "y": 168
+    },
+    "outl": {
+      "x": 168,
+      "y": 168
+    },
+    "outr": {
+      "x": 216,
+      "y": 168
+    }
+  },
+  "dfplayer": {
+    "vcc": {
+      "x": 48,
+      "y": 264
+    },
+    "rx": {
+      "x": 72,
+      "y": 264
+    },
+    "tx": {
+      "x": 96,
+      "y": 264
+    },
+    "dacr": {
+      "x": 120,
+      "y": 264
+    },
+    "dacl": {
+      "x": 144,
+      "y": 264
+    },
+    "spk1": {
+      "x": 264,
+      "y": 24
+    },
+    "gnd": {
+      "x": 192,
+      "y": 264
+    },
+    "spk2": {
+      "x": 312,
+      "y": 24
+    },
+    "busy": {
+      "x": 240,
+      "y": 264
+    }
+  },
+  "isd1820": {
+    "vcc": {
+      "x": 24,
+      "y": 192
+    },
+    "gnd": {
+      "x": 48,
+      "y": 192
+    },
+    "playl": {
+      "x": 168,
+      "y": 192
+    },
+    "spp": {
+      "x": 216,
+      "y": 192
+    },
+    "spn": {
+      "x": 240,
+      "y": 192
+    }
+  },
   "botao-arcade": {
     "a": {
       "x": 144,
@@ -652,6 +779,40 @@ export const PINOS_AJUSTADOS = {
     "b": {
       "x": 120,
       "y": 144
+    }
+  },
+  "tcs3200": {
+    "vcc": {
+      "x": 168,
+      "y": 24
+    },
+    "gnd": {
+      "x": 144,
+      "y": 192
+    },
+    "out": {
+      "x": 144,
+      "y": 24
+    },
+    "s0": {
+      "x": 96,
+      "y": 192
+    },
+    "s1": {
+      "x": 120,
+      "y": 192
+    },
+    "s2": {
+      "x": 96,
+      "y": 24
+    },
+    "s3": {
+      "x": 120,
+      "y": 24
+    },
+    "led": {
+      "x": 168,
+      "y": 192
     }
   },
   "umidade-solo": {
@@ -788,6 +949,138 @@ export const PINOS_AJUSTADOS = {
       "y": 168
     }
   },
+  "esp01": {
+    "gnd": {
+      "x": 96,
+      "y": 168
+    },
+    "gpio2": {
+      "x": 120,
+      "y": 168
+    },
+    "gpio0": {
+      "x": 144,
+      "y": 168
+    },
+    "rx": {
+      "x": 168,
+      "y": 168
+    },
+    "tx": {
+      "x": 96,
+      "y": 192
+    },
+    "chpd": {
+      "x": 120,
+      "y": 192
+    },
+    "rst": {
+      "x": 144,
+      "y": 192
+    },
+    "vcc": {
+      "x": 168,
+      "y": 192
+    }
+  },
+  "enc28j60": {
+    "vcc": {
+      "x": 24,
+      "y": 168
+    },
+    "gnd": {
+      "x": 48,
+      "y": 168
+    },
+    "clk": {
+      "x": 24,
+      "y": 72
+    },
+    "sck": {
+      "x": 48,
+      "y": 120
+    },
+    "so": {
+      "x": 48,
+      "y": 96
+    },
+    "si": {
+      "x": 24,
+      "y": 120
+    },
+    "cs": {
+      "x": 24,
+      "y": 144
+    },
+    "rst": {
+      "x": 48,
+      "y": 144
+    },
+    "int": {
+      "x": 48,
+      "y": 72
+    }
+  },
+  "nrf24l01": {
+    "gnd": {
+      "x": 24,
+      "y": 72
+    },
+    "vcc": {
+      "x": 48,
+      "y": 72
+    },
+    "ce": {
+      "x": 24,
+      "y": 96
+    },
+    "csn": {
+      "x": 48,
+      "y": 96
+    },
+    "sck": {
+      "x": 24,
+      "y": 120
+    },
+    "mosi": {
+      "x": 48,
+      "y": 120
+    },
+    "miso": {
+      "x": 48,
+      "y": 144
+    },
+    "irq": {
+      "x": 24,
+      "y": 144
+    }
+  },
+  "cartao-sd": {
+    "gnd": {
+      "x": 48,
+      "y": 216
+    },
+    "vcc": {
+      "x": 72,
+      "y": 216
+    },
+    "miso": {
+      "x": 96,
+      "y": 216
+    },
+    "mosi": {
+      "x": 120,
+      "y": 216
+    },
+    "sck": {
+      "x": 144,
+      "y": 216
+    },
+    "cs": {
+      "x": 168,
+      "y": 216
+    }
+  },
   "caixa-bluetooth": {
     "p3": {
       "x": 320,
@@ -802,8 +1095,11 @@ export const PINOS_AJUSTADOS = {
   }
 };
 
-/* Pecas que mudaram de tamanho no assistente. */
 export const TAMANHOS = {
+  "dfplayer": {
+    "w": 336,
+    "h": 288
+  },
   "ky037": {
     "w": 168,
     "h": 192

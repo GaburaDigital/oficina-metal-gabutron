@@ -192,3 +192,32 @@
   color: var(--poeira); font-size: var(--t-micro); line-height: 1.5;
 }
 
+
+/* ---------- deck de scripts ---------- */
+.abas-firmware { display: flex; gap: 4px; padding: var(--e2) var(--e3) 0; }
+.abas-firmware .btn { flex: 1; justify-content: center; }
+
+.grade-scripts { display: grid; gap: 6px; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+.cartao-script {
+  display: flex; flex-direction: column; gap: 4px;
+  padding: var(--e2) var(--e3);
+  background: var(--casco-alto); border: var(--borda); border-radius: var(--raio);
+  color: var(--luz); font: inherit; text-align: left; cursor: pointer;
+}
+.cartao-script:hover { border-color: var(--fosforo); }
+.cartao-script.on { border-color: var(--fosforo); background: var(--fosforo-op); }
+.cartao-script b { font-size: var(--t-min); font-weight: 500; }
+.cartao-script small { color: var(--poeira); font-size: var(--t-micro); line-height: 1.5; }
+.pecas-script { color: var(--gelo); font-size: 10px; }
+
+.ligacoes-script {
+  margin-top: var(--e3); padding: var(--e2) var(--e3);
+  border: 1px solid var(--fosforo); border-radius: var(--raio);
+}
+.ligacoes-script ul { margin: 0 0 var(--e2); padding-left: 18px; color: var(--luz); font-size: var(--t-min); line-height: 1.7; }
+.ligacoes-script p { margin: 0; color: var(--poeira); font-size: var(--t-micro); }
+
+/* filtro da janela de missoes */
+.filtros-missao { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: var(--e3); }
+.filtros-missao .btn { font-size: var(--t-micro); padding: 4px 9px; }
+.etq-hacking { color: #C77DFF; border-color: #C77DFF; }

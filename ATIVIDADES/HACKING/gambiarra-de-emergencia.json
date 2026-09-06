@@ -1,0 +1,64 @@
+{
+  "id": "gambiarra-de-emergencia",
+  "titulo": "Gambiarra de emergencia",
+  "tipo": "hacking",
+  "dificuldade": "novato",
+  "minutos": 12,
+  "pontos": 120,
+  "fase": 5,
+  "creditos": 40,
+  "briefing": "Estamos sem jumper na nave. Sem nenhum. E preciso fechar um circuito de sinalizacao agora. Olhe para a gaveta das tranqueiras: tem clipe de papel e tem moeda. Os dois sao metal, e metal conduz. Isso nao e improviso bobo, e entendimento: circuito nao liga porque a peca e apropriada, liga porque existe caminho para a corrente. Prove com o multimetro antes de confiar.",
+  "objetivos": [
+    {
+      "id": "caminho",
+      "texto": "Circuito fechado sem usar jumper de fabrica",
+      "regra": {
+        "tipo": "aceso",
+        "componente": "led",
+        "n": 1
+      }
+    },
+    {
+      "id": "resistor",
+      "texto": "Resistor em serie com o LED",
+      "regra": {
+        "tipo": "emSerie",
+        "a": "resistor",
+        "b": "led"
+      }
+    },
+    {
+      "id": "mediu",
+      "texto": "Confirmar o caminho com o teste de continuidade",
+      "regra": {
+        "tipo": "usouFerramenta",
+        "modo": "continuidade"
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "Clipe de papel tem duas pontas de metal e cabe em dois furos da protoboard. Adivinha o que ele vira.",
+    "Teste continuidade no clipe antes: se apitar, ele conduz e serve.",
+    "A borracha tambem esta na gaveta. Teste ela tambem e veja a diferenca.",
+    "Resistor continua obrigatorio. Gambiarra nao dispensa a lei de Ohm."
+  ],
+  "erroComum": "Achar que gambiarra dispensa o resistor. O LED nao concorda.",
+  "sucesso": "Metal conduz, borracha nao. Voce fechou um circuito com um clipe e provou com o multimetro. E isso que separa gambiarra de chute.",
+  "componentesLiberados": [
+    "bateria9v",
+    "clipe",
+    "moeda",
+    "borracha",
+    "led",
+    "resistor",
+    "protoboard",
+    "multimetro"
+  ]
+}
