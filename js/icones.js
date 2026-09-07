@@ -19,6 +19,7 @@ const D = {
   passivo: `<path d="M2 12h4M18 12h4"/><rect x="6" y="9" width="12" height="6" rx="1"/><path d="M9 9v6M12 9v6M15 9v6" stroke="${F}"/>`,
   audio: `<path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 010 6" stroke="${A}"/><path d="M18.5 6.5a8 8 0 010 11" stroke="${A}"/>`,
   ferramenta: `<path d="M14 3a5 5 0 00-5 7L3 16l3 3 6-6a5 5 0 007-5l-3 3-3-1-1-3 3-3z" stroke="${A}"/>`,
+  selo: `<path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.2l5.9-.9z" stroke="${A}"/>`,
   pausar: `<rect x="7" y="5" width="4" height="14"/><rect x="13" y="5" width="4" height="14" stroke="${A}"/>`,
   tocar: `<path d="M7 4l12 8-12 8z" stroke="${A}"/>`,
   reiniciar: `<path d="M4 12a8 8 0 108-8" /><path d="M4 4v6h6" stroke="${A}"/>`,

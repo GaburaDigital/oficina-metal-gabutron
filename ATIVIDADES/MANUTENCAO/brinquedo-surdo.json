@@ -7,14 +7,14 @@
   "pontos": 140,
   "fase": 6,
   "placa": "microbura",
-  "briefing": "Trouxeram o bichinho eletronico da filha do comandante. A matriz acende, os botoes respondem, mas ele emudeceu. Ja conferi a placa: esta boa. O buzzer tambem testei aqui e funciona. Sobra a montagem. Buzzer tem lado, e nem todo mundo lembra disso.",
+  "briefing": "Trouxeram o bichinho eletronico da filha do comandante. A matriz acende, os botoes respondem, mas ele emudeceu. Ja conferi a placa: esta boa. O buzzer passivo tambem testei aqui e funciona. Sobra a montagem. Buzzer tem lado, e nem todo mundo lembra disso.",
   "objetivos": [
     {
       "id": "toca",
       "texto": "Buzzer voltando a apitar",
       "regra": {
         "tipo": "ligado",
-        "componente": "buzzer"
+        "componente": "buzzer-passivo"
       }
     },
     {
@@ -35,8 +35,77 @@
   "sucesso": "Polaridade de novo. Guarde a lista: LED, buzzer, capacitor eletrolitico, diodo e modulo.",
   "componentesLiberados": [
     "microbura",
-    "buzzer",
+    "buzzer-passivo",
     "multimetro",
     "protoboard"
-  ]
+  ],
+  "montagem": {
+    "formato": "gabutron-bancada",
+    "versao": 3,
+    "comps": [
+      {
+        "id": "mb",
+        "tipo": "microbura",
+        "x": 0,
+        "y": 0,
+        "rot": 0,
+        "usbLigado": true,
+        "encaixes": [],
+        "firmware": {
+          "anel0": {
+            "modo": "alto"
+          }
+        }
+      },
+      {
+        "id": "bz",
+        "tipo": "buzzer-passivo",
+        "x": 640,
+        "y": 120,
+        "rot": 0,
+        "encaixes": []
+      }
+    ],
+    "fios": [
+      {
+        "id": "f1",
+        "tipo": "mm",
+        "cor": "#E9C542",
+        "pontas": [
+          "macho",
+          "macho"
+        ],
+        "a": {
+          "comp": "mb",
+          "pino": "anel0"
+        },
+        "b": {
+          "comp": "bz",
+          "pino": "b"
+        }
+      },
+      {
+        "id": "f2",
+        "tipo": "mm",
+        "cor": "#2A2E36",
+        "pontas": [
+          "macho",
+          "macho"
+        ],
+        "a": {
+          "comp": "mb",
+          "pino": "anel4"
+        },
+        "b": {
+          "comp": "bz",
+          "pino": "a"
+        }
+      }
+    ],
+    "vista": {
+      "x": 30,
+      "y": 20,
+      "k": 0.3
+    }
+  }
 }

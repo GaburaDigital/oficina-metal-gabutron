@@ -7,14 +7,14 @@
   "pontos": 110,
   "fase": 6,
   "placa": "microbura",
-  "briefing": "Todo cadete acaba adotando alguma coisa. Monte um bichinho: a matriz de LEDs da MicroBURA e a carinha dele, o buzzer e a voz, e os botoes A e B sao o carinho e a comida. Comece pelo mais simples que existe, um buzzer num anel, e va crescendo. Com a bancada energizada, aperte o botao A na propria placa e veja.",
+  "briefing": "Todo cadete acaba adotando alguma coisa. Monte um bichinho: a matriz de LEDs da MicroBURA e a carinha dele, o buzzer passivo e a voz, e os botoes A e B sao o carinho e a comida. Comece pelo mais simples que existe, um buzzer num anel, e va crescendo. Com a bancada energizada, aperte o botao A na propria placa e veja.",
   "objetivos": [
     {
-      "id": "buzzer",
+      "id": "buzzer-passivo",
       "texto": "Buzzer ligado num anel da MicroBURA",
       "regra": {
         "tipo": "ligado",
-        "componente": "buzzer"
+        "componente": "buzzer-passivo"
       }
     },
     {
@@ -23,8 +23,8 @@
       "regra": {
         "tipo": "mesmoNo",
         "a": {
-          "componente": "buzzer",
-          "pino": "n"
+          "componente": "buzzer-passivo",
+          "pino": "b"
         },
         "b": {
           "componente": "microbura",
@@ -42,15 +42,15 @@
   ],
   "dicas": [
     "Os aneis grandes cabem garra jacare: e o jeito mais rapido de ligar sem solda.",
-    "O anel 3V entrega pouca corrente. Buzzer cabe, motor nao.",
+    "O anel 3V entrega pouca corrente. Buzzer passivo, que e piezo, cabe. Buzzer ativo de 30 mA nao.",
     "No Deck de scripts existe o Blink: use para conferir se o anel responde.",
     "Energize a bancada e aperte o botao A desenhado na placa."
   ],
-  "erroComum": "Ligar motor nos aneis. Cinco miliamperes por pino nao movem nada.",
+  "erroComum": "Usar o buzzer ativo. Ele puxa 30 mA e o anel da MicroBURA entrega 5.",
   "sucesso": "Seu bichinho tem voz. Agora ele so precisa de um nome.",
   "componentesLiberados": [
     "microbura",
-    "buzzer",
+    "buzzer-passivo",
     "led",
     "resistor",
     "protoboard"

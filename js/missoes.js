@@ -211,8 +211,7 @@ export function gastoAtual(comps) {
 export const treino = { ativo: false, fila: [], feitas: 0, filtros: null };
 
 export function montarTreino(filtros) {
-  const todas = [...(catalogo.construcao || []), ...(catalogo.manutencao || [])]
-    .filter((m) => (m.fase || 2) <= 6)
+  const todas = [...(catalogo.construcao || []), ...(catalogo.manutencao || []), ...(catalogo.hacking || [])]
     .filter((m) => (filtros.tipos.length ? filtros.tipos.includes(m.tipo) : true))
     .filter((m) => (filtros.dificuldades.length ? filtros.dificuldades.includes(m.dificuldade) : true));
   const embaralhada = todas.map((m) => [Math.random(), m]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
@@ -254,9 +253,19 @@ const CASA_FILTRO = {
   arubagpi: (m) => m.placa === "arubagpi",
 };
 
+/* Sorteia outra missao dentro do filtro que o aluno deixou escolhido.
+   Evita repetir a que ele acabou de fazer. */
+export function sortearProxima(evitarId) {
+  const todas = [...(catalogo.construcao || []), ...(catalogo.manutencao || []), ...(catalogo.hacking || [])];
+  const alvo = todas
+    .filter(CASA_FILTRO[filtroAtual] || CASA_FILTRO.todas)
+    .filter((m) => m.id !== evitarId);
+  if (!alvo.length) return null;
+  return alvo[Math.floor(Math.random() * alvo.length)];
+}
+
 export function abrirSeletor(aoEscolher) {
-  const todas = [...(catalogo.construcao || []), ...(catalogo.manutencao || []), ...(catalogo.hacking || [])]
-    .filter((m) => (m.fase || 2) <= 5);
+  const todas = [...(catalogo.construcao || []), ...(catalogo.manutencao || []), ...(catalogo.hacking || [])];
   const lista = todas.filter(CASA_FILTRO[filtroAtual] || CASA_FILTRO.todas);
   const futuras = [];
 

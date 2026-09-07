@@ -127,7 +127,7 @@ function iniciarInterface() {
     },
     aoEscolherFio: (jumper, cor) => {
       bancada.escolherFio(jumper, cor);
-      if (jumper && jumper.exigeFerro) robo.dizer("Fio para solda na mao. Ele entra em qualquer contato, porque estanho nao liga para formato de ponta. Nao serve para deixar ponta solta.", { expressao: "pensando" });
+      if (jumper && jumper.exigeFerro) robo.dizer("Fio para solda na mao. Enquanto ele estiver escolhido, o clique traca fio em vez de soldar por proximidade. Ele entra em qualquer contato e nao aceita ponta solta.", { expressao: "pensando" });
       else if (jumper) robo.dizer(`${jumper.nome} na mao. Clique no primeiro contato e depois no segundo.`, { expressao: "pensando", falar: false });
     },
   });
@@ -565,8 +565,59 @@ function aoMudarBancada(est) {
       const m = missoes.sessao.missao;
       robo.dizer(`${m.sucesso || robo.FALAS.tudoCerto} Voce ganhou ${resultado.pontos} pontos. Patente atual: ${patenteDe(resultado.progresso.pontos)}.`, { expressao: "satisfeito" });
       if (treinoEmCurso) setTimeout(emendarTreino, 2600);
+      else setTimeout(() => festejar(m, resultado), 900);
     }
   }
+}
+
+/* Missao concluida: em vez de so avisar, oferecer o proximo passo.
+   Continuar mexendo, refazer do zero ou pular para outra da mesma
+   categoria — que e como a aula costuma seguir. */
+function festejar(m, resultado) {
+  const antigo = q("#veu-fim");
+  if (antigo) antigo.remove();
+  const veu = document.createElement("div");
+  veu.className = "veu";
+  veu.id = "veu-fim";
+  veu.innerHTML = `
+<div class="janela" style="width:min(460px,100%)">
+  <div class="janela-topo">${ico("selo", 18)}<h2>Missao concluida</h2></div>
+  <div class="janela-corpo" style="text-align:center">
+    <p style="font-size:var(--t-alto);color:var(--fosforo);margin-bottom:4px">${m.titulo}</p>
+    <p style="color:var(--luz)">${m.sucesso || ""}</p>
+    <p style="margin-top:14px"><b style="color:var(--fosforo);font-size:26px">+${resultado.pontos}</b>
+      <span style="color:var(--poeira)"> pontos</span></p>
+    <p style="color:var(--grafite);font-size:var(--t-min)">total ${resultado.progresso.pontos} &#183; ${patenteDe(resultado.progresso.pontos)}</p>
+    ${missoes.sessao.dicasUsadas ? `<p style="color:var(--poeira);font-size:11px">${missoes.sessao.dicasUsadas} dica(s) pedida(s)</p>` : ""}
+    ${missoes.sessao.queimadas ? `<p style="color:var(--brasa);font-size:11px">${missoes.sessao.queimadas} peca(s) perdida(s)</p>` : ""}
+  </div>
+  <div class="janela-base" style="justify-content:center">
+    <button class="btn" id="fim-editar">Continuar editando</button>
+    <button class="btn" id="fim-refazer">Refazer missao</button>
+    <button class="btn btn-verde" id="fim-proxima">Proxima missao</button>
+  </div>
+</div>`;
+  document.body.appendChild(veu);
+  SOM.sucesso();
+
+  const fecha = () => veu.remove();
+  veu.addEventListener("click", (e) => { if (e.target === veu) fecha(); });
+  q("#fim-editar").addEventListener("click", () => {
+    fecha();
+    robo.dizer("Bancada liberada. Mexa a vontade: a missao ja esta contada.", { expressao: "satisfeito", falar: false });
+  });
+  q("#fim-refazer").addEventListener("click", () => { fecha(); escolherMissao(m); });
+  q("#fim-proxima").addEventListener("click", async () => {
+    fecha();
+    const proxima = missoes.sortearProxima(m.id);
+    if (!proxima) { robo.dizer("Acabaram as missoes desse filtro. Troque a categoria na janela de missoes.", { expressao: "pensando" }); return; }
+    try {
+      const dados = await import("./conteudo.js").then((x) => x.carregarMissao(proxima));
+      escolherMissao({ ...proxima, ...dados });
+    } catch (e) {
+      robo.dizer("Tropecei ao abrir a proxima missao.", { expressao: "alarmado" });
+    }
+  });
 }
 
 async function emendarTreino() {

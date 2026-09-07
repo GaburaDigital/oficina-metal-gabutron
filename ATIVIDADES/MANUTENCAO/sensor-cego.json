@@ -49,5 +49,87 @@
     "protoboard",
     "multimetro",
     "resistor"
-  ]
+  ],
+  "montagem": {
+    "formato": "gabutron-bancada",
+    "versao": 3,
+    "comps": [
+      {
+        "id": "pl",
+        "tipo": "bura32",
+        "x": 0,
+        "y": 0,
+        "rot": 0,
+        "usbLigado": true,
+        "encaixes": []
+      },
+      {
+        "id": "sn",
+        "tipo": "irobstaculo",
+        "x": 420,
+        "y": 60,
+        "rot": 0,
+        "trimpot": 3,
+        "encaixes": []
+      }
+    ],
+    "fios": [
+      {
+        "id": "f1",
+        "tipo": "mm",
+        "cor": "#E24B4A",
+        "pontas": [
+          "macho",
+          "macho"
+        ],
+        "a": {
+          "comp": "pl",
+          "pino": "e0"
+        },
+        "b": {
+          "comp": "sn",
+          "pino": "vcc"
+        }
+      },
+      {
+        "id": "f2",
+        "tipo": "mm",
+        "cor": "#2A2E36",
+        "pontas": [
+          "macho",
+          "macho"
+        ],
+        "a": {
+          "comp": "pl",
+          "pino": "e14"
+        },
+        "b": {
+          "comp": "sn",
+          "pino": "gnd"
+        }
+      },
+      {
+        "id": "f3",
+        "tipo": "mm",
+        "cor": "#5CE07A",
+        "pontas": [
+          "macho",
+          "macho"
+        ],
+        "a": {
+          "comp": "sn",
+          "pino": "out"
+        },
+        "b": {
+          "comp": "pl",
+          "pino": "d13"
+        }
+      }
+    ],
+    "vista": {
+      "x": 30,
+      "y": 20,
+      "k": 0.3
+    }
+  }
 }

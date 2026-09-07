@@ -95,17 +95,20 @@ function deck(comp) {
         <span class="pecas-script">${(s.pede || []).map((p) => (PORID[p] || {}).nome || p).join(" &#183; ")}</span>
       </button>`).join("")}
     </div>
-    ${atual ? blocoLigacoes(acharScript(atual)) : ""}
+    ${atual ? blocoLigacoes(acharScript(atual), comp.tipo) : ""}
     ${atual ? `<button class="btn" data-parar="${comp.id}">Parar o script e voltar ao manual</button>` : ""}
   </div>`;
 }
 
-function blocoLigacoes(s) {
+function blocoLigacoes(s, placa) {
   if (!s) return "";
+  const lista = (s.ligacoes && s.ligacoes[placa]) || [];
+  const nome = (PORID[placa] || {}).nome || placa;
   return `<div class="ligacoes-script">
-    <h3>Ligacoes que este script espera</h3>
-    <ul>${s.ligacoes.map((l) => `<li>${l}</li>`).join("")}</ul>
-    <p>Se alguma faltar, o circuito nao vai reagir. E de proposito: o script confia na sua montagem.</p>
+    <h3>Ligacoes deste script na ${nome}</h3>
+    <ul>${lista.map((l) => `<li>${l}</li>`).join("")}</ul>
+    <p>Os pinos sao esses e nao outros: PWM so funciona em pino com PWM, analogico so em entrada analogica.
+       Se alguma ligacao faltar, o circuito nao reage — o script confia na sua montagem.</p>
   </div>`;
 }
 

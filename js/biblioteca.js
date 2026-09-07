@@ -858,7 +858,9 @@ add({
 
 add({
   id: "buzzer-passivo", nome: "Buzzer passivo", caixa: "som", arte: "buzzer",
-  w: 216, h: 192, cor: "#0B0D11", alimenta: 3, apito: true, correnteTipica: 30, custo: 6,
+  // Passivo e piezo: consome quase nada, e por isso cabe direto num
+  // pino de 3,3 volts. O ativo e magnetico e puxa dez vezes mais.
+  w: 216, h: 192, cor: "#0B0D11", alimenta: 3, apito: true, correnteTipica: 3, custo: 6,
   pinos: [
     { id: "a", n: "+", rotulo: "Positivo — precisa de onda quadrada para tocar", x: 120, y: 168, r: "macho", papel: "v+", lado: "baixo" },
     { id: "b", n: "-", rotulo: "Negativo — terra", x: 168, y: 168, r: "macho", papel: "gnd", lado: "baixo" }

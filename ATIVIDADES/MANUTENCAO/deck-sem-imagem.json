@@ -49,5 +49,62 @@
     "fonte-tomada",
     "multimetro",
     "protoboard"
-  ]
+  ],
+  "montagem": {
+    "formato": "gabutron-bancada",
+    "versao": 3,
+    "comps": [
+      {
+        "id": "pi",
+        "tipo": "arubagpi",
+        "x": 0,
+        "y": 520,
+        "rot": 0,
+        "usbLigado": true,
+        "encaixes": [],
+        "ocupados": {
+          "hdmi": "cb"
+        }
+      },
+      {
+        "id": "tv",
+        "tipo": "lcd7",
+        "x": 0,
+        "y": 0,
+        "rot": 0,
+        "encaixes": [],
+        "ocupados": {
+          "hdmi": "cb"
+        }
+      },
+      {
+        "id": "cb",
+        "tipo": "cabo-hdmi",
+        "x": 520,
+        "y": 430,
+        "rot": 0,
+        "encaixes": [],
+        "pontasLigadas": [
+          "p1",
+          "p2"
+        ],
+        "pai": "pi"
+      },
+      {
+        "id": "ft",
+        "tipo": "fonte-tomada",
+        "x": 760,
+        "y": 520,
+        "rot": 0,
+        "tensaoSaida": 5,
+        "encaixes": []
+      }
+    ],
+    "fios": [],
+    "vista": {
+      "x": 30,
+      "y": 20,
+      "k": 0.3
+    }
+  }
 }

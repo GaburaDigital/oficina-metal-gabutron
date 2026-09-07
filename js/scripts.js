@@ -10,7 +10,9 @@
    Cada script tem:
      id, nome, placas    onde ele aparece
      resumo              uma linha do que faz
-     ligacoes            comentario de pino, o que o aluno le antes
+     ligacoes            POR PLACA, com o numero de cada pino. Isso e o
+                         coracao didatico do deck: ligar em qualquer
+                         porta ensinaria o oposto da robotica real
      pede                pecas que o script espera na bancada
      saidas              { pinoId: { modo, duty } } aplicado no firmware
      anima               efeitos na bancada: servo, motor, tela, som
@@ -21,10 +23,7 @@ export const SCRIPTS = [
   {
     id: "blink", nome: "Blink", placas: ["gaburino", "bura32", "microbura", "arubagpi"],
     resumo: "Pisca um LED. O primeiro programa de todo mundo.",
-    ligacoes: [
-      "LED com resistor no pino de saida escolhido",
-      "catodo do LED no GND da placa",
-    ],
+    ligacoes: {"gaburino": ["LED com resistor de 220 ohms no pino digital 13", "catodo do LED em qualquer GND da placa"], "bura32": ["LED com resistor de 220 ohms no GPIO 13", "catodo do LED num dos GND da placa"], "microbura": ["LED com resistor de 220 ohms no anel P0", "catodo do LED no anel GND"], "arubagpi": ["LED com resistor de 220 ohms no GPIO 18", "catodo do LED num dos GND da barra"]},
     pede: ["led", "resistor"],
     saidas: { gaburino: { t13: { modo: "alto" } }, bura32: { e13: { modo: "alto" } },
       microbura: { anel0: { modo: "alto" } }, arubagpi: { p9: { modo: "alto" } } },
@@ -33,11 +32,7 @@ export const SCRIPTS = [
   {
     id: "servo-vaivem", nome: "Servo vai e vem", placas: ["gaburino", "bura32", "microbura", "arubagpi"],
     resumo: "Gira o servo de um lado para o outro, sem parar.",
-    ligacoes: [
-      "sinal do servo num pino PWM",
-      "alimentacao do servo por fonte externa, nunca pela placa",
-      "GND da fonte e GND da placa no mesmo ponto",
-    ],
+    ligacoes: {"gaburino": ["fio de sinal do servo no pino ~9 (PWM por hardware)", "fio vermelho do servo no positivo do suporte de pilhas", "fio preto do servo no negativo das pilhas", "negativo das pilhas tambem num GND da GaburINO"], "bura32": ["fio de sinal do servo no GPIO 26 (aceita PWM)", "fio vermelho do servo na fonte externa de 5 volts", "GND da fonte e GND da Bura32 no mesmo ponto"], "microbura": ["fio de sinal do servo no anel P0 (PWM)", "fio vermelho do servo na fonte externa, nunca no anel 3V", "GND da fonte no anel GND"], "arubagpi": ["fio de sinal do servo no GPIO 18 (o unico com PWM por hardware)", "alimentacao do servo por fora, com GND comum"]},
     pede: ["servo180"],
     saidas: { gaburino: { t9: { modo: "pwm", duty: 128 } }, bura32: { e10: { modo: "pwm", duty: 128 } },
       microbura: { anel0: { modo: "pwm", duty: 128 } }, arubagpi: { p9: { modo: "pwm", duty: 128 } } },
@@ -46,11 +41,7 @@ export const SCRIPTS = [
   {
     id: "distancia-lcd", nome: "Distancia no LCD", placas: ["gaburino", "bura32", "arubagpi"],
     resumo: "Le o ultrassonico e escreve a distancia no display I2C.",
-    ligacoes: [
-      "TRIG e ECHO do ultrassonico em pinos digitais",
-      "SDA e SCL do display nos pinos de I2C da placa",
-      "VCC e GND do display e do sensor na alimentacao de 5 volts",
-    ],
+    ligacoes: {"gaburino": ["TRIG do ultrassonico no digital 7", "ECHO do ultrassonico no digital 8", "SDA do display no pino A4, SCL no pino A5", "VCC do sensor e do display no 5V, GND no GND"], "bura32": ["TRIG no GPIO 32, ECHO no GPIO 33", "ECHO devolve 5 volts: use divisor de tensao antes do GPIO", "SDA do display no GPIO 21, SCL no GPIO 22", "VCC do display no pino VIN de 5 volts"], "arubagpi": ["TRIG no GPIO 4, ECHO no GPIO 17 com divisor de tensao", "SDA no GPIO 2, SCL no GPIO 3", "VCC do display no pino de 5V da barra"]},
     pede: ["ultrassonico", "lcdi2c"],
     saidas: { gaburino: { t7: { modo: "alto" }, t8: { modo: "entrada" } },
       bura32: { e6: { modo: "alto" }, e7: { modo: "entrada" } }, arubagpi: { p5: { modo: "alto" } } },
@@ -61,13 +52,7 @@ export const SCRIPTS = [
   {
     id: "seguidor", nome: "Carro seguidor de linha", placas: ["gaburino"],
     resumo: "Le dois sensores de linha e corrige o rumo pelos motores.",
-    ligacoes: [
-      "sensor da esquerda no digital 2, da direita no digital 4",
-      "IN1 e IN2 nos digitais 7 e 8, IN3 e IN4 nos digitais 12 e 13",
-      "ENA e ENB em pinos PWM, ou com os jumpers de fabrica",
-      "motores nos bornes OUT, pilhas no +12V da ponte H",
-      "GND da ponte H no GND da placa",
-    ],
+    ligacoes: {"gaburino": ["D0 do sensor esquerdo no digital 2, do direito no digital 4", "IN1 no digital 7 e IN2 no digital 8 (motor A)", "IN3 no digital 12 e IN4 no digital 13 (motor B)", "ENA no ~9 e ENB no ~10, os dois com PWM, ou deixe os jumpers de fabrica", "+12V da ponte H no positivo das pilhas, GND no negativo", "GND da ponte H tambem num GND da GaburINO", "VCC dos sensores no 5V da placa: eles sao carga leve"]},
     pede: ["ponteh", "ir-linha", "motordc"],
     saidas: { gaburino: { t7: { modo: "alto" }, t8: { modo: "baixo" }, t12: { modo: "alto" }, t13: { modo: "baixo" },
       t9: { modo: "pwm", duty: 190 }, t10: { modo: "pwm", duty: 190 } } },
@@ -76,12 +61,7 @@ export const SCRIPTS = [
   {
     id: "mao-robotica", nome: "Mao robotica", placas: ["gaburino"],
     resumo: "Move doze servos pela expansao I2C: dedos, punho e cotovelo.",
-    ligacoes: [
-      "SDA e SCL da expansao nos pinos A4 e A5",
-      "V+ da expansao numa fonte externa, capaz de segurar todos os servos juntos",
-      "dez micro servos nos canais 0 a 9, dois de alto torque nos canais 10 e 11",
-      "GND da fonte e GND da placa no mesmo ponto",
-    ],
+    ligacoes: {"gaburino": ["SDA da expansao no pino A4 e SCL no pino A5", "VCC da expansao no 5V da placa (so a logica)", "V+ da expansao numa fonte externa que segure todos os servos", "dez micro servos nos canais 0 a 9, dois de alto torque nos canais 10 e 11", "GND da fonte externa no GND da GaburINO"]},
     pede: ["expansao-servo", "servo180", "servo-torque180"],
     saidas: { gaburino: { A4: { modo: "alto" }, A5: { modo: "alto" } } },
     anima: { servo: "onda" },
@@ -89,12 +69,7 @@ export const SCRIPTS = [
   {
     id: "plantacao", nome: "Plantacao inteligente", placas: ["gaburino"],
     resumo: "Le a umidade do solo e liga a bomba quando a terra seca.",
-    ligacoes: [
-      "A0 do sensor de umidade na entrada analogica A0",
-      "IN do rele num digital, VCC e GND do rele na placa",
-      "bomba e fonte externa passando pelo contato COM e NA do rele",
-      "sonda ligada nos dois bornes do modulo de leitura",
-    ],
+    ligacoes: {"gaburino": ["A0 do sensor de umidade na entrada analogica A0", "D0 do sensor pode ficar livre: aqui interessa a leitura analogica", "IN do rele no digital 8, VCC no 5V e GND no GND", "bomba e fonte externa passando pelos contatos COM e NA do rele", "as duas hastes da sonda nos bornes SD1 e SD2 do modulo"]},
     pede: ["umidade-solo", "sonda-solo", "rele", "bomba"],
     saidas: { gaburino: { t8: { modo: "alto" }, A0: { modo: "analog" } } },
     anima: { motor: "bomba", contador: "umidade" },
@@ -102,11 +77,7 @@ export const SCRIPTS = [
   {
     id: "elevador", nome: "Mini elevador de carga", placas: ["gaburino"],
     resumo: "Tres botoes escolhem o andar e o servo de giro continuo sobe a plataforma.",
-    ligacoes: [
-      "tres botoes nos digitais 2, 3 e 4, cada um com resistor de pull-down",
-      "sinal do servo de alto torque 360 num pino PWM",
-      "servo alimentado por fora, com GND comum",
-    ],
+    ligacoes: {"gaburino": ["botao do andar 1 no digital 2, andar 2 no digital 3, andar 3 no digital 4", "cada botao com resistor de 10k para o GND (pull-down)", "sinal do servo de alto torque no ~9", "servo alimentado por fora, com GND comum"]},
     pede: ["botao", "servo-torque360"],
     saidas: { gaburino: { t9: { modo: "pwm", duty: 160 } } },
     anima: { servo: "gira" },
@@ -116,11 +87,7 @@ export const SCRIPTS = [
   {
     id: "servo-botoes", nome: "Controle do servo pelos botoes", placas: ["microbura"],
     resumo: "Botao A gira para um lado, botao B para o outro.",
-    ligacoes: [
-      "sinal do servo no anel P0",
-      "servo alimentado por fora: os aneis da MicroBURA entregam pouca corrente",
-      "GND da fonte no anel GND",
-    ],
+    ligacoes: {"microbura": ["fio de sinal do servo no anel P0 (PWM)", "botoes A e B ja sao da placa: nao precisa ligar nada neles", "fio vermelho do servo na fonte externa, GND da fonte no anel GND"]},
     pede: ["servo180"],
     saidas: { microbura: { anel0: { modo: "pwm", duty: 128 } } },
     anima: { servo: "botoes" },
@@ -128,11 +95,7 @@ export const SCRIPTS = [
   {
     id: "bateria-piezo", nome: "Bateria com piezo", placas: ["microbura"],
     resumo: "Dois discos piezo viram tambores e o buzzer responde com a nota.",
-    ligacoes: [
-      "S de cada modulo piezo nos aneis P1 e P2",
-      "discos piezo nos bornes PZ de cada modulo",
-      "buzzer passivo no anel P0",
-    ],
+    ligacoes: {"microbura": ["saida S do primeiro modulo piezo no anel P1 (entrada analogica)", "saida S do segundo modulo no anel P2", "cada disco piezo nos bornes PZ+ e PZ- do seu modulo", "buzzer passivo no anel P0 (PWM), negativo no anel GND", "VCC dos modulos no anel 3V"]},
     pede: ["piezo-modulo", "piezo", "buzzer-passivo"],
     saidas: { microbura: { anel0: { modo: "pwm", duty: 128 }, anel1: { modo: "entrada" }, anel2: { modo: "entrada" } } },
     anima: { som: true },
@@ -140,11 +103,7 @@ export const SCRIPTS = [
   {
     id: "snake", nome: "Jogo da cobrinha", placas: ["microbura"],
     resumo: "Joystick move a cobra na tela TFT. Sim, da para jogar.",
-    ligacoes: [
-      "VRx e VRy do joystick em aneis com entrada analogica",
-      "tela TFT no barramento SPI da expansao",
-      "SW do joystick num pino digital para pausar",
-    ],
+    ligacoes: {"microbura": ["VRx do joystick no anel P1, VRy no anel P2 (entradas analogicas)", "SW do joystick no pino P8 da expansao", "tela TFT no SPI da expansao: SCK em P13, SDI em P15, CS em P16", "VCC do joystick e da tela no 3V, GND no GND"]},
     pede: ["joystick", "tft", "expansao-microbura"],
     saidas: { microbura: { anel1: { modo: "entrada" }, anel2: { modo: "entrada" } } },
     anima: { tela: ["SNAKE", "use o joystick"] },
@@ -154,11 +113,7 @@ export const SCRIPTS = [
   {
     id: "casa-inteligente", nome: "Casa inteligente", placas: ["bura32"],
     resumo: "Senha no teclado 4x4 libera quatro reles: luz, ventilador, portao e alarme.",
-    ligacoes: [
-      "quatro linhas e quatro colunas do teclado em oito GPIO livres",
-      "IN de cada rele num GPIO, com VCC de 3,3 volts nos reles de 3V",
-      "cargas passando pelos contatos COM e NA, com fonte propria",
-    ],
+    ligacoes: {"bura32": ["linhas do teclado nos GPIO 13, 12, 14 e 27", "colunas do teclado nos GPIO 26, 25, 33 e 32", "IN dos quatro reles nos GPIO 19, 18, 5 e 17", "VCC dos reles de 3V no pino 3V3, GND no GND", "cargas passando por COM e NA, com fonte propria"]},
     pede: ["keypad", "rele3v"],
     saidas: { bura32: { e6: { modo: "alto" }, e7: { modo: "alto" }, e8: { modo: "alto" }, e9: { modo: "alto" } } },
     anima: { rele: true },
@@ -166,12 +121,7 @@ export const SCRIPTS = [
   {
     id: "cnc", nome: "Mesa CNC de dois eixos", placas: ["bura32"],
     resumo: "Dois motores de passo movem a mesa em X e Y; a ponte H sobe e desce a ferramenta.",
-    ligacoes: [
-      "IN1 a IN4 de cada driver ULN2003 em oito GPIO",
-      "motores de passo nos conectores dos drivers",
-      "ponte H para o eixo Z, com alimentacao propria",
-      "GND de tudo no mesmo ponto: sem isso os passos se perdem",
-    ],
+    ligacoes: {"bura32": ["driver do eixo X: IN1 a IN4 nos GPIO 13, 12, 14 e 27", "driver do eixo Y: IN1 a IN4 nos GPIO 26, 25, 33 e 32", "fio vermelho de cada motor no COM do seu driver", "ENA da ponte H no GPIO 19 (PWM), IN1 e IN2 nos GPIO 18 e 5", "GND dos drivers, da ponte H e da placa no mesmo ponto"]},
     pede: ["uln2003", "motor-passo", "ponteh"],
     saidas: { bura32: { e6: { modo: "alto" }, e7: { modo: "baixo" }, e8: { modo: "alto" }, e9: { modo: "baixo" } } },
     anima: { passo: true },
@@ -179,12 +129,7 @@ export const SCRIPTS = [
   {
     id: "drone", nome: "Estabilizacao de drone", placas: ["bura32"],
     resumo: "O acelerometro corrige a rotacao dos quatro motores para manter o nivel.",
-    ligacoes: [
-      "SDA e SCL do MPU-6050 nos GPIO 21 e 22",
-      "duas pontes H, cada uma com dois motores de drone",
-      "ENA e ENB em pinos PWM: aqui a velocidade e o que estabiliza",
-      "pacote de baterias no +12V, GND comum com a placa",
-    ],
+    ligacoes: {"bura32": ["SDA do MPU-6050 no GPIO 21, SCL no GPIO 22", "ENA da primeira ponte H no GPIO 19, ENB no GPIO 18 (os dois PWM)", "IN1 a IN4 da primeira ponte nos GPIO 5, 17, 16 e 4", "ENA e ENB da segunda ponte nos GPIO 25 e 26 (PWM)", "+12V das duas pontes no pacote de baterias, GND comum com a placa"]},
     pede: ["mpu6050", "ponteh", "motor-drone"],
     saidas: { bura32: { e10: { modo: "pwm", duty: 200 }, e11: { modo: "pwm", duty: 200 } } },
     anima: { motor: "drone" },
@@ -194,11 +139,7 @@ export const SCRIPTS = [
   {
     id: "caixa-preta", nome: "Caixa-preta da nave", placas: ["gaburino", "bura32"],
     resumo: "Grava temperatura, umidade e trancos no cartao SD, com hora de cada leitura.",
-    ligacoes: [
-      "modulo de cartao SD no barramento SPI",
-      "DHT num pino digital, SW-420 em outro",
-      "tudo alimentado em 5 volts, GND comum",
-    ],
+    ligacoes: {"gaburino": ["cartao SD no SPI: SCK no 13, MISO no 12, MOSI no 11 e CS no 10", "OUT do DHT no digital 7", "DO do SW-420 no digital 8", "VCC de tudo no 5V, GND no GND"], "bura32": ["cartao SD no SPI: SCK no GPIO 18, MISO no 19, MOSI no 23 e CS no 5", "OUT do DHT no GPIO 4", "DO do SW-420 no GPIO 15", "VCC do cartao no pino de 5V, os sensores em 3V3"]},
     pede: ["cartao-sd", "dht", "sw420"],
     saidas: { gaburino: { t10: { modo: "alto" } }, bura32: { e10: { modo: "alto" } } },
     anima: { gravando: true },
@@ -206,12 +147,7 @@ export const SCRIPTS = [
   {
     id: "farol-solar", nome: "Farol solar do casco", placas: ["gaburino", "bura32"],
     resumo: "Carrega a bateria de dia pelo painel solar e acende a lampada de noite.",
-    ligacoes: [
-      "painel solar no VIN do carregador TP4056",
-      "bateria de litio nos bornes B+ e B-",
-      "OUT do carregador alimentando o circuito",
-      "LDR num pino analogico, rele acionando a lampada",
-    ],
+    ligacoes: {"gaburino": ["painel solar no VIN+ e VIN- do carregador TP4056", "celula de litio nos bornes B+ e B- do carregador", "OUT+ e OUT- do carregador alimentando o resto do circuito", "LDR em divisor com resistor de 10k, o meio na entrada A0", "IN do rele no digital 8, lampada por COM e NA com fonte propria"], "bura32": ["painel no VIN do TP4056, bateria no B, circuito no OUT", "LDR em divisor de 10k no GPIO 34 (so entrada, com ADC)", "IN do rele de 3V no GPIO 19"]},
     pede: ["celula-solar", "tp4056", "suporte-litio", "ldr", "rele"],
     saidas: { gaburino: { t8: { modo: "alto" }, A0: { modo: "analog" } }, bura32: { e6: { modo: "alto" } } },
     anima: { rele: true, contador: "luz" },
@@ -219,12 +155,7 @@ export const SCRIPTS = [
   {
     id: "radio-pirata", nome: "Radio pirata do deck", placas: ["gaburino", "bura32"],
     resumo: "Toca as musicas do cartao no amplificador, com controle pelo bluetooth.",
-    ligacoes: [
-      "RX do DFPlayer num digital, com resistor de 1k em serie",
-      "DAC_L e DAC_R do DFPlayer nas entradas do amplificador",
-      "alto-falantes nos bornes OUT+ e OUT- de cada canal",
-      "HC-06 na serial, alimentado em 5 volts",
-    ],
+    ligacoes: {"gaburino": ["RX do DFPlayer no digital 10, com resistor de 1k em serie", "TX do DFPlayer no digital 11", "DAC_L e DAC_R do DFPlayer em IN L e IN R do amplificador", "GND do audio no GND de audio do amplificador", "alto-falantes nos bornes OUT L+/OUT L- e OUT R+/OUT R-", "TXD do HC-06 no digital 0 (RX) e RXD no digital 1 (TX), com divisor"], "bura32": ["RX do DFPlayer no GPIO 17 com resistor de 1k, TX no GPIO 16", "DAC_L e DAC_R nas entradas do amplificador", "TXD do HC-06 no GPIO 3 (RX) e RXD no GPIO 1 (TX)"]},
     pede: ["dfplayer", "amplificador", "altofalante", "hc06"],
     saidas: { gaburino: { t10: { modo: "alto" } }, bura32: { e10: { modo: "alto" } } },
     anima: { som: true, tela: ["TOCANDO", "faixa 01"] },
@@ -232,11 +163,7 @@ export const SCRIPTS = [
   {
     id: "sonar", nome: "Sonar de atracagem", placas: ["gaburino", "bura32"],
     resumo: "Quanto mais perto o obstaculo, mais rapido o bipe. Igual a radar de re.",
-    ligacoes: [
-      "TRIG e ECHO do ultrassonico em digitais",
-      "buzzer passivo num pino PWM",
-      "LED vermelho com resistor para o alerta de colisao",
-    ],
+    ligacoes: {"gaburino": ["TRIG do ultrassonico no digital 7, ECHO no digital 8", "buzzer passivo no pino ~9 (PWM), negativo no GND", "LED vermelho com resistor de 220 ohms no digital 12"], "bura32": ["TRIG no GPIO 32, ECHO no GPIO 33 com divisor de tensao", "buzzer passivo no GPIO 26 (PWM)", "LED com resistor no GPIO 27"]},
     pede: ["ultrassonico", "buzzer-passivo", "led"],
     saidas: { gaburino: { t7: { modo: "alto" }, t9: { modo: "pwm", duty: 128 } },
       bura32: { e6: { modo: "alto" }, e10: { modo: "pwm", duty: 128 } } },

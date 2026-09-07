@@ -1064,8 +1064,13 @@ function clicarPino(compId, pinoId) {
   const alvo = pinoDe(compId, pinoId);
   if (!alvo) return;
 
+  // Fio de solda escolhido na sacola vence o ferro: o clique passa a
+  // ser tracado de fio, nao junta de proximidade. Sem essa regra as
+  // duas ferramentas brigavam pelo mesmo clique.
+  const fioDeSolda = estado.ferramentaFio && estado.ferramentaFio.tipo === "solda-fio";
+
   // Com uma ferramenta na mao, o clique pertence a ela.
-  if (estado.modoFerramenta) {
+  if (estado.modoFerramenta && !fioDeSolda) {
     if (ganchos.aoUsarFerramenta) ganchos.aoUsarFerramenta(estado.modoFerramenta, compId, pinoId);
     return;
   }

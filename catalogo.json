@@ -185,7 +185,7 @@
         "resumo": "Matriz, buzzer e os botoes A e B: um bichinho que responde.",
         "componentes": [
           "microbura",
-          "buzzer",
+          "buzzer-passivo",
           "led",
           "resistor",
           "protoboard"
@@ -427,7 +427,7 @@
         "resumo": "Matriz acende, som nenhum. Peca boa, montagem errada.",
         "componentes": [
           "microbura",
-          "buzzer",
+          "buzzer-passivo",
           "multimetro",
           "protoboard"
         ],
