@@ -110,7 +110,13 @@ footer .ok{color:var(--fosforo)}
     <button data-fer="pen">Caneta</button>
     <button data-fer="no">Remodelar</button>
     <button data-fer="text">Rotulo</button>
-    <button data-fer="led">Luz de ligado</button>
+    <button data-fer="marca">Marcador</button>
+    <select id="tipo-marca" style="height:30px">
+      <option value="luz">luz de ligado</option>
+      <option value="eixo">eixo de giro</option>
+      <option value="som">som</option>
+      <option value="vibra">vibracao</option>
+    </select>
     <button id="b-grade" class="on">Grade</button>
     <button id="b-pinos" class="on">Pinos</button>
     <button id="b-marcas" class="on">Areas vivas</button>
@@ -176,6 +182,9 @@ const app = {
   grade: true,
   verPinos: true,
   verMarcas: true,
+  marcadores: {},     // id do componente -> lista de marcadores editaveis
+  tipoMarca: "luz",
+  marcaSel: null,
   seq: 1,
   trabalho: {},       // id -> { formas, pinos } ja editados
 };
@@ -354,18 +363,34 @@ function pintar(soMesa) {
 /* Marcas do que se mexe, acende, soa ou mostra algo. Elas nao entram
    no desenho exportado: existem so para voce posicionar as formas em
    volta sem quebrar a animacao que a bancada aplica por cima. */
+const CORES_MARCA = { luz: "#5CE07A", eixo: "#E9C542", som: "#E0703C", vibra: "#C77DFF" };
+const ROTULO_MARCA = { luz: "luz de ligado", eixo: "eixo de giro", som: "som", vibra: "vibracao" };
+
+function marcadoresEditaveis() {
+  const lista = app.marcadores[app.atual] || [];
+  return lista.map((mk, i) => {
+    const cor = CORES_MARCA[mk.tipo] || "#7DD3FC";
+    const r = mk.r || 22;
+    const sel = app.marcaSel === i;
+    return `<g class="marca-alca" data-marca="${i}" style="cursor:move">
+      <circle cx="${mk.x}" cy="${mk.y}" r="${r}" fill="${cor}" fill-opacity="${sel ? 0.22 : 0.1}"
+        stroke="${cor}" stroke-width="${sel ? 3 : 2}" stroke-dasharray="5 4"/>
+      <path d="M${mk.x - r - 8} ${mk.y}h${r * 2 + 16}M${mk.x} ${mk.y - r - 8}v${r * 2 + 16}" stroke="${cor}" stroke-width="1.5"/>
+      <text x="${mk.x}" y="${mk.y - r - 12}" font-family="monospace" font-size="11" fill="${cor}" text-anchor="middle">${ROTULO_MARCA[mk.tipo] || mk.tipo}${mk.estilo ? " (" + mk.estilo + ")" : ""}</text>
+    </g>`;
+  }).join("");
+}
+
 function marcasDaPeca(d) {
   const m = (BASE.marcas || {})[d.id];
-  if (!m) return "";
-  let s = "";
+  if (!m) return marcadoresEditaveis();
+  let s = marcadoresEditaveis();
   const alvo = (x, y, cor, rot) =>
     `<g pointer-events="none" opacity=".9">
       <circle cx="${x}" cy="${y}" r="16" fill="none" stroke="${cor}" stroke-width="2" stroke-dasharray="5 4"/>
       <path d="M${x - 22} ${y}h44M${x} ${y - 22}v44" stroke="${cor}" stroke-width="1.5"/>
       <text x="${x}" y="${y - 26}" font-family="monospace" font-size="11" fill="${cor}" text-anchor="middle">${rot}</text>
     </g>`;
-  for (const e of m.eixos || []) s += alvo(e.x, e.y, "#E9C542", "eixo de giro");
-  for (const l of m.luzes || []) s += alvo(l.x, l.y, "#5CE07A", "luz");
   for (const z of m.acoes || []) s += `<g pointer-events="none">
       <circle cx="${z.x}" cy="${z.y}" r="${z.r}" fill="none" stroke="#7DD3FC" stroke-width="2" stroke-dasharray="7 5"/>
       <text x="${z.x}" y="${z.y - z.r - 6}" font-family="monospace" font-size="11" fill="#7DD3FC" text-anchor="middle">${z.rotulo}</text>
@@ -374,7 +399,11 @@ function marcasDaPeca(d) {
       <rect x="${t.x}" y="${t.y}" width="${t.w}" height="${t.h}" fill="none" stroke="#C77DFF" stroke-width="2" stroke-dasharray="7 5"/>
       <text x="${t.x + t.w / 2}" y="${t.y - 6}" font-family="monospace" font-size="11" fill="#C77DFF" text-anchor="middle">area de tela</text>
     </g>`;
-  for (const so of m.sons || []) s += alvo(so.x, so.y, "#E0703C", "som");
+  for (const t of m.trimpots || []) s += `<g pointer-events="none">
+      <path d="M${t.x} ${t.y}L${t.x} ${t.y + t.r + 20}" stroke="#5CE07A" stroke-width="1.5" stroke-dasharray="4 4"/>
+      <rect x="${t.x - 60}" y="${t.y + t.r + 10}" width="120" height="20" fill="none" stroke="#5CE07A" stroke-width="1.5" stroke-dasharray="5 4"/>
+      <text x="${t.x}" y="${t.y + t.r + 44}" font-family="monospace" font-size="10" fill="#5CE07A" text-anchor="middle">aqui aparece: ${t.rotulo}</text>
+    </g>`;
   return s;
 }
 
@@ -626,15 +655,18 @@ function abrirComponente(id) {
   app.sel = null;
   const c = BASE.componentes.find((x) => x.id === id);
   const guardado = app.trabalho[id];
+  app.marcaSel = null;
   if (guardado) {
     app.formas = JSON.parse(JSON.stringify(guardado.formas));
     app.pinos = JSON.parse(JSON.stringify(guardado.pinos));
+    app.marcadores[id] = JSON.parse(JSON.stringify(guardado.marcadores || (BASE.marcadores || {})[id] || []));
     if (guardado.w) c.w = guardado.w;
     if (guardado.h) c.h = guardado.h;
     app.seq = Math.max(app.seq, ...app.formas.map((f) => parseInt(String(f.id).slice(1), 10) || 0)) + 1;
   } else {
     app.formas = lerFormas(c.svg);
     app.pinos = JSON.parse(JSON.stringify(c.pinos));
+    app.marcadores[id] = JSON.parse(JSON.stringify((BASE.marcadores || {})[id] || []));
   }
   enquadrar();
   pintarLista(q("#busca").value);
@@ -648,6 +680,7 @@ function marcarEditado() {
   app.trabalho[app.atual] = {
     formas: JSON.parse(JSON.stringify(app.formas)),
     pinos: JSON.parse(JSON.stringify(app.pinos)),
+    marcadores: JSON.parse(JSON.stringify(app.marcadores[app.atual] || [])),
     w: c.w, h: c.h,
   };
   guardar();
@@ -672,12 +705,36 @@ function iniciarMesa() {
 
     if (app.ferramenta === "pen") { penClique(m, ev); return; }
 
+    if (app.ferramenta === "marca") {
+      const lista = app.marcadores[app.atual] || (app.marcadores[app.atual] = []);
+      const tipo = app.tipoMarca;
+      const mk = { tipo, x: Math.round(m.x), y: Math.round(m.y) };
+      if (tipo === "eixo") { mk.estilo = (BASE.eixoPadrao || {})[app.atual] || "dc"; mk.r = 26; }
+      lista.push(mk);
+      app.marcaSel = lista.length - 1;
+      app.ferramenta = "sel";
+      atualizarBarra();
+      marcarEditado();
+      pintar();
+      recado(`marcador de ${ROTULO_MARCA[tipo]} adicionado — arraste para posicionar, Delete remove`);
+      return;
+    }
     if (app.ferramenta !== "sel" && app.ferramenta !== "no") { criarForma(m); return; }
 
     const alca = ev.target.closest("[data-alca]");
     if (alca) {
       arraste = { modo: "escala", f: formaSel(), inicio: m, orig: JSON.parse(JSON.stringify(formaSel().attrs)) };
       svg.setPointerCapture(ev.pointerId);
+      return;
+    }
+
+    const marcaAlca = ev.target.closest("[data-marca]");
+    if (marcaAlca) {
+      app.marcaSel = Number(marcaAlca.dataset.marca);
+      app.sel = null; app.selMulti = [];
+      arraste = { modo: "marca", i: app.marcaSel };
+      svg.setPointerCapture(ev.pointerId);
+      pintar();
       return;
     }
 
@@ -743,6 +800,9 @@ function iniciarMesa() {
       arraste.ponto.y = Math.round(m.y / g) * g;
       arraste.f.attrs.d = caminhoDePontos(arraste.pontos, arraste.fechado);
       pintar(true);
+    } else if (arraste.modo === "marca") {
+      const mk = (app.marcadores[app.atual] || [])[arraste.i];
+      if (mk) { mk.x = Math.round(m.x); mk.y = Math.round(m.y); pintar(true); }
     } else if (arraste.modo === "pino") {
       const p = app.pinos.find((x) => x.id === arraste.id);
       const g = p.r === "macho" ? PASSO : 4;
@@ -781,6 +841,12 @@ function iniciarMesa() {
     if (ev.target.matches("input, select, textarea")) return;
     if (ev.key === "Escape") { penPontos = null; app.sel = null; pintar(); }
     if (ev.key === "Enter" && penPontos) fecharCaneta(false);
+    if ((ev.key === "Delete" || ev.key === "Backspace") && app.marcaSel != null) {
+      (app.marcadores[app.atual] || []).splice(app.marcaSel, 1);
+      app.marcaSel = null; marcarEditado(); pintar();
+      recado("marcador removido");
+      return;
+    }
     if ((ev.key === "Delete" || ev.key === "Backspace") && selecionadas().length) {
       const fora = new Set(selecionadas().map((f) => f.id));
       app.formas = app.formas.filter((x) => !fora.has(x.id));
@@ -925,6 +991,7 @@ function atualizarBarra() {
     pen: "Clique para fixar um ponto; arraste no clique para curvar. Enter fecha, Esc cancela.",
     text: "Clique para colocar um rotulo e depois edite o texto no painel.",
     led: "Clique onde fica a luz de ligado da peca.",
+    marca: "Escolha o tipo ao lado e clique na peca. Depois arraste para posicionar; Delete remove.",
     no: "Escolha um traco da caneta: os pontos dele aparecem em amarelo e voce arrasta cada um.",
   };
   q("#ajuda").textContent = dicas[app.ferramenta] || "";
@@ -970,6 +1037,7 @@ function exportarTudo() {
         w: t && t.w ? t.w : c.w,
         h: t && t.h ? t.h : c.h,
         svg: montarSvgDaPeca(c.id),
+        marcadores: (t && t.marcadores) || (BASE.marcadores || {})[c.id] || [],
         pinos: (t ? t.pinos : c.pinos).map((p) => ({ id: p.id, n: p.n, x: p.x, y: p.y, r: p.r, lado: p.lado })),
       };
     }),
@@ -995,6 +1063,7 @@ document.querySelectorAll("[data-fer]").forEach((b) => b.addEventListener("click
 }));
 q("#b-grade").addEventListener("click", (e) => { app.grade = !app.grade; e.target.classList.toggle("on", app.grade); aplicarVista(); });
 q("#b-pinos").addEventListener("click", (e) => { app.verPinos = !app.verPinos; e.target.classList.toggle("on", app.verPinos); pintar(); });
+q("#tipo-marca").addEventListener("change", (e) => { app.tipoMarca = e.target.value; app.ferramenta = "marca"; atualizarBarra(); });
 q("#b-marcas").addEventListener("click", (e) => { app.verMarcas = !app.verMarcas; e.target.classList.toggle("on", app.verMarcas); pintar(); });
 q("#b-mais").addEventListener("click", () => zoom(1.25));
 q("#b-menos").addEventListener("click", () => zoom(0.8));

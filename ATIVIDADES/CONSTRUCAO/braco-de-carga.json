@@ -1,0 +1,84 @@
+{
+  "id": "braco-de-carga",
+  "titulo": "Braco de carga do deck",
+  "tipo": "construcao",
+  "dificuldade": "intermediario",
+  "minutos": 22,
+  "pontos": 200,
+  "fase": 6,
+  "placa": "bura32",
+  "briefing": "O deck precisa de um braco que levante caixa. Motor de passo pelo driver, porque aqui interessa parar no lugar exato e nao apenas girar. O motor de passo nao liga na placa: quem puxa cada bobina para o GND e o driver. Cinco fios, e o vermelho e o comum.",
+  "objetivos": [
+    {
+      "id": "driver",
+      "texto": "Driver ULN2003 alimentado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "uln2003"
+      }
+    },
+    {
+      "id": "motor",
+      "texto": "Motor de passo ligado no driver e girando",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "motor-passo"
+      }
+    },
+    {
+      "id": "comum",
+      "texto": "Fio vermelho do motor no COM do driver",
+      "regra": {
+        "tipo": "mesmoNo",
+        "a": {
+          "componente": "motor-passo",
+          "pino": "com"
+        },
+        "b": {
+          "componente": "uln2003",
+          "pino": "mc"
+        }
+      }
+    },
+    {
+      "id": "gnd",
+      "texto": "GND do driver no GND da placa",
+      "regra": {
+        "tipo": "mesmoNo",
+        "a": {
+          "componente": "uln2003",
+          "pino": "gnd"
+        },
+        "b": {
+          "componente": "bura32",
+          "papel": "gnd"
+        }
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "Comece pela alimentacao do driver: pilhas nos pinos + e - dele.",
+    "Os quatro fios coloridos do motor vao nas bobinas A, B, C e D do driver.",
+    "IN1 a IN4 do driver vao em quatro GPIO livres da Bura32.",
+    "Ponha um IN em nivel alto no Firmware e veja o eixo se mexer."
+  ],
+  "erroComum": "Ligar o motor de passo direto na placa. Ele nem se mexe e parece quebrado.",
+  "sucesso": "Passo a passo, literalmente. E o que faz impressora 3D saber onde esta sem sensor nenhum.",
+  "componentesLiberados": [
+    "bura32",
+    "uln2003",
+    "motor-passo",
+    "suporteaa",
+    "protoboard",
+    "resistor"
+  ],
+  "creditos": 200,
+  "usaScripts": true
+}

@@ -1,0 +1,42 @@
+{
+  "id": "brinquedo-surdo",
+  "titulo": "O brinquedo que ficou surdo",
+  "tipo": "manutencao",
+  "dificuldade": "facil",
+  "minutos": 14,
+  "pontos": 140,
+  "fase": 6,
+  "placa": "microbura",
+  "briefing": "Trouxeram o bichinho eletronico da filha do comandante. A matriz acende, os botoes respondem, mas ele emudeceu. Ja conferi a placa: esta boa. O buzzer tambem testei aqui e funciona. Sobra a montagem. Buzzer tem lado, e nem todo mundo lembra disso.",
+  "objetivos": [
+    {
+      "id": "toca",
+      "texto": "Buzzer voltando a apitar",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "buzzer"
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "Passe o mouse nos dois pinos do buzzer e leia qual e o positivo.",
+    "Veja de onde vem cada fio: um do anel de sinal, outro do GND.",
+    "Apague um fio com Delete e refaca ao contrario.",
+    "Com a bancada ligada, o multimetro em tensao mostra o sinal invertido."
+  ],
+  "erroComum": "Trocar o buzzer. Buzzer invertido nao queima, so fica calado.",
+  "sucesso": "Polaridade de novo. Guarde a lista: LED, buzzer, capacitor eletrolitico, diodo e modulo.",
+  "componentesLiberados": [
+    "microbura",
+    "buzzer",
+    "multimetro",
+    "protoboard"
+  ]
+}

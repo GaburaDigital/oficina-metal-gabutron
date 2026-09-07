@@ -675,6 +675,18 @@ ${txt("MULTIMETRO", 168, 388, 16, "#4A2410")}
 <circle cx="216" cy="432" r="16" fill="#8A2C28" stroke="#4A1614" stroke-width="3"/>`;
 }
 
+function miniteclado(d, i) {
+  let teclas = "";
+  for (let l = 0; l < 4; l++)
+    for (let c = 0; c < 10; c++)
+      teclas += `<rect x="${30 + c * 34}" y="${42 + l * 32}" width="28" height="26" rx="4" fill="#31363E" stroke="#0A0C11"/>`;
+  return `
+<rect width="${d.w}" height="${d.h}" rx="12" fill="#1B1F26" stroke="#05060A" stroke-width="3"/>
+${teclas}
+${txt("mini teclado bluetooth", 216, 194, 13, "#7DD3FC")}
+<circle cx="396" cy="30" r="7" fill="#7DD3FC"/>`;
+}
+
 function moeda(d, i) {
   return `
 <circle cx="60" cy="60" r="44" fill="#C9A227" stroke="#8A6B14" stroke-width="4"/>
@@ -764,7 +776,7 @@ const MAPA = {
   "motor-passo": motorPasso, sonda, "expansao-servo": expansaoServo,
   "suporte-litio": suporteLitio, "fonte-bancada": fonteBancada,
   joystick, encoder, dfplayer, moeda, borracha, "cartao-midia": cartaoMidia,
-  "multimetro-peca": multimetroPeca, piezo, lampada, lcd7, "cabo-hdmi": caboHdmi, isd1820,
+  "multimetro-peca": multimetroPeca, piezo, lampada, lcd7, "cabo-hdmi": caboHdmi, isd1820, miniteclado,
   pendrive, "caixa-som": caixaSom, clipe,
 };
 
@@ -794,11 +806,78 @@ function ajustarArte(def, i, svg) {
    O corpo da peca vem pronto do assistente de desenho, mas brilho,
    luz de ligado, tela acesa, onda de som e motor girando precisam
    reagir. Por isso eles continuam sendo desenhados aqui por cima. */
+/* Eixo animado. Cada motor gira de um jeito, e a animacao roda no
+   proprio SVG: nao precisa de laco em JavaScript e nao trava a bancada.
+   O aluno ve o servo varrer, o DC girar rapido e o passo dar passos. */
+function eixoVivo(m, on) {
+  const { x, y, estilo } = m;
+  const r = m.r || 26;
+  const eixo = `<circle cx="${x}" cy="${y}" r="${r * 0.28}" fill="#6C727B"/>`;
+
+  const girar = (dur, corpo) => on
+    ? `<g>${corpo}<animateTransform attributeName="transform" type="rotate"
+        from="0 ${x} ${y}" to="360 ${x} ${y}" dur="${dur}s" repeatCount="indefinite"/></g>`
+    : `<g>${corpo}</g>`;
+
+  if (estilo === "servo") {
+    const braco = `<rect x="${x - 5}" y="${y - r}" width="10" height="${r + 4}" rx="3" fill="#F2F2EE" stroke="#8A8F98" stroke-width="2"/>
+      <rect x="${x - r * 0.7}" y="${y - r - 8}" width="${r * 1.4}" height="10" rx="5" fill="#F2F2EE" stroke="#8A8F98" stroke-width="2"/>`;
+    return `<circle cx="${x}" cy="${y}" r="${r * 0.9}" fill="#C9CDD3"/>` +
+      (on ? `<g>${braco}<animateTransform attributeName="transform" type="rotate"
+        values="-80 ${x} ${y}; 80 ${x} ${y}; -80 ${x} ${y}" dur="2.4s" repeatCount="indefinite"/></g>` : braco) + eixo;
+  }
+  if (estilo === "servo-continuo")
+    return `<circle cx="${x}" cy="${y}" r="${r * 0.9}" fill="#C9CDD3"/>` +
+      girar(1.6, `<rect x="${x - 5}" y="${y - r}" width="10" height="${r}" rx="3" fill="#F2F2EE" stroke="#8A8F98" stroke-width="2"/>`) + eixo;
+  if (estilo === "dc")
+    return `<circle cx="${x}" cy="${y}" r="${r}" fill="#6C727B"/>` +
+      girar(0.35, `<path d="M${x} ${y - r} L${x} ${y + r} M${x - r} ${y} L${x + r} ${y}" stroke="#D5D9DE" stroke-width="5"/>`) + eixo;
+  if (estilo === "helice")
+    return girar(0.22, `<ellipse cx="${x}" cy="${y}" rx="${r * 1.6}" ry="${r * 0.28}" fill="#B9BEC6" opacity=".85"/>
+      <ellipse cx="${x}" cy="${y}" rx="${r * 0.28}" ry="${r * 1.6}" fill="#B9BEC6" opacity=".85"/>`) + eixo;
+  if (estilo === "passo") {
+    const dentes = Array.from({ length: 12 }, (_, k) => {
+      const a = (k * 30 * Math.PI) / 180;
+      return `<rect x="${x + Math.cos(a) * r * 0.78 - 3}" y="${y + Math.sin(a) * r * 0.78 - 3}" width="6" height="6" fill="#3A3F47"/>`;
+    }).join("");
+    return `<circle cx="${x}" cy="${y}" r="${r}" fill="#9BA1AA"/>` +
+      (on ? `<g>${dentes}<animateTransform attributeName="transform" type="rotate"
+        values="0 ${x} ${y}; 30 ${x} ${y}; 30 ${x} ${y}; 60 ${x} ${y}" dur="1.2s" repeatCount="indefinite"/></g>` : `<g>${dentes}</g>`) + eixo;
+  }
+  if (estilo === "rotor")
+    return `<circle cx="${x}" cy="${y}" r="${r}" fill="#2A6BB0"/>` +
+      girar(0.5, `<path d="M${x} ${y - r * 0.8} L${x} ${y + r * 0.8} M${x - r * 0.8} ${y} L${x + r * 0.8} ${y}" stroke="#CFE4EE" stroke-width="6"/>`) + eixo;
+  if (estilo === "vibra")
+    return on
+      ? `<g><circle cx="${x}" cy="${y}" r="${r * 0.7}" fill="#8A8F98"/>
+         <animateTransform attributeName="transform" type="translate"
+           values="0 0; 3 -2; -3 2; 0 0" dur="0.12s" repeatCount="indefinite"/></g>`
+      : `<circle cx="${x}" cy="${y}" r="${r * 0.7}" fill="#8A8F98"/>`;
+  return "";
+}
+
 function camadaViva(def, inst, arte) {
   const i = inst || {};
   let s = "";
 
-  for (const luz of arte.luzes || []) s += ledAlim(luz.x, luz.y, i.ligado);
+  // Marcadores mandam: os do desenho revisado tem prioridade sobre os
+  // padroes da biblioteca. E assim que da para tirar a luz de uma peca
+  // que nao acende e por eixo onde ele realmente fica.
+  const marcas = arte.marcadores || def.marcadores || [];
+  for (const m of marcas) {
+    if (m.tipo === "luz") {
+      if (m.forte) {
+        s += i.ligado
+          ? `<circle cx="${m.x}" cy="${m.y}" r="26" fill="${m.cor || "#E24B4A"}" opacity=".4"/>
+             <circle cx="${m.x}" cy="${m.y}" r="9" fill="${m.cor || "#E24B4A"}"/>`
+          : `<circle cx="${m.x}" cy="${m.y}" r="7" fill="#4A1E1E"/>`;
+      } else s += ledAlim(m.x, m.y, i.ligado);
+    } else if (m.tipo === "eixo") s += eixoVivo(m, i.ligado);
+    else if (m.tipo === "som" && i.ligado)
+      s += `<g fill="none" stroke="#5CE07A" stroke-width="3">
+        <path d="M${m.x} ${m.y - 16}a22 22 0 010 32"/><path d="M${m.x + 10} ${m.y - 26}a34 34 0 010 52"/></g>`;
+    else if (m.tipo === "vibra") s += eixoVivo({ ...m, estilo: "vibra" }, i.ligado);
+  }
 
   // Botao e chave: o desenho exportado e estatico, entao o efeito de
   // apertar entra por cima. Sem isso a peca parece travada.
@@ -888,11 +967,24 @@ function camadaViva(def, inst, arte) {
   }
 
   // Slot de midia: sem a marca, ninguem descobre onde encaixa.
+  // Cada slot tem tipo proprio: pen drive nao entra em HDMI. E ele so
+  // fica azul enquanto REALMENTE tem alguma coisa dentro.
   for (const e of def.encaixes || (def.encaixe ? [def.encaixe] : [])) {
-    const cheio = (i.temMidia || []).includes ? (i.temMidia || []).includes(e.tipo) : i.temMidia === e.tipo;
+    const ocupados = i.ocupados || {};
+    const cheio = !!ocupados[e.tipo];
     s += `<rect x="${e.x - 46}" y="${e.y - 26}" width="92" height="52" rx="5"
-            fill="${cheio ? "#1B4E8A" : "#0A0C11"}" stroke="#5CE07A" stroke-width="2" stroke-dasharray="${cheio ? "0" : "7 5"}"/>`;
+            fill="${cheio ? "#1B4E8A" : "#0A0C11"}" stroke="${cheio ? "#5CE07A" : "#565C66"}" stroke-width="2"
+            stroke-dasharray="${cheio ? "0" : "7 5"}"/>`;
     s += txt(cheio ? "encaixado" : e.rotulo, e.x, e.y + 44, 11, cheio ? "#5CE07A" : "#8A8F98");
+  }
+
+  // Pontas de cabo: cada uma encaixa sozinha, e a orientacao importa.
+  for (const pt of def.pontasEncaixe || []) {
+    const ligada = (i.pontasLigadas || []).includes(pt.id);
+    s += `<rect x="${pt.x - 30}" y="${pt.y - 26}" width="60" height="52" rx="5"
+            fill="none" stroke="${ligada ? "#5CE07A" : "#565C66"}" stroke-width="2"
+            stroke-dasharray="${ligada ? "0" : "6 5"}"/>`;
+    s += txt(ligada ? "ligada" : pt.rotulo, pt.x, pt.y + 42, 10, ligada ? "#5CE07A" : "#8A8F98");
   }
 
   if (def.arte === "led" && i.aceso) {
@@ -903,8 +995,19 @@ function camadaViva(def, inst, arte) {
          <circle cx="${cx}" cy="${cy}" r="${20 + b * 14}" fill="${v.cor}" opacity="${0.18 + b * 0.3}"/>` + s;
   }
 
-  if ((def.id === "ledrgb" || def.id === "neopixel") && i.ligado)
+  if (def.id === "ledrgb" && i.ligado)
     s += `<circle cx="${def.w / 2}" cy="${def.h * 0.35}" r="${def.w * 0.34}" fill="#F2F2EE" opacity=".24"/>`;
+
+  // Neopixel: os dezesseis quadradinhos acendem, cada um na sua cor.
+  if (def.id === "neopixel" && i.ligado) {
+    const cores = ["#E24B4A", "#5CE07A", "#7DD3FC", "#E9C542"];
+    const passo = (def.w - 96) / 3;
+    for (let k = 0; k < 16; k++) {
+      const x = 48 + (k % 4) * passo, y = 48 + Math.floor(k / 4) * passo, c = cores[(k + Math.floor(k / 4)) % 4];
+      s += `<rect x="${x - passo * 0.34}" y="${y - passo * 0.34}" width="${passo * 0.68}" height="${passo * 0.68}" rx="4" fill="${c}" opacity=".9"/>
+            <rect x="${x - passo * 0.46}" y="${y - passo * 0.46}" width="${passo * 0.92}" height="${passo * 0.92}" rx="6" fill="${c}" opacity=".22"/>`;
+    }
+  }
 
   if (def.tela && i.ligado)
     s += `<rect x="${def.w * 0.09}" y="${def.h * 0.1}" width="${def.w * 0.82}" height="${def.h * 0.5}" rx="4" fill="#2FA5D8" opacity=".5"/>` +

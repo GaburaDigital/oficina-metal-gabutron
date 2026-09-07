@@ -1,0 +1,53 @@
+{
+  "id": "deck-sem-imagem",
+  "titulo": "O deck que perdeu a imagem",
+  "tipo": "manutencao",
+  "dificuldade": "facil",
+  "minutos": 14,
+  "pontos": 150,
+  "fase": 6,
+  "placa": "arubagpi",
+  "briefing": "O cyberdeck do time de inspecao voltou sem imagem. A placa liga, o LED de energia acende, o teclado responde, mas a tela fica preta. Antes de acusar a tela, lembre do que quase ninguem lembra: HDMI leva video, nao leva energia. Sem alimentacao propria, ela nao acende nem com o melhor cabo do universo.",
+  "objetivos": [
+    {
+      "id": "tela",
+      "texto": "Tela alimentada e acesa",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "lcd7"
+      }
+    },
+    {
+      "id": "hdmi",
+      "texto": "Cabo HDMI encaixado dos dois lados",
+      "regra": {
+        "tipo": "encaixado",
+        "componente": "cabo-hdmi",
+        "n": 2
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "Meca a tensao nos bornes de alimentacao da tela com o multimetro.",
+    "Se der zero, o problema nao e o cabo: e a alimentacao.",
+    "Confira tambem se as duas pontas do HDMI estao encaixadas e alinhadas.",
+    "Tela de sete polegadas puxa quase 700 mA: fonte fraca da imagem piscando."
+  ],
+  "erroComum": "Trocar o cabo HDMI. O cabo estava bom; faltava energia para a tela.",
+  "sucesso": "HDMI leva video, nao leva energia. Esse detalhe explica metade das telas pretas do mundo.",
+  "componentesLiberados": [
+    "arubagpi",
+    "lcd7",
+    "cabo-hdmi",
+    "fonte-tomada",
+    "multimetro",
+    "protoboard"
+  ]
+}

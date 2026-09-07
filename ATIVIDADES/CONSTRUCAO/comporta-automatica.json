@@ -1,0 +1,79 @@
+{
+  "id": "comporta-automatica",
+  "titulo": "Comporta automatica do hangar",
+  "tipo": "construcao",
+  "dificuldade": "facil",
+  "minutos": 16,
+  "pontos": 150,
+  "fase": 6,
+  "placa": "bura32",
+  "briefing": "O hangar precisa de comporta que abre sozinha quando alguem chega. Sensor de presenca na entrada, servo movendo a trava, Bura32 no meio. Lembre que ela e de 3,3 volts: modulo que devolve 5 volts na saida precisa de divisor, senao voce mata a entrada e descobre tarde.",
+  "objetivos": [
+    {
+      "id": "pir",
+      "texto": "Sensor de presenca energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "pir"
+      }
+    },
+    {
+      "id": "servo",
+      "texto": "Servo com alimentacao externa",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "servo180"
+      }
+    },
+    {
+      "id": "pwm",
+      "texto": "Sinal do servo num pino PWM",
+      "regra": {
+        "tipo": "pinoEm",
+        "componente": "servo180",
+        "pino": "sig",
+        "papelAlvo": "pwm"
+      }
+    },
+    {
+      "id": "gnd",
+      "texto": "GND da fonte do servo no GND da placa",
+      "regra": {
+        "tipo": "mesmoNo",
+        "a": {
+          "componente": "suporteaa",
+          "pino": "n"
+        },
+        "b": {
+          "componente": "bura32",
+          "papel": "gnd"
+        }
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "O PIR precisa de uns trinta segundos parado para se acostumar depois de ligar.",
+    "Gire o trimpot do PIR e veja o alcance mudar na bancada.",
+    "Servo sempre por fora: quinhentos miliamperes no pico.",
+    "Use o script Servo vai e vem para conferir antes de fechar."
+  ],
+  "erroComum": "Alimentar o servo pela Bura32. Ela reinicia no primeiro movimento.",
+  "sucesso": "Presenca, PWM e alimentacao separada: os tres pilares de qualquer automacao.",
+  "componentesLiberados": [
+    "bura32",
+    "pir",
+    "servo180",
+    "suporteaa",
+    "protoboard",
+    "resistor"
+  ],
+  "creditos": 160,
+  "usaScripts": true
+}

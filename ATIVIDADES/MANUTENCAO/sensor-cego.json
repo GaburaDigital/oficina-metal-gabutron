@@ -1,0 +1,53 @@
+{
+  "id": "sensor-cego",
+  "titulo": "O sensor que ficou cego",
+  "tipo": "manutencao",
+  "dificuldade": "intermediario",
+  "minutos": 16,
+  "pontos": 170,
+  "fase": 6,
+  "placa": "bura32",
+  "briefing": "O corredor de servico tem um sensor de obstaculo que parou de enxergar. Ou melhor: ele enxerga o tempo todo, ou nao enxerga nunca. Antes de trocar peca, olhe o parafusinho azul em cima do modulo. Trimpot desregulado imita defeito com uma perfeicao impressionante.",
+  "objetivos": [
+    {
+      "id": "sensor",
+      "texto": "Sensor energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "irobstaculo"
+      }
+    },
+    {
+      "id": "ajuste",
+      "texto": "Trimpot ajustado numa faixa util",
+      "regra": {
+        "tipo": "trimpotEntre",
+        "componente": "irobstaculo",
+        "min": 35,
+        "max": 75
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "Energize a bancada: com ela ligada o trimpot mostra o alcance.",
+    "Arraste o parafusinho azul e veja o arco de alcance mudar de tamanho.",
+    "No maximo ele dispara com qualquer coisa; no minimo nao ve nem a parede.",
+    "Entre trinta e cinco e setenta e cinco por cento costuma servir."
+  ],
+  "erroComum": "Trocar o modulo. O sensor estava bom: errado estava o ajuste.",
+  "sucesso": "Trimpot. Metade dos sensores que chegam aqui como defeituosos so estao desregulados.",
+  "componentesLiberados": [
+    "bura32",
+    "irobstaculo",
+    "protoboard",
+    "multimetro",
+    "resistor"
+  ]
+}

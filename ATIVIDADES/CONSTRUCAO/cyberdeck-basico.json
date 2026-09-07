@@ -1,0 +1,62 @@
+{
+  "id": "cyberdeck-basico",
+  "titulo": "Cyberdeck de bolso",
+  "tipo": "construcao",
+  "dificuldade": "facil",
+  "minutos": 18,
+  "pontos": 160,
+  "fase": 6,
+  "placa": "arubagpi",
+  "briefing": "Cyberdeck e computador improvisado que voce carrega junto. Vamos ao basico: Arubag Pi, tela de sete polegadas pelo cabo HDMI e um mini teclado. Duas coisas derrubam iniciante: HDMI so leva video, entao a tela precisa de alimentacao propria; e o conector so entra numa posicao, entao gire o cabo ate alinhar.",
+  "objetivos": [
+    {
+      "id": "tela",
+      "texto": "Tela de 7 polegadas alimentada",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "lcd7"
+      }
+    },
+    {
+      "id": "hdmi",
+      "texto": "Cabo HDMI encaixado nos dois lados",
+      "regra": {
+        "tipo": "encaixado",
+        "componente": "cabo-hdmi",
+        "n": 2
+      }
+    },
+    {
+      "id": "teclado",
+      "texto": "Mini teclado na bancada",
+      "regra": {
+        "tipo": "existe",
+        "componente": "miniteclado"
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "Solte o cabo perto da entrada HDMI. Se recusar, gire com a tecla R e tente de novo.",
+    "Uma ponta vai na Arubag, a outra na tela. As duas precisam encaixar.",
+    "A tela pede 5 volts e ate 700 mA por fora: HDMI nao alimenta nada.",
+    "Alimentar tela e placa na mesma fonte fraca da tela piscando."
+  ],
+  "erroComum": "Achar que o HDMI alimenta a tela. Ela fica escura e o cabo leva a culpa.",
+  "sucesso": "Seu primeiro cyberdeck. Video por um caminho, energia por outro: e sempre assim.",
+  "componentesLiberados": [
+    "arubagpi",
+    "lcd7",
+    "cabo-hdmi",
+    "miniteclado",
+    "fonte-tomada",
+    "protoboard"
+  ],
+  "creditos": 320
+}

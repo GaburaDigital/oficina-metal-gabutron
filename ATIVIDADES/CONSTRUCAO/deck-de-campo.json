@@ -1,0 +1,84 @@
+{
+  "id": "deck-de-campo",
+  "titulo": "Deck de campo com registro",
+  "tipo": "construcao",
+  "dificuldade": "hacker",
+  "minutos": 30,
+  "pontos": 290,
+  "fase": 6,
+  "placa": "arubagpi",
+  "briefing": "Missao de inspecao longa, sem rede. O deck precisa gravar tudo o que medir e mostrar na tela enquanto trabalha. Monte: Arubag com tela, cartao de memoria no slot proprio, pen drive para levar o resultado, sensores de temperatura e vibracao. A Arubag tem tres entradas diferentes, e cada coisa vai na sua.",
+  "objetivos": [
+    {
+      "id": "tela",
+      "texto": "Tela ligada por HDMI",
+      "regra": {
+        "tipo": "encaixado",
+        "componente": "cabo-hdmi",
+        "n": 2
+      }
+    },
+    {
+      "id": "cartao",
+      "texto": "Cartao de memoria no slot de cartao",
+      "regra": {
+        "tipo": "encaixado",
+        "componente": "cartao-sd-midia",
+        "n": 1
+      }
+    },
+    {
+      "id": "pendrive",
+      "texto": "Pen drive na porta USB",
+      "regra": {
+        "tipo": "encaixado",
+        "componente": "pendrive",
+        "n": 1
+      }
+    },
+    {
+      "id": "dht",
+      "texto": "Sensor de temperatura energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "dht"
+      }
+    },
+    {
+      "id": "vibra",
+      "texto": "Sensor de vibracao energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "sw420"
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "Cada entrada aceita so o seu tipo: cartao no slot de cartao, pen drive no USB, cabo no HDMI.",
+    "O cabo HDMI precisa das duas pontas encaixadas e na orientacao certa.",
+    "Os dois sensores dividem a alimentacao de 5 volts e o GND.",
+    "Ajuste o trimpot do SW-420 para nao registrar o proprio ventilador da placa."
+  ],
+  "erroComum": "Tentar enfiar o pen drive no HDMI. Nao entra, e nem deveria.",
+  "sucesso": "Deck de campo completo. Tela, memoria, sensores e um jeito de levar o dado embora.",
+  "componentesLiberados": [
+    "arubagpi",
+    "lcd7",
+    "cabo-hdmi",
+    "cartao-sd-midia",
+    "pendrive",
+    "dht",
+    "sw420",
+    "miniteclado",
+    "fonte-tomada",
+    "protoboard"
+  ],
+  "creditos": 420
+}

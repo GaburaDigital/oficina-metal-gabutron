@@ -5,13 +5,20 @@
    porque e a coisa que mais se pega.
    ============================================================ */
 
-import { COMPONENTES, MOVEIS, JUMPERS, CORES_FIO } from "./biblioteca.js";
+import { COMPONENTES, MOVEIS, JUMPERS, CORES_FIO, FIO_SOLDA } from "./biblioteca.js";
 import { miniatura } from "./desenhos.js";
 import { ico } from "./icones.js";
 import { SOM } from "./som.js";
 
 let alvo, aoEscolherPeca, aoEscolherFio;
 let fioAtivo = null, corAtiva = CORES_FIO[0];
+
+let ferroLigado = false;
+
+export function mostrarFioDeSolda(ligado) {
+  ferroLigado = ligado;
+  render(buscaAtual);
+}
 
 export function iniciar(elemento, ganchos) {
   alvo = elemento;
@@ -53,6 +60,7 @@ function render(filtro = "") {
 function marcaPonta(tipo, x, y, cor) {
   if (tipo === "femea") return `<circle cx="${x}" cy="${y}" r="4" fill="${cor}" stroke="#05060A"/>`;
   if (tipo === "jacare") return `<rect x="${x - 5}" y="${y - 3}" width="10" height="6" rx="1" fill="${cor}" stroke="#05060A"/>`;
+  if (tipo === "solda") return `<circle cx="${x}" cy="${y}" r="4" fill="${cor}" stroke="#05060A"/><circle cx="${x - 1}" cy="${y - 1}" r="1.5" fill="#F2F2EE"/>`;
   return `<rect x="${x - 4}" y="${y - 4}" width="8" height="8" rx="1" fill="${cor}" stroke="#05060A"/>`;
 }
 
@@ -61,10 +69,10 @@ function sacolaJumpers() {
     <summary class="gaveta-puxador">${ico("jumper", 18)}<span>Sacola de jumpers</span><span class="conta">${JUMPERS.length}</span></summary>
     <div style="padding:8px">
       <div style="display:grid;gap:4px">
-        ${JUMPERS.map((j) => `<button class="btn ${fioAtivo === j.id ? "ativo" : ""}" data-fio="${j.id}" style="justify-content:flex-start">
+        ${(ferroLigado ? [...JUMPERS, FIO_SOLDA] : JUMPERS).map((j) => `<button class="btn ${fioAtivo === j.id ? "ativo" : ""}" data-fio="${j.id}" style="justify-content:flex-start">
           <svg viewBox="0 0 48 16" width="42" height="14" aria-hidden="true">
             ${marcaPonta(j.pontas[0], 6, 11, j.cor)}
-            <path d="M8 11q16 -14 32 0" fill="none" stroke="${j.cor}" stroke-width="3"/>
+            <path d="M8 11q16 -14 32 0" fill="none" stroke="${j.cor}" stroke-width="3" ${j.exigeFerro ? 'stroke-dasharray="4 3"' : ""}/>
             ${marcaPonta(j.pontas[1], 42, 11, j.cor)}
           </svg>${j.nome}</button>`).join("")}
       </div>
@@ -88,7 +96,7 @@ function ligarEventos() {
   });
   alvo.querySelectorAll("[data-fio]").forEach((b) => {
     b.addEventListener("click", () => {
-      const j = JUMPERS.find((x) => x.id === b.dataset.fio);
+      const j = [...JUMPERS, FIO_SOLDA].find((x) => x.id === b.dataset.fio);
       fioAtivo = fioAtivo === j.id ? null : j.id;
       SOM.clique();
       aoEscolherFio(fioAtivo ? j : null, corAtiva);

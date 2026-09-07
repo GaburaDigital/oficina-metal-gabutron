@@ -225,6 +225,7 @@ function svgComponente(comp, ocupados) {
     temCartao: comp.temMidia === "cartao-sd-midia", temMidia: comp.temMidia,
     leitura: comp.leitura, modo: comp.modo,
     trimpot: comp.trimpot, apertados: comp.apertados, jumperEnable: comp.jumperEnable,
+    ocupados: comp.ocupados, pontasLigadas: comp.pontasLigadas,
     script: comp.script,
     ligado: estado.energizado && est.ligado,
     aceso: estado.energizado && est.aceso,
@@ -314,7 +315,7 @@ function svgFio(f) {
   <path class="sombra" d="${dpath}" fill="none" stroke="#05060A" stroke-width="8" stroke-linecap="round" opacity=".45"/>
   <path class="alma" d="${dpath}" fill="none" stroke="${f.cor}" stroke-width="5" stroke-linecap="round"/>
   ${viva ? `<path d="${dpath}" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" opacity=".35" pointer-events="none"/>` : ""}
-  ${f.tipo === "solda" ? svgJunta(pa.x, pa.y) + svgJunta(pb.x, pb.y)
+  ${f.tipo === "solda" || f.tipo === "solda-fio" ? svgJunta(pa.x, pa.y) + svgJunta(pb.x, pb.y)
     : (MARCA_PONTA[pontas[0]] || MARCA_PONTA.macho)(pa.x, pa.y, f.cor) +
       (MARCA_PONTA[pontas[1]] || MARCA_PONTA.macho)(pb.x, pb.y, f.cor)}
 </g>`;
@@ -352,6 +353,14 @@ function tentarEncaixar(comp) {
   const d = PORID[comp.tipo];
   comp.encaixes = [];
   comp.pai = null;
+  comp.pontasLigadas = [];
+  // Tirar a peca do slot limpa a marca do hospedeiro: era isso que
+  // deixava o encaixe azul depois de remover o cartao.
+  for (const outro of estado.comps) {
+    if (!outro.ocupados) continue;
+    for (const [tipo, quem] of Object.entries(outro.ocupados))
+      if (quem === comp.id) delete outro.ocupados[tipo];
+  }
 
   // 1) A placa mae solta em cima de uma expansao ja apoiada: ela desce
   //    para a posicao e passa a andar junto.
@@ -372,18 +381,43 @@ function tentarEncaixar(comp) {
 
   // 2) Midia: cartao de memoria e pen drive entram no slot de quem
   //    tem encaixe, sem fio nenhum. E so mecanico, mas o aluno espera.
-  if (d.inerte || d.encaixavel) {
+  if (d.inerte || d.encaixavel || d.pontasEncaixe) {
     for (const host of estado.comps) {
       if (host.id === comp.id) continue;
       const hd = PORID[host.tipo];
       const slots = hd.encaixes || (hd.encaixe ? [hd.encaixe] : []);
       for (const slot of slots) {
-        if (slot.tipo !== comp.tipo && slot.tipo !== d.encaixavel) continue;
-        const alvoX = host.x + slot.x - d.w / 2, alvoY = host.y + slot.y - d.h / 2;
+        const alvoSlot = { x: host.x + slot.x, y: host.y + slot.y };
+
+        // Cabo de duas pontas: encaixa pela ponta mais proxima, e so se
+        // ele estiver na mesma orientacao do conector.
+        if (d.pontasEncaixe) {
+          const orientacaoOk = ((comp.rot || 0) % 180) === ((host.rot || 0) % 180);
+          for (const pt of d.pontasEncaixe) {
+            if (pt.tipo !== slot.tipo) continue;
+            const alvoX = alvoSlot.x - pt.x, alvoY = alvoSlot.y - pt.y;
+            if (Math.hypot(comp.x - alvoX, comp.y - alvoY) > 150) continue;
+            if (!orientacaoOk) {
+              if (ganchos.aoRecusarEncaixe) ganchos.aoRecusarEncaixe(comp, "orientacao");
+              return false;
+            }
+            comp.x = alvoX; comp.y = alvoY;
+            comp.pai = host.id;
+            comp.pontasLigadas = [...new Set([...(comp.pontasLigadas || []), pt.id])];
+            host.ocupados = { ...(host.ocupados || {}), [slot.tipo]: comp.id };
+            return true;
+          }
+          continue;
+        }
+
+        const tipoOk = slot.tipo === comp.tipo || slot.tipo === d.encaixavel;
+        if (!tipoOk) continue;
+        if ((host.ocupados || {})[slot.tipo]) continue;
+        const alvoX = alvoSlot.x - d.w / 2, alvoY = alvoSlot.y - d.h / 2;
         if (Math.hypot(comp.x - alvoX, comp.y - alvoY) > 140) continue;
         comp.x = alvoX; comp.y = alvoY;
         comp.pai = host.id;
-        host.temMidia = [...new Set([...(Array.isArray(host.temMidia) ? host.temMidia : host.temMidia ? [host.temMidia] : []), slot.tipo])];
+        host.ocupados = { ...(host.ocupados || {}), [slot.tipo]: comp.id };
         return true;
       }
     }
@@ -807,6 +841,14 @@ function aoApertar(ev) {
   // Fio na mao e clique no vazio: a ponta fica pendurada ali, virando
   // um ponto de ligacao onde outros fios podem se pendurar depois.
   if (estado.pendente) {
+    // Fio de solda nao fica pendurado no ar: solda precisa de contato.
+    if (estado.ferramentaFio && estado.ferramentaFio.tipo === "solda-fio") {
+      if (ganchos.aoRecusar) ganchos.aoRecusar("Fio soldado precisa de contato dos dois lados. Estanho nao gruda no ar.");
+      SOM.erro();
+      estado.pendente = null;
+      desenharTopo();
+      return;
+    }
     const m = telaParaMundo(ev.clientX, ev.clientY);
     const solta = criarPontaSolta(m.x, m.y);
     clicarPino(solta.id, "no");

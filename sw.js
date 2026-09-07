@@ -5,7 +5,7 @@
    pegar a versao nova.
    ============================================================ */
 
-const VERSAO = "gabutron-v11";
+const VERSAO = "gabutron-v12";
 
 const ARQUIVOS = [
   "./",
@@ -48,6 +48,18 @@ const ARQUIVOS = [
   "assets/icone-pwa.svg",
   "ATIVIDADES/COMPONENTES/basico.json",
   "ATIVIDADES/CURIOSIDADES/falas-gabutron.json",
+  "ATIVIDADES/CONSTRUCAO/bicho-de-estimacao.json",
+  "ATIVIDADES/CONSTRUCAO/braco-de-carga.json",
+  "ATIVIDADES/CONSTRUCAO/central-de-bordo.json",
+  "ATIVIDADES/CONSTRUCAO/comporta-automatica.json",
+  "ATIVIDADES/CONSTRUCAO/cyberdeck-basico.json",
+  "ATIVIDADES/CONSTRUCAO/deck-de-campo.json",
+  "ATIVIDADES/CONSTRUCAO/oculos-ra.json",
+  "ATIVIDADES/CONSTRUCAO/piao-luminoso.json",
+  "ATIVIDADES/CONSTRUCAO/tambor-de-bolso.json",
+  "ATIVIDADES/MANUTENCAO/brinquedo-surdo.json",
+  "ATIVIDADES/MANUTENCAO/deck-sem-imagem.json",
+  "ATIVIDADES/MANUTENCAO/sensor-cego.json",
   "ATIVIDADES/CONSTRUCAO/primeira-luz.json",
   "ATIVIDADES/CONSTRUCAO/farol-de-emergencia.json",
   "ATIVIDADES/CONSTRUCAO/sirene-da-nave.json",

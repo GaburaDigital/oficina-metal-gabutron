@@ -1,0 +1,69 @@
+{
+  "id": "tambor-de-bolso",
+  "titulo": "Tambor de bolso",
+  "tipo": "construcao",
+  "dificuldade": "intermediario",
+  "minutos": 18,
+  "pontos": 170,
+  "fase": 6,
+  "placa": "microbura",
+  "briefing": "Instrumento para a banda da nave. Dois discos piezo viram tambores e o buzzer passivo responde com a nota. O disco piezo cru gera picos que passam de vinte volts numa batida forte: ele NAO vai direto no anel. Vai no modulo, que traduz a pancada para algo que a placa aguente ler.",
+  "objetivos": [
+    {
+      "id": "m1",
+      "texto": "Modulo piezo energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "piezo-modulo"
+      }
+    },
+    {
+      "id": "disco",
+      "texto": "Disco piezo nos bornes do modulo",
+      "regra": {
+        "tipo": "mesmoNo",
+        "a": {
+          "componente": "piezo",
+          "pino": "p"
+        },
+        "b": {
+          "componente": "piezo-modulo",
+          "pino": "pz1"
+        }
+      }
+    },
+    {
+      "id": "buzzer",
+      "texto": "Buzzer passivo ligado num anel",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "buzzer-passivo"
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "O disco vai nos bornes PZ do modulo, nunca direto no anel.",
+    "A saida S do modulo e analogica: quanto mais forte a batida, maior o valor.",
+    "Buzzer passivo precisa de PWM para tocar nota; o ativo so faz um bip.",
+    "No Deck de scripts existe a Bateria com piezo."
+  ],
+  "erroComum": "Ligar o disco piezo direto na placa. Uma batida forte e a entrada vai embora.",
+  "sucesso": "Tambor pronto. E voce entendeu por que existe um modulo entre o sensor e a placa.",
+  "componentesLiberados": [
+    "microbura",
+    "piezo",
+    "piezo-modulo",
+    "buzzer-passivo",
+    "protoboard",
+    "resistor"
+  ],
+  "creditos": 150,
+  "usaScripts": true
+}

@@ -1,0 +1,74 @@
+{
+  "id": "central-de-bordo",
+  "titulo": "Central de bordo",
+  "tipo": "construcao",
+  "dificuldade": "hacker",
+  "minutos": 28,
+  "pontos": 270,
+  "fase": 6,
+  "placa": "bura32",
+  "briefing": "Painel de controle da nave: teclado para a senha, reles para as cargas, display mostrando o estado. Atencao ao rele: a Bura32 e de 3,3 volts, entao use o modulo de 3V. Rele de 5 volts nao aciona com 3,3, e voce passa uma hora achando que o codigo esta errado.",
+  "objetivos": [
+    {
+      "id": "teclado",
+      "texto": "Teclado 4x4 na bancada",
+      "regra": {
+        "tipo": "existe",
+        "componente": "keypad"
+      }
+    },
+    {
+      "id": "rele",
+      "texto": "Rele de 3V energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "rele3v"
+      }
+    },
+    {
+      "id": "display",
+      "texto": "Display I2C energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "lcdi2c"
+      }
+    },
+    {
+      "id": "i2c",
+      "texto": "SDA do display na linha de I2C da placa",
+      "regra": {
+        "tipo": "pinoEm",
+        "componente": "lcdi2c",
+        "pino": "sda",
+        "papelAlvo": "i2c"
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "O teclado nao precisa de alimentacao: sao dezesseis botoes numa matriz.",
+    "Use o rele de 3V, nao o de 5V. Sao pecas diferentes na mesma caixa.",
+    "O display I2C quer 5 volts, e a Bura32 tem esse pino. SDA e SCL sao 3,3.",
+    "As teclas do teclado sao clicaveis: energize a bancada e experimente."
+  ],
+  "erroComum": "Usar o rele de 5V numa placa de 3,3. A bobina nao puxa e ninguem entende.",
+  "sucesso": "Central pronta. E voce aprendeu a olhar a tensao da bobina antes de escolher o rele.",
+  "componentesLiberados": [
+    "bura32",
+    "keypad",
+    "rele3v",
+    "lcdi2c",
+    "lampada12v",
+    "fonte-tomada",
+    "protoboard",
+    "resistor"
+  ],
+  "creditos": 280,
+  "usaScripts": true
+}

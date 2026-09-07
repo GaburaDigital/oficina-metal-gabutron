@@ -9,6 +9,7 @@
    ============================================================ */
 import { COMPONENTES, MOVEIS } from "../js/biblioteca.js";
 import { desenhar } from "../js/desenhos.js";
+import { ARTE } from "../js/arte.js";
 import fs from "fs";
 import path from "path";
 
@@ -34,9 +35,12 @@ const componentes = COMPONENTES.filter((d) => !d.avulsa).map((d) => ({
    desenhista saber onde NAO desenhar em cima, e onde deixar espaco. */
 const marcas = {};
 for (const d of COMPONENTES) {
-  const m = { eixos: [], luzes: [], acoes: [], telas: [], sons: [] };
+  const m = { eixos: [], luzes: [], acoes: [], telas: [], sons: [], trimpots: [] };
   if (d.zonaAcao) m.acoes.push({ x: d.zonaAcao.x, y: d.zonaAcao.y, r: d.zonaAcao.r, rotulo: d.zonaAcao.acao });
-  if (d.trimpot) m.acoes.push({ x: d.trimpot.x, y: d.trimpot.y, r: d.trimpot.r, rotulo: "trimpot: " + d.trimpot.rotulo });
+  if (d.trimpot) {
+    m.acoes.push({ x: d.trimpot.x, y: d.trimpot.y, r: d.trimpot.r, rotulo: "trimpot: " + d.trimpot.rotulo });
+    m.trimpots.push({ x: d.trimpot.x, y: d.trimpot.y, r: d.trimpot.r, rotulo: d.trimpot.rotulo });
+  }
   for (const b of d.botoes || []) m.acoes.push({ x: b.x, y: b.y, r: b.r, rotulo: "botao " + b.n });
   if (d.teclado) {
     const k = d.teclado;
@@ -44,17 +48,23 @@ for (const d of COMPONENTES) {
       x: k.x0 + (i % k.colunas) * k.dx, y: k.y0 + Math.floor(i / k.colunas) * k.dy, r: k.r, rotulo: t,
     }));
   }
-  if (/servo/.test(d.id)) m.eixos.push({ x: d.w * 0.29, y: d.h * 0.22 });
-  if (/motor|bomba/.test(d.id)) m.eixos.push({ x: d.w * 0.4, y: d.h * 0.45 });
-  if (d.arte === "led" || d.id === "ledrgb" || d.id === "lampada12v" || d.id === "laser")
-    m.luzes.push({ x: d.w / 2, y: d.h * 0.34 });
-  if (d.alimenta !== undefined && !d.tela) m.luzes.push({ x: d.w - 34, y: d.h / 2 + 26 });
   if (d.tela) m.telas.push({ x: d.w * 0.09, y: d.h * 0.1, w: d.w * 0.82, h: d.h * 0.5 });
   if (d.apito || /falante|buzzer|piezo/.test(d.id)) m.sons.push({ x: d.w - 26, y: d.h * 0.4 });
   if (Object.values(m).some((v) => v.length)) marcas[d.id] = m;
 }
 
-const dados = JSON.stringify({ moveis: MOVEIS.map((m) => ({ id: m.id, nome: m.nome })), componentes, marcas });
+/* Marcadores editaveis: eixo de giro, luz, som e vibracao. Sao eles
+   que a bancada usa para animar, entao mover aqui muda o projeto. */
+const marcadores = {};
+const eixoPadrao = {};
+for (const d of COMPONENTES) {
+  const lista = ARTE[d.id] && ARTE[d.id].marcadores ? ARTE[d.id].marcadores : d.marcadores;
+  if (lista && lista.length) marcadores[d.id] = JSON.parse(JSON.stringify(lista));
+  const eixo = (d.marcadores || []).find((m) => m.tipo === "eixo");
+  if (eixo) eixoPadrao[d.id] = eixo.estilo;
+}
+
+const dados = JSON.stringify({ moveis: MOVEIS.map((m) => ({ id: m.id, nome: m.nome })), componentes, marcas, marcadores, eixoPadrao });
 if (dados.includes("</script")) throw new Error("dado com tag que quebraria o HTML");
 
 const saida = molde.replace("__BASE__", dados);

@@ -87,7 +87,11 @@ function iniciarInterface() {
         ? `Fio selecionado. Delete remove. Botao direito tambem.`
         : "Arraste uma peca da paleta. Passe o mouse num pino para ver o que ele e.";
     },
-    aoRecusarEncaixe: (comp) => {
+    aoRecusarEncaixe: (comp, motivo) => {
+      if (motivo === "orientacao") {
+        robo.dizer("O conector so entra numa posicao. Gire o cabo com a tecla R ate ele ficar alinhado com a entrada.", { expressao: "pensando" });
+        return;
+      }
       robo.dizer(`${PORID[comp.tipo].nome} tem duas fileiras de pinos separadas por um passo so. Na protoboard as duas cairiam na mesma coluna, ou seja, em curto. Esse tipo de modulo pede jumper macho-femea ou uma placa adaptadora — e assim tambem no laboratorio de verdade.`, { expressao: "pensando" });
     },
     aoEncaixar: (comp, n) => {
@@ -123,7 +127,8 @@ function iniciarInterface() {
     },
     aoEscolherFio: (jumper, cor) => {
       bancada.escolherFio(jumper, cor);
-      if (jumper) robo.dizer(`${jumper.nome} na mao. Clique no primeiro contato e depois no segundo.`, { expressao: "pensando", falar: false });
+      if (jumper && jumper.exigeFerro) robo.dizer("Fio para solda na mao. Ele entra em qualquer contato, porque estanho nao liga para formato de ponta. Nao serve para deixar ponta solta.", { expressao: "pensando" });
+      else if (jumper) robo.dizer(`${jumper.nome} na mao. Clique no primeiro contato e depois no segundo.`, { expressao: "pensando", falar: false });
     },
   });
 
@@ -207,12 +212,13 @@ function ligarFerramentas() {
   q("#ponta-chip").addEventListener("click", () => bancada.inverterPontas());
 
   q("#b-solda").addEventListener("click", (e) => {
-    if (solda.estado.ativo) { solda.desligar(bancada); e.currentTarget.classList.remove("ativo"); return; }
+    if (solda.estado.ativo) { solda.desligar(bancada); gavetas.mostrarFioDeSolda(false); e.currentTarget.classList.remove("ativo"); return; }
     if (multimetro.estado.ativo) multimetro.fechar(bancada);
     bancada.escolherFio(null);
     gavetas.largarFio();
     pintarChipDaPonta(null);
     solda.ligar(bancada);
+    gavetas.mostrarFioDeSolda(true);
     e.currentTarget.classList.add("ativo");
     robo.dizer("Ferro quente. Encoste em dois contatos que estejam perto um do outro e eles viram um so. Clicar numa junta pronta dessolda.", { expressao: "pensando" });
   });
@@ -253,7 +259,7 @@ function ligarFerramentas() {
     if (bm) {
       const comp = bancada.estado.comps.find((c) => c.id === bm.dataset.abrirMm);
       if (!comp) return;
-      if (solda.estado.ativo) { solda.desligar(bancada); q("#b-solda").classList.remove("ativo"); }
+      if (solda.estado.ativo) { solda.desligar(bancada); gavetas.mostrarFioDeSolda(false); q("#b-solda").classList.remove("ativo"); }
       bancada.escolherFio(null);
       gavetas.largarFio();
       pintarChipDaPonta(null);
@@ -273,6 +279,7 @@ function ligarFerramentas() {
     if (alvo.dataset.campo === "variante") comp.variante = alvo.value;
     if (alvo.dataset.campo === "tensao") comp.tensaoSaida = Number(alvo.value);
     if (alvo.dataset.campo === "slots") comp.slots = Number(alvo.value);
+    if (alvo.dataset.campo === "jumper") comp.jumperEnable = alvo.checked;
     SOM.clique();
     bancada.recalcular();
   });
@@ -611,6 +618,13 @@ function pintarPropriedades(comp) {
       ${Array.from({ length: d.slots.max - d.slots.min + 1 }, (_, k) => d.slots.min + k)
         .map((v) => `<option ${v === n ? "selected" : ""}>${v}</option>`).join("")}</select></label>`);
     partes.push(`<span style="color:var(--fosforo)">${(n * d.slots.porSlot).toFixed(1)} V</span>`);
+  }
+  if (d.jumperEnable) {
+    const on = comp.jumperEnable !== false;
+    partes.push(`<label><input type="checkbox" data-comp="${comp.id}" data-campo="jumper" ${on ? "checked" : ""}> ${d.jumperEnable.rotulo}</label>`);
+    partes.push(on
+      ? `<span style="color:var(--fosforo)">so IN1 a IN4 para controlar</span>`
+      : `<span style="color:var(--ambar)">ENA e ENB precisam de PWM</span>`);
   }
   if (d.instrumento) partes.push(`<button class="btn" data-abrir-fonte="${comp.id}">Abrir painel da fonte</button>`);
   if (d.instrumentoMedida) partes.push(`<button class="btn" data-abrir-mm="${comp.id}">Abrir painel do multimetro</button>`);

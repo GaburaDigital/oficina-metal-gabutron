@@ -221,3 +221,5 @@
 .filtros-missao { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: var(--e3); }
 .filtros-missao .btn { font-size: var(--t-micro); padding: 4px 9px; }
 .etq-hacking { color: #C77DFF; border-color: #C77DFF; }
+
+.etq-placa { color: var(--gelo); border-color: var(--gelo); }

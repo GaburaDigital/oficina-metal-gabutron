@@ -1,0 +1,83 @@
+{
+  "id": "piao-luminoso",
+  "titulo": "Piao luminoso",
+  "tipo": "construcao",
+  "dificuldade": "facil",
+  "minutos": 15,
+  "pontos": 130,
+  "fase": 6,
+  "placa": "microbura",
+  "briefing": "Brinquedo de gravidade zero: um piao que acende enquanto gira. O sensor de vibracao percebe o giro e o Neopixel faz o show. Repare numa conta: dezesseis LEDs no branco total puxam quase um ampere, e a MicroBURA entrega noventa miliamperes na placa inteira. Faca a conta ANTES de ligar.",
+  "objetivos": [
+    {
+      "id": "neo",
+      "texto": "Neopixel alimentado por fonte externa",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "neopixel"
+      }
+    },
+    {
+      "id": "externa",
+      "texto": "Neopixel alimentado pelas pilhas, nao pelo anel 3V",
+      "regra": {
+        "tipo": "mesmoNo",
+        "a": {
+          "componente": "neopixel",
+          "pino": "vcc"
+        },
+        "b": {
+          "componente": "suporteaa",
+          "pino": "p"
+        }
+      }
+    },
+    {
+      "id": "gnd-comum",
+      "texto": "GND da fonte e da placa no mesmo ponto",
+      "regra": {
+        "tipo": "mesmoNo",
+        "a": {
+          "componente": "suporteaa",
+          "pino": "n"
+        },
+        "b": {
+          "componente": "microbura",
+          "papel": "gnd"
+        }
+      }
+    },
+    {
+      "id": "vibra",
+      "texto": "Sensor de vibracao energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "sw420"
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "Alimente o Neopixel pelas pilhas, nunca pelo anel 3V.",
+    "GND comum e obrigatorio: sem ele o fio de dados nao tem referencia.",
+    "Gire o trimpot do SW-420 ate ele acusar giro e nao tremor de mesa.",
+    "Energize e veja os dezesseis quadradinhos acenderem de uma vez."
+  ],
+  "erroComum": "Pendurar o Neopixel no anel 3V. A placa reinicia e o aluno culpa o codigo.",
+  "sucesso": "Piao com luz propria. Voce respeitou a corrente, que e a parte que ninguem ve.",
+  "componentesLiberados": [
+    "microbura",
+    "neopixel",
+    "sw420",
+    "suporteaa",
+    "protoboard",
+    "resistor"
+  ],
+  "creditos": 140
+}

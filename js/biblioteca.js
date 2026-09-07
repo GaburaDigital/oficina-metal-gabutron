@@ -229,6 +229,7 @@ add({
   tensaoLogica: 3.3, tensaoMaxPino: 3.6,
   limitePino: 12, limiteAlim: 600, limiteTotal: 900,
   usb: true, vinMin: 5, vinMax: 5.5,
+  botoes: [{ id: "en", n: "EN", x: 60, y: 396, r: 20 }, { id: "boot", n: "BOOT", x: 228, y: 396, r: 20 }],
 });
 add({
   id: "microbura", nome: "MicroBURA", caixa: "placas", arte: "placa-microbura",
@@ -562,8 +563,9 @@ add({
   ],
   botoes: [{ id: "power", n: "PWR", x: 396, y: 264, r: 22 }],
   encaixes: [
-    { tipo: "cabo-hdmi", x: 264, y: 288, rotulo: "HDMI" },
-    { tipo: "pendrive", x: 384, y: 168, rotulo: "USB" },
+    { tipo: "hdmi", x: 264, y: 288, rotulo: "HDMI" },
+    { tipo: "pendrive", x: 396, y: 168, rotulo: "USB" },
+    { tipo: "cartao-sd-midia", x: 60, y: 180, rotulo: "cartao SD" },
   ],
 });
 
@@ -915,7 +917,7 @@ add({
     { id: "rec", n: "REC", rotulo: "Segure para gravar", x: 96, y: 192, r: "macho", papel: "digital", lado: "baixo" },
     { id: "playe", n: "PLAYE", rotulo: "Toca a gravacao inteira com um toque", x: 120, y: 192, r: "macho", papel: "digital", lado: "baixo" },
     { id: "playl", n: "PLAYL", rotulo: "Toca enquanto ficar pressionado", x: 144, y: 192, r: "macho", papel: "digital", lado: "baixo" },
-    { id: "ft", n: "FT", rotulo: "Modo de gravacao por gatilho — dispara sem segurar o botao", x: 192, y: 192, r: "macho", papel: "digital", lado: "baixo" },
+    { id: "ft", n: "FT", rotulo: "Modo de gravacao por gatilho — dispara sem segurar o botao", x: 144, y: 192, r: "macho", papel: "digital", lado: "baixo" },
     { id: "spp", n: "SP+", rotulo: "Alto-falante, positivo", x: 192, y: 192, r: "borne", papel: "sinal", lado: "baixo" },
     { id: "spn", n: "SP-", rotulo: "Alto-falante, negativo", x: 240, y: 192, r: "borne", papel: "sinal", lado: "baixo" },
   ],
@@ -1394,6 +1396,13 @@ add({
 });
 
 add({
+  id: "miniteclado", nome: "Mini teclado bluetooth", caixa: "extras", arte: "miniteclado",
+  w: 432, h: 216, cor: "#1B1F26", custo: 70, inerte: true,
+  pinos: [
+    { id: "usb", n: "USB", rotulo: "Receptor USB do teclado — vai numa porta da placa", x: 396, y: 192, r: "borne", papel: "sinal", lado: "cima" },
+  ],
+});
+add({
   id: "clipe", nome: "Clipe de papel", caixa: "extras", arte: "clipe",
   w: 168, h: 96, cor: "#B9BEC6", custo: 0,
   pinos: [
@@ -1504,7 +1513,7 @@ add({
 add({
   id: "lcd7", nome: "Tela LCD 7 polegadas", caixa: "leds", arte: "lcd7", w: 600, h: 432,
   cor: "#1B1F26", alimenta: 4.5, tela: true, correnteTipica: 700, custo: 220,
-  encaixe: { tipo: "cabo-hdmi", x: 168, y: 408, rotulo: "entrada HDMI" },
+  encaixes: [{ tipo: "hdmi", x: 168, y: 408, rotulo: "entrada HDMI" }],
   pinos: [
     { id: "vcc", n: "5V", rotulo: "Alimentacao propria da tela — ela nao se alimenta pelo HDMI", x: 408, y: 408, r: "borne", papel: "v+", lado: "cima" },
     { id: "gnd", n: "GND", rotulo: "Terra da alimentacao", x: 456, y: 408, r: "borne", papel: "gnd", lado: "cima" },
@@ -1513,7 +1522,13 @@ add({
 
 add({
   id: "cabo-hdmi", nome: "Cabo HDMI curto", caixa: "extras", arte: "cabo-hdmi", w: 336, h: 144,
-  cor: "#1B1F26", custo: 20, inerte: true, encaixavel: "cabo-hdmi",
+  cor: "#1B1F26", custo: 20, inerte: true,
+  // Duas pontas de verdade: cada uma encaixa num conector HDMI, e o
+  // cabo so entra se estiver na mesma orientacao do conector.
+  pontasEncaixe: [
+    { id: "p1", tipo: "hdmi", x: 54, y: 72, rotulo: "ponta A" },
+    { id: "p2", tipo: "hdmi", x: 282, y: 72, rotulo: "ponta B" },
+  ],
   pinos: [],
 });
 
@@ -1542,6 +1557,25 @@ for (const [id, mov] of Object.entries(PINOS_AJUSTADOS)) {
 for (const [id, t] of Object.entries(TAMANHOS)) {
   const d = C.find((c) => c.id === id);
   if (d) { d.w = t.w; d.h = t.h; }
+}
+
+/* Marcadores padrao. Sao o ponto de partida; o assistente de desenho
+   pode mover, adicionar e remover cada um, e o que ele exportar manda.
+   Sem isso, peca redesenhada perde a luz e o eixo do motor. */
+const EIXO = {
+  servo180: "servo", servo360: "servo-continuo", "servo-torque180": "servo",
+  "servo-torque360": "servo-continuo", motordc: "dc", "motordc-reducao": "dc",
+  "motor-drone": "helice", "motor-passo": "passo", bomba: "rotor", vibracao: "vibra",
+};
+for (const d of C) {
+  const m = [];
+  if (EIXO[d.id]) m.push({ tipo: "eixo", estilo: EIXO[d.id], x: Math.round(d.w * 0.34), y: Math.round(d.h * 0.34), r: Math.round(Math.min(d.w, d.h) * 0.22) });
+  if (d.alimenta !== undefined && !d.inerte) m.push({ tipo: "luz", x: d.w - 34, y: 34 });
+  if (d.alimentada) m.push({ tipo: "luz", x: d.w - 40, y: 40 });
+  if (d.apito || /falante|buzzer|piezo|amplificador/.test(d.id)) m.push({ tipo: "som", x: d.w - 26, y: Math.round(d.h * 0.4) });
+  if (d.id === "vibracao") m.push({ tipo: "vibra", x: Math.round(d.w / 2), y: Math.round(d.h / 2) });
+  if (d.id === "laser") m.push({ tipo: "luz", x: d.w - 20, y: Math.round(d.h / 2), cor: "#E24B4A", forte: true });
+  if (m.length) d.marcadores = m;
 }
 
 /* Duas travas contra erro de montagem do catalogo. Elas ja pegaram
@@ -1588,12 +1622,20 @@ export const JUMPERS = [
   { id: "jf", nome: "Cabo jacare-femea", pontas: ["jacare", "femea"], cor: "#C77DFF" },
 ];
 
+/* Fio de solda. Nao respeita formato de conector porque estanho nao
+   respeita: e o atalho para quem ja entendeu os tipos de ponta. So
+   aparece na sacola quando o ferro esta ligado. */
+export const FIO_SOLDA = {
+  id: "solda-fio", nome: "Fio para solda", pontas: ["solda", "solda"], cor: "#C9CDD3", exigeFerro: true,
+};
+
 export const CORES_FIO = ["#E24B4A", "#2A2E36", "#5CE07A", "#7DD3FC", "#E9C542", "#C77DFF", "#F2F2EE", "#E08A3C"];
 
 /* O que cada ponta aceita tocar. Garra jacare tambem morde a ponta
    metalica de um jumper macho ja espetado, que e a gambiarra classica
    da bancada real. */
 export const ACEITA = {
+  solda: ["macho", "femea", "borne", "pad"],
   macho: ["femea", "borne", "pad"],
   femea: ["macho", "pad", "borne"],
   jacare: ["macho", "pad", "borne"],

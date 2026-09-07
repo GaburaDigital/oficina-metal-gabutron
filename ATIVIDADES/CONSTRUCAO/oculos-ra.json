@@ -1,0 +1,83 @@
+{
+  "id": "oculos-ra",
+  "titulo": "Oculos de realidade aumentada",
+  "tipo": "construcao",
+  "dificuldade": "intermediario",
+  "minutos": 24,
+  "pontos": 220,
+  "fase": 6,
+  "placa": "arubagpi",
+  "briefing": "O time de inspecao externa quer enxergar dados sobre o casco enquanto trabalha. Monte o nucleo do visor: Arubag Pi, acelerometro para saber para onde a cabeca aponta, e alimentacao por bateria com carregador, porque isso vai na cabeca de alguem e nao pode ter fio ate a parede.",
+  "objetivos": [
+    {
+      "id": "mpu",
+      "texto": "Acelerometro energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "mpu6050"
+      }
+    },
+    {
+      "id": "i2c",
+      "texto": "SDA do MPU na linha de I2C",
+      "regra": {
+        "tipo": "pinoEm",
+        "componente": "mpu6050",
+        "pino": "sda",
+        "papelAlvo": "i2c"
+      }
+    },
+    {
+      "id": "bateria",
+      "texto": "Alimentacao pela saida do carregador",
+      "regra": {
+        "tipo": "mesmoNo",
+        "a": {
+          "componente": "tp4056",
+          "pino": "outp"
+        },
+        "b": {
+          "componente": "stepup",
+          "pino": "inp"
+        }
+      }
+    },
+    {
+      "id": "cinco",
+      "texto": "Stepup ajustado perto de 5 volts",
+      "regra": {
+        "tipo": "tensaoEm",
+        "componente": "stepup",
+        "pino": "outp",
+        "min": 4.7,
+        "max": 5.3
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "A Arubag exige 5 volts firmes. Litio da 3,7: quem resolve e o stepup.",
+    "Gire o trimpot do stepup ate o visor mostrar perto de 5 volts, ANTES de ligar a placa.",
+    "O MPU trabalha em I2C, os mesmos dois fios do display.",
+    "Alimente sempre pela saida do carregador, nunca direto da celula."
+  ],
+  "erroComum": "Ajustar o stepup depois de ligar a placa. Sete volts na Arubag e uma placa a menos.",
+  "sucesso": "Ajustar a tensao antes de ligar a carga e o habito que salva placa.",
+  "componentesLiberados": [
+    "arubagpi",
+    "mpu6050",
+    "tp4056",
+    "suporte-litio",
+    "stepup",
+    "multimetro",
+    "protoboard",
+    "resistor"
+  ],
+  "creditos": 340
+}

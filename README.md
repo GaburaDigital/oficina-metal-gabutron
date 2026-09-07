@@ -257,7 +257,7 @@ Os outros campos da missão: `briefing` e `sucesso` são falas do GabuTRON; `dic
 
 ## O que existe na oficina
 
-94 componentes distribuídos em dez gavetas e caixas, todos com pinagem fiel e encaixe real na protoboard.
+95 componentes distribuídos em dez gavetas e caixas, todos com pinagem fiel e encaixe real na protoboard.
 
 | Móvel | Peças | Destaques |
 |---|---|---|
@@ -302,6 +302,32 @@ Duas regras estão implementadas porque são as que os alunos erram:
 ## Pontas soltas
 
 Com um cabo na mão, clicar num ponto vazio da bancada deixa a ponta pendurada ali. Ela vira um ponto de ligação onde outros fios se penduram — garra jacaré, ponta macho e ponta fêmea ao mesmo tempo. É a gambiarra clássica do laboratório, e agora ela cabe no simulador. A ponta some sozinha quando o último fio sai dela.
+
+## Marcadores: o que a bancada anima
+
+O desenho de cada peça é estático, mas quatro coisas precisam reagir à energia: **eixo de giro**, **luz de ligado**, **som** e **vibração**. Elas são desenhadas por cima, a partir de marcadores que você posiciona no assistente.
+
+Cada tipo de motor gira do seu jeito, e a animação roda no próprio SVG — sem laço em JavaScript e sem travar a bancada:
+
+| Marcador | Comportamento |
+|---|---|
+| `servo` | braço varre de um lado ao outro |
+| `servo-continuo` | gira sem parar |
+| `dc` | eixo em cruz girando rápido |
+| `helice` | pás de motor de drone |
+| `passo` | disco entalhado avançando em passos |
+| `rotor` | hélice da bomba submersa |
+| `vibra` | tremor curto do motor de vibração |
+
+No assistente, o botão **Marcador** cria; arrastar move; Delete remove. Isso resolve os dois casos: peça que ganhou luz sem ter, e peça que acende mas não tinha marcador.
+
+## Fio para solda
+
+Na sacola de jumpers aparece **Fio para solda** — mas só quando o ferro está ligado. Ele entra em qualquer contato, porque estanho não liga para formato de ponta, e não pode ficar pendurado no ar. É o atalho para quem já entendeu os tipos de conector; o aluno iniciante continua tendo que acertar macho, fêmea e jacaré.
+
+## Cabo HDMI e encaixes
+
+Cada entrada aceita só o seu tipo: pen drive não entra em HDMI. A Arubag Pi tem as três — HDMI, USB e cartão SD. O cabo HDMI tem **duas pontas independentes**, cada uma encaixando num conector, e só entra se estiver na mesma orientação da entrada. Girar com `R` resolve.
 
 ## Peças que se mexem
 
@@ -365,6 +391,16 @@ Solda une dois contatos que estejam encostados, sem perguntar se a ponta é mach
 | O bracinho que eu perdi | intermediário | alimentação externa, GND comum e sinal em PWM |
 
 As três primeiras formam uma sequência: acender, acionar, medir o limite. A quarta e a quinta se completam de propósito — o buzzer cabe no pino, o servo não. A diferença entre os dois é a lição inteira da bancada.
+
+### Por placa
+
+| Placa | Missões |
+|---|---|
+| MicroBURA | brinquedos: bicho de estimação, pião luminoso, tambor de bolso, brinquedo surdo |
+| Bura32 | automação: comporta do hangar, braço de carga, central de bordo, sensor cego |
+| Arubag Pi | portáteis: cyberdeck de bolso, óculos de RA, deck de campo, deck sem imagem |
+
+A janela de missões filtra por dificuldade, por tipo e por placa.
 
 ### Manutenção
 

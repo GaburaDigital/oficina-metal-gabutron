@@ -1,6 +1,6 @@
 {
   "projeto": "Oficina do Metal GabuTRON",
-  "versao": 5,
+  "versao": 6,
   "atualizado": "2026-09-02",
   "comoUsar": "Este arquivo e o indice do conteudo. Para adicionar material: 1) coloque o .json na pasta certa dentro de ATIVIDADES; 2) escreva uma linha aqui apontando para ele. O campo fase diz a partir de qual fase do projeto a missao pode ser jogada. O site le so este arquivo ao abrir e busca a missao inteira quando o aluno clica nela, por isso o menu carrega rapido mesmo com centenas de exercicios.",
   "conteudos": {
@@ -172,6 +172,182 @@
         ],
         "fase": 5,
         "usaScripts": true
+      },
+      {
+        "id": "bicho-de-estimacao",
+        "titulo": "Bicho de estimacao eletronico",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/bicho-de-estimacao.json",
+        "tipo": "construcao",
+        "placa": "microbura",
+        "dificuldade": "novato",
+        "minutos": 12,
+        "pontos": 110,
+        "resumo": "Matriz, buzzer e os botoes A e B: um bichinho que responde.",
+        "componentes": [
+          "microbura",
+          "buzzer",
+          "led",
+          "resistor",
+          "protoboard"
+        ],
+        "fase": 6,
+        "usaScripts": true
+      },
+      {
+        "id": "piao-luminoso",
+        "titulo": "Piao luminoso",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/piao-luminoso.json",
+        "tipo": "construcao",
+        "placa": "microbura",
+        "dificuldade": "facil",
+        "minutos": 15,
+        "pontos": 130,
+        "resumo": "Neopixel e sensor de vibracao: luz que so acende girando.",
+        "componentes": [
+          "microbura",
+          "neopixel",
+          "sw420",
+          "suporteaa",
+          "protoboard"
+        ],
+        "fase": 6
+      },
+      {
+        "id": "tambor-de-bolso",
+        "titulo": "Tambor de bolso",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/tambor-de-bolso.json",
+        "tipo": "construcao",
+        "placa": "microbura",
+        "dificuldade": "intermediario",
+        "minutos": 18,
+        "pontos": 170,
+        "resumo": "Dois piezos e um buzzer: bateria eletronica de bolso.",
+        "componentes": [
+          "microbura",
+          "piezo",
+          "piezo-modulo",
+          "buzzer-passivo",
+          "protoboard"
+        ],
+        "fase": 6,
+        "usaScripts": true
+      },
+      {
+        "id": "comporta-automatica",
+        "titulo": "Comporta automatica do hangar",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/comporta-automatica.json",
+        "tipo": "construcao",
+        "placa": "bura32",
+        "dificuldade": "facil",
+        "minutos": 16,
+        "pontos": 150,
+        "resumo": "PIR e servo: a porta que abre sozinha.",
+        "componentes": [
+          "bura32",
+          "pir",
+          "servo180",
+          "suporteaa",
+          "protoboard"
+        ],
+        "fase": 6,
+        "usaScripts": true
+      },
+      {
+        "id": "braco-de-carga",
+        "titulo": "Braco de carga do deck",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/braco-de-carga.json",
+        "tipo": "construcao",
+        "placa": "bura32",
+        "dificuldade": "intermediario",
+        "minutos": 22,
+        "pontos": 200,
+        "resumo": "Motor de passo pelo driver: precisao em vez de forca bruta.",
+        "componentes": [
+          "bura32",
+          "uln2003",
+          "motor-passo",
+          "suporteaa",
+          "protoboard"
+        ],
+        "fase": 6,
+        "usaScripts": true
+      },
+      {
+        "id": "central-de-bordo",
+        "titulo": "Central de bordo",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/central-de-bordo.json",
+        "tipo": "construcao",
+        "placa": "bura32",
+        "dificuldade": "hacker",
+        "minutos": 28,
+        "pontos": 270,
+        "resumo": "Teclado, reles e display: o painel que controla a nave.",
+        "componentes": [
+          "bura32",
+          "keypad",
+          "rele3v",
+          "lcdi2c",
+          "lampada12v"
+        ],
+        "fase": 6,
+        "usaScripts": true
+      },
+      {
+        "id": "cyberdeck-basico",
+        "titulo": "Cyberdeck de bolso",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/cyberdeck-basico.json",
+        "tipo": "construcao",
+        "placa": "arubagpi",
+        "dificuldade": "facil",
+        "minutos": 18,
+        "pontos": 160,
+        "resumo": "Arubag, tela por HDMI e mini teclado: computador de bolso.",
+        "componentes": [
+          "arubagpi",
+          "lcd7",
+          "cabo-hdmi",
+          "miniteclado",
+          "fonte-tomada"
+        ],
+        "fase": 6
+      },
+      {
+        "id": "oculos-ra",
+        "titulo": "Oculos de realidade aumentada",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/oculos-ra.json",
+        "tipo": "construcao",
+        "placa": "arubagpi",
+        "dificuldade": "intermediario",
+        "minutos": 24,
+        "pontos": 220,
+        "resumo": "Acelerometro e bateria: o nucleo de um visor vestivel.",
+        "componentes": [
+          "arubagpi",
+          "mpu6050",
+          "tp4056",
+          "suporte-litio",
+          "stepup"
+        ],
+        "fase": 6
+      },
+      {
+        "id": "deck-de-campo",
+        "titulo": "Deck de campo com registro",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/deck-de-campo.json",
+        "tipo": "construcao",
+        "placa": "arubagpi",
+        "dificuldade": "hacker",
+        "minutos": 30,
+        "pontos": 290,
+        "resumo": "Tela, cartao, pen drive e sensores: o deck completo de campo.",
+        "componentes": [
+          "arubagpi",
+          "lcd7",
+          "cabo-hdmi",
+          "cartao-sd-midia",
+          "pendrive"
+        ],
+        "fase": 6
       }
     ],
     "manutencao": [
@@ -238,6 +414,62 @@
           "suporteaa"
         ],
         "fase": 4
+      },
+      {
+        "id": "brinquedo-surdo",
+        "titulo": "O brinquedo que ficou surdo",
+        "arquivo": "ATIVIDADES/MANUTENCAO/brinquedo-surdo.json",
+        "tipo": "manutencao",
+        "placa": "microbura",
+        "dificuldade": "facil",
+        "minutos": 14,
+        "pontos": 140,
+        "resumo": "Matriz acende, som nenhum. Peca boa, montagem errada.",
+        "componentes": [
+          "microbura",
+          "buzzer",
+          "multimetro",
+          "protoboard"
+        ],
+        "fase": 6
+      },
+      {
+        "id": "sensor-cego",
+        "titulo": "O sensor que ficou cego",
+        "arquivo": "ATIVIDADES/MANUTENCAO/sensor-cego.json",
+        "tipo": "manutencao",
+        "placa": "bura32",
+        "dificuldade": "intermediario",
+        "minutos": 16,
+        "pontos": 170,
+        "resumo": "Ele enxerga demais ou de menos. Antes de trocar, ajuste.",
+        "componentes": [
+          "bura32",
+          "irobstaculo",
+          "protoboard",
+          "multimetro",
+          "resistor"
+        ],
+        "fase": 6
+      },
+      {
+        "id": "deck-sem-imagem",
+        "titulo": "O deck que perdeu a imagem",
+        "arquivo": "ATIVIDADES/MANUTENCAO/deck-sem-imagem.json",
+        "tipo": "manutencao",
+        "placa": "arubagpi",
+        "dificuldade": "facil",
+        "minutos": 14,
+        "pontos": 150,
+        "resumo": "Placa liga, tela preta. E quase nunca e o cabo.",
+        "componentes": [
+          "arubagpi",
+          "lcd7",
+          "cabo-hdmi",
+          "fonte-tomada",
+          "multimetro"
+        ],
+        "fase": 6
       }
     ],
     "hacking": [

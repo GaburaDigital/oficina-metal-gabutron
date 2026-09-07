@@ -138,6 +138,25 @@ export function verificar(regra, comps, circ) {
       // nenhum fio partido por dentro continuou no circuito
       return !(circ.fiosRompidos || []).length;
 
+    case "trimpotEntre": {
+      const alvos = comps.filter((c) => c.tipo === regra.componente);
+      return alvos.some((c) => {
+        const v = c.trimpot ?? 50;
+        return v >= (regra.min ?? 0) && v <= (regra.max ?? 100);
+      });
+    }
+
+    case "encaixado": {
+      // Peca de encaixe mecanico: cartao, pen drive, cabo. Conta quantos
+      // slots ela realmente ocupou.
+      const pecas = comps.filter((c) => c.tipo === regra.componente);
+      const total = pecas.reduce((soma, c) => {
+        if (c.pontasLigadas) return soma + c.pontasLigadas.length;
+        return soma + (comps.some((h) => Object.values(h.ocupados || {}).includes(c.id)) ? 1 : 0);
+      }, 0);
+      return total >= (regra.n || 1);
+    }
+
     case "semCriticos":
       return !circ.diagnosticos.some((d) => d.nivel === "critico");
 
@@ -193,7 +212,7 @@ export const treino = { ativo: false, fila: [], feitas: 0, filtros: null };
 
 export function montarTreino(filtros) {
   const todas = [...(catalogo.construcao || []), ...(catalogo.manutencao || [])]
-    .filter((m) => (m.fase || 2) <= 4)
+    .filter((m) => (m.fase || 2) <= 6)
     .filter((m) => (filtros.tipos.length ? filtros.tipos.includes(m.tipo) : true))
     .filter((m) => (filtros.dificuldades.length ? filtros.dificuldades.includes(m.dificuldade) : true));
   const embaralhada = todas.map((m) => [Math.random(), m]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
@@ -229,6 +248,10 @@ const CASA_FILTRO = {
   construcao: (m) => m.tipo === "construcao",
   manutencao: (m) => m.tipo === "manutencao",
   hacking: (m) => m.tipo === "hacking",
+  gaburino: (m) => !m.placa || m.placa === "gaburino",
+  microbura: (m) => m.placa === "microbura",
+  bura32: (m) => m.placa === "bura32",
+  arubagpi: (m) => m.placa === "arubagpi",
 };
 
 export function abrirSeletor(aoEscolher) {
@@ -248,6 +271,11 @@ export function abrirSeletor(aoEscolher) {
     <div class="filtros-missao">
       ${[["todas", "todas"], ["novato", "novato"], ["facil", "facil"], ["intermediario", "intermediario"],
          ["hacker", "hacker"], ["construcao", "construcao"], ["manutencao", "manutencao"], ["hacking", "hacking"]]
+        .map(([id, r]) => `<button class="btn ${filtroAtual === id ? "ativo" : ""}" data-filtro="${id}">${r}</button>`).join("")}
+    </div>
+    <div class="filtros-missao">
+      <span style="color:var(--poeira);font-size:11px;align-self:center">placa:</span>
+      ${[["gaburino", "GaburINO"], ["microbura", "MicroBURA"], ["bura32", "Bura32"], ["arubagpi", "Arubag Pi"]]
         .map(([id, r]) => `<button class="btn ${filtroAtual === id ? "ativo" : ""}" data-filtro="${id}">${r}</button>`).join("")}
     </div>
     ${lista.length ? `<div class="grade-missoes">${lista.map(cartao).join("")}</div>`
@@ -332,6 +360,7 @@ function cartao(m) {
       <i class="etq">${m.minutos} min</i>
       <i class="etq">${m.pontos} pts</i>
       <i class="etq ${m.tipo === "hacking" ? "etq-hacking" : ""}">${m.tipo}</i>
+      ${m.placa ? `<i class="etq etq-placa">${m.placa}</i>` : ""}
     </span>
     <small>${m.resumo || ""}</small>
   </button>`;
