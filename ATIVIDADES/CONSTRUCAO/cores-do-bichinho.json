@@ -1,0 +1,133 @@
+{
+  "id": "cores-do-bichinho",
+  "titulo": "As cores do bichinho",
+  "tipo": "construcao",
+  "dificuldade": "facil",
+  "minutos": 18,
+  "pontos": 170,
+  "fase": 6,
+  "placa": "microbura",
+  "creditos": 120,
+  "usaScripts": true,
+  "briefing": "O bichinho da missao anterior ficou mudo de cor. Vamos dar humor a ele: LED RGB no lugar dos olhos, botao A deixa azul, botao B deixa verde. Esta missao tem tres partes e voce precisa das tres. Primeiro monte o circuito. Depois abra o painel Firmware, va no Deck de scripts e escolha Cores nos botoes — sem script a placa nao sabe o que fazer com os pinos. Por ultimo, energize a bancada e APERTE os dois botoes na propria placa para ver a cor mudar. Montar sem testar nao vale: metade dos defeitos de bancada so aparece quando alguem aperta.",
+  "objetivos": [
+    {
+      "id": "tem-rgb",
+      "texto": "LED RGB na bancada",
+      "regra": {
+        "tipo": "existe",
+        "componente": "ledrgb"
+      }
+    },
+    {
+      "id": "canal-g",
+      "texto": "Canal verde do LED no anel P1",
+      "regra": {
+        "tipo": "mesmoNo",
+        "a": {
+          "componente": "ledrgb",
+          "pino": "g"
+        },
+        "b": {
+          "componente": "microbura",
+          "pino": "anel1"
+        }
+      }
+    },
+    {
+      "id": "canal-b",
+      "texto": "Canal azul do LED no anel P2",
+      "regra": {
+        "tipo": "mesmoNo",
+        "a": {
+          "componente": "ledrgb",
+          "pino": "b"
+        },
+        "b": {
+          "componente": "microbura",
+          "pino": "anel2"
+        }
+      }
+    },
+    {
+      "id": "gnd",
+      "texto": "Catodo comum do LED no anel GND",
+      "regra": {
+        "tipo": "mesmoNo",
+        "a": {
+          "componente": "ledrgb",
+          "pino": "gnd"
+        },
+        "b": {
+          "componente": "microbura",
+          "papel": "gnd"
+        }
+      }
+    },
+    {
+      "id": "script",
+      "texto": "Script Cores nos botoes escolhido no Deck",
+      "regra": {
+        "tipo": "scriptAtivo",
+        "componente": "microbura",
+        "script": "cores-nos-botoes"
+      }
+    },
+    {
+      "id": "testou-a",
+      "texto": "Botao A apertado na placa",
+      "regra": {
+        "tipo": "botaoUsado",
+        "componente": "microbura",
+        "botao": "a"
+      }
+    },
+    {
+      "id": "testou-b",
+      "texto": "Botao B apertado na placa",
+      "regra": {
+        "tipo": "botaoUsado",
+        "componente": "microbura",
+        "botao": "b"
+      }
+    },
+    {
+      "id": "viu-azul",
+      "texto": "LED chegou a acender azul",
+      "regra": {
+        "tipo": "corDoLed",
+        "cor": "b"
+      }
+    },
+    {
+      "id": "viu-verde",
+      "texto": "LED chegou a acender verde",
+      "regra": {
+        "tipo": "corDoLed",
+        "cor": "g"
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "O LED RGB deste modulo e de catodo comum: o pino GND vai no anel de terra, e cada cor entra pelo seu canal.",
+    "Verde no anel P1, azul no anel P2. O canal vermelho pode ficar livre nesta missao.",
+    "Abra o painel Firmware, mude para a aba Deck de scripts e escolha Cores nos botoes. Sem isso os pinos ficam mudos.",
+    "Energize a bancada e clique nos botoes A e B desenhados na propria MicroBURA. A cupula do LED muda de cor.",
+    "Se nada acender, confira o GND: catodo comum sem terra e LED apagado."
+  ],
+  "erroComum": "Montar tudo certo e nao escolher o script. A placa fica sem instrucao e o aluno acha que o circuito esta errado.",
+  "sucesso": "Montou, programou e testou. Essas tres etapas juntas sao o ciclo completo de qualquer projeto de robotica, e a maioria pula a terceira.",
+  "componentesLiberados": [
+    "microbura",
+    "ledrgb",
+    "resistor",
+    "protoboard"
+  ]
+}

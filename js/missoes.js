@@ -32,6 +32,8 @@ export const sessao = {
   dicasUsadas: 0,
   queimadas: 0,
   ferramentas: new Set(),
+  botoes: new Set(),
+  cores: new Set(),
   concluida: false,
   inicio: 0,
 };
@@ -155,6 +157,18 @@ export function verificar(regra, comps, circ) {
         return soma + (comps.some((h) => Object.values(h.ocupados || {}).includes(c.id)) ? 1 : 0);
       }, 0);
       return total >= (regra.n || 1);
+    }
+
+    case "scriptAtivo":
+      return comps.some((c) => c.tipo === regra.componente && c.script === regra.script);
+
+    case "botaoUsado":
+      // Registrado quando o aluno aperta o botao de verdade na bancada.
+      return sessao.botoes.has(`${regra.componente}:${regra.botao}`);
+
+    case "corDoLed": {
+      // O LED chegou a mostrar essa cor durante a missao?
+      return sessao.cores.has(regra.cor);
     }
 
     case "semCriticos":
@@ -383,6 +397,8 @@ export function iniciarMissao(missao) {
   sessao.dicasUsadas = 0;
   sessao.queimadas = 0;
   sessao.ferramentas = new Set();
+  sessao.botoes = new Set();
+  sessao.cores = new Set();
   sessao.concluida = false;
   sessao.pausada = false;
   sessao.inicio = Date.now();

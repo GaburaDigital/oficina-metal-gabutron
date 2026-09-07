@@ -392,26 +392,37 @@ ${txt("ALCALINA", 84, 116, 14, "#8A8F98")}
 
 function suporteAA(d, i) {
   const n = i.slots || 4;
+  const alt = 36 + n * 40;
   let pilhas = "";
   for (let k = 0; k < n; k++) {
-    const y = 14 + k * 36;
-    pilhas += `<rect x="20" y="${y}" width="248" height="28" rx="9" fill="#3A3F47" stroke="#101318" stroke-width="2"/>`;
-    pilhas += txt("AA", 144, y + 20, 13, "#B9BEC6");
+    const y = 16 + k * 40;
+    pilhas += `<rect x="20" y="${y}" width="248" height="32" rx="10" fill="#3A3F47" stroke="#101318" stroke-width="2"/>`;
+    pilhas += `<rect x="${k % 2 ? 24 : 250}" y="${y + 8}" width="14" height="16" rx="2" fill="#C9A227"/>`;
+    pilhas += txt(k % 2 ? "+" : "-", k % 2 ? 44 : 240, y + 22, 14, "#E24B4A");
+    pilhas += txt("AA", 144, y + 22, 13, "#B9BEC6");
   }
-  return `<rect width="312" height="168" rx="7" fill="#1B1F26" stroke="#05060A" stroke-width="2"/>${pilhas}
-${txt((n * 1.5).toFixed(1) + " V", 300, 60, 15, "#E24B4A")}
-${txt(n + " pilha" + (n > 1 ? "s" : ""), 300, 84, 11, "#8A8F98")}
-<path d="M240 168v24" stroke="#E24B4A" stroke-width="8" stroke-linecap="round"/>
-<path d="M288 168v24" stroke="#2A2E36" stroke-width="8" stroke-linecap="round"/>`;
+  return `<rect width="312" height="${alt}" rx="7" fill="#1B1F26" stroke="#05060A" stroke-width="2"/>${pilhas}
+${txt((n * 1.5).toFixed(1) + " V", 156, alt - 10, 16, "#E24B4A")}
+${txt(n + " pilha" + (n > 1 ? "s" : ""), 60, alt - 10, 12, "#8A8F98")}
+<path d="M240 ${alt}v24" stroke="#E24B4A" stroke-width="8" stroke-linecap="round"/>
+<path d="M288 ${alt}v24" stroke="#2A2E36" stroke-width="8" stroke-linecap="round"/>`;
 }
 
 function fontePb(d, i) {
   const on = i.ligado;
+  const v = i.tensaoSaida ?? 5;
+  const tres = Math.abs(v - 3.3) < 0.1;
+  // A chavinha muda de lado e a tensao aparece grande: sem isso o
+  // aluno mexe no ajuste e nao ve nada acontecer.
   return `
-<rect width="288" height="144" rx="7" fill="#134E3A" stroke="#05060A" stroke-width="2"/>
-${txt("FONTE DE PROTOBOARD", 144, 52, 15, "#F2F2EE")}
-${txt(i.tensaoSaida ? i.tensaoSaida + " V" : "5 V", 144, 84, 20, "#5CE07A")}
-<rect x="36" y="96" width="52" height="18" rx="3" fill="#0A0C11"/>
+<rect width="288" height="168" rx="7" fill="#134E3A" stroke="#05060A" stroke-width="2"/>
+${txt("FONTE DE PROTOBOARD", 144, 46, 14, "#F2F2EE")}
+<rect x="84" y="60" width="120" height="40" rx="5" fill="#0A0C11"/>
+${txt(v.toFixed(1) + " V", 144, 90, 24, "#5CE07A")}
+<rect x="96" y="112" width="96" height="26" rx="13" fill="#0A0C11" stroke="#3A3F47" stroke-width="2"/>
+<rect x="${tres ? 100 : 148}" y="116" width="40" height="18" rx="9" fill="#5CE07A"/>
+${txt("3V3", 112, 152, 11, tres ? "#5CE07A" : "#6C8C7C")}
+${txt("5V", 180, 152, 11, tres ? "#6C8C7C" : "#5CE07A")}
 ${ledAlim(252, 40, on)}`;
 }
 
@@ -588,15 +599,18 @@ ${ledAlim(440, 60, on)}`;
 
 function suporteLitio(d, i) {
   const n = i.slots || 1;
+  const alt = 40 + n * 52;
   let cel = "";
   for (let k = 0; k < n; k++) {
-    const y = 18 + k * 48;
-    cel += `<rect x="24" y="${y}" width="240" height="40" rx="8" fill="#134E3A" stroke="#0A2A20" stroke-width="2"/>`;
-    cel += txt("18650", 144, y + 27, 14, "#9FD8C6");
+    const y = 18 + k * 52;
+    cel += `<rect x="24" y="${y}" width="252" height="42" rx="10" fill="#134E3A" stroke="#0A2A20" stroke-width="2"/>`;
+    cel += `<rect x="${k % 2 ? 28 : 258}" y="${y + 11}" width="14" height="20" rx="2" fill="#C9A227"/>`;
+    cel += txt("18650", 150, y + 28, 14, "#9FD8C6");
+    cel += txt(k % 2 ? "+" : "-", k % 2 ? 50 : 248, y + 29, 14, "#E24B4A");
   }
-  return `<rect width="${d.w}" height="${d.h}" rx="7" fill="#1B1F26" stroke="#05060A" stroke-width="2"/>${cel}
-${txt((n * 3.7).toFixed(1) + " V", 300, 40, 15, "#E24B4A")}
-${txt(n + " celula" + (n > 1 ? "s" : ""), 300, 64, 11, "#8A8F98")}`;
+  return `<rect width="${d.w}" height="${alt}" rx="7" fill="#1B1F26" stroke="#05060A" stroke-width="2"/>${cel}
+${txt((n * 3.7).toFixed(1) + " V", 150, alt - 10, 16, "#E24B4A")}
+${txt(n + " celula" + (n > 1 ? "s" : ""), 56, alt - 10, 12, "#8A8F98")}`;
 }
 
 function fonteBancada(d, i) {
@@ -819,16 +833,31 @@ function eixoVivo(m, on) {
         from="0 ${x} ${y}" to="360 ${x} ${y}" dur="${dur}s" repeatCount="indefinite"/></g>`
     : `<g>${corpo}</g>`;
 
+  // Braco de servo: uma pa so no de 180 graus, duas no de giro
+  // continuo. E o formato que vem na sacolinha do servo de verdade.
+  const pa = (ang) => {
+    const L = r * 1.35, la = r * 0.3;
+    return `<g transform="rotate(${ang} ${x} ${y})">
+      <path d="M${x - la / 2} ${y}
+               L${x - la * 0.34} ${y - L + la * 0.6}
+               A${la * 0.34} ${la * 0.34} 0 0 1 ${x + la * 0.34} ${y - L + la * 0.6}
+               L${x + la / 2} ${y} Z"
+        fill="#F2F2EE" stroke="#8A8F98" stroke-width="1.6"/>
+      <circle cx="${x}" cy="${y - L + la * 0.6}" r="${la * 0.2}" fill="#8A8F98"/>
+    </g>`;
+  };
+  const cubo = `<circle cx="${x}" cy="${y}" r="${r * 0.42}" fill="#E8E8E4" stroke="#8A8F98" stroke-width="2"/>`;
+
   if (estilo === "servo") {
-    const braco = `<rect x="${x - 5}" y="${y - r}" width="10" height="${r + 4}" rx="3" fill="#F2F2EE" stroke="#8A8F98" stroke-width="2"/>
-      <rect x="${x - r * 0.7}" y="${y - r - 8}" width="${r * 1.4}" height="10" rx="5" fill="#F2F2EE" stroke="#8A8F98" stroke-width="2"/>`;
-    return `<circle cx="${x}" cy="${y}" r="${r * 0.9}" fill="#C9CDD3"/>` +
-      (on ? `<g>${braco}<animateTransform attributeName="transform" type="rotate"
-        values="-80 ${x} ${y}; 80 ${x} ${y}; -80 ${x} ${y}" dur="2.4s" repeatCount="indefinite"/></g>` : braco) + eixo;
+    const braco = cubo + pa(0);
+    return (on
+      ? `<g>${braco}<animateTransform attributeName="transform" type="rotate"
+          values="-85 ${x} ${y}; 85 ${x} ${y}; -85 ${x} ${y}" dur="2.6s"
+          calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.2 1;0.4 0 0.2 1" repeatCount="indefinite"/></g>`
+      : `<g transform="rotate(-85 ${x} ${y})">${braco}</g>`) + eixo;
   }
-  if (estilo === "servo-continuo")
-    return `<circle cx="${x}" cy="${y}" r="${r * 0.9}" fill="#C9CDD3"/>` +
-      girar(1.6, `<rect x="${x - 5}" y="${y - r}" width="10" height="${r}" rx="3" fill="#F2F2EE" stroke="#8A8F98" stroke-width="2"/>`) + eixo;
+  if (estilo === "servo360")
+    return girar(1.4, cubo + pa(0) + pa(180)) + eixo;
   if (estilo === "dc")
     return `<circle cx="${x}" cy="${y}" r="${r}" fill="#6C727B"/>` +
       girar(0.35, `<path d="M${x} ${y - r} L${x} ${y + r} M${x - r} ${y} L${x + r} ${y}" stroke="#D5D9DE" stroke-width="5"/>`) + eixo;
@@ -856,14 +885,63 @@ function eixoVivo(m, on) {
   return "";
 }
 
+/* Painel de ajuste desenhado POR CIMA do desenho da peca. Ele existe
+   porque o corpo vem estatico do assistente: sem esta camada, trocar a
+   tensao ou o numero de pilhas nao mudava nada na tela. */
+function painelAjuste(def, i, m) {
+  const x = m.x, y = m.y;
+  let s = "";
+
+  if (def.slots) {
+    const n = i.slots ?? def.slots.padrao;
+    const v = (n * def.slots.porSlot).toFixed(1);
+    const larg = Math.min(def.w - 24, n * 26 + 14);
+    s += `<rect x="${x - larg / 2}" y="${y - 34}" width="${larg}" height="26" rx="5" fill="#05060A" opacity=".8"/>`;
+    for (let k = 0; k < n; k++) {
+      const px = x - larg / 2 + 12 + k * 26;
+      s += `<rect x="${px - 8}" y="${y - 29}" width="16" height="16" rx="3" fill="#3A3F47" stroke="#8A8F98" stroke-width="1.2"/>
+            <rect x="${px + 8}" y="${y - 25}" width="3" height="8" fill="#C9A227"/>`;
+    }
+    s += txt(`${n} ${def.slots.rotulo} — ${v} V`, x, y + 6, 15, "#E24B4A", "middle", 700);
+    return s;
+  }
+
+  if (def.ajustavel) {
+    const v = i.tensaoSaida ?? def.ajustavel[def.ajustavel.length - 1];
+    const larg = def.ajustavel.length * 44 + 12;
+    s += `<rect x="${x - larg / 2}" y="${y - 34}" width="${larg}" height="24" rx="12" fill="#05060A" stroke="#3A3F47" stroke-width="1.5"/>`;
+    def.ajustavel.forEach((opcao, k) => {
+      const px = x - larg / 2 + 28 + k * 44;
+      const on = Math.abs(opcao - v) < 0.1;
+      if (on) s += `<rect x="${px - 20}" y="${y - 31}" width="40" height="18" rx="9" fill="#5CE07A"/>`;
+      s += txt(opcao + "V", px, y - 18, 11, on ? "#062033" : "#6C8C7C");
+    });
+    s += txt(v.toFixed(1) + " V", x, y + 6, 16, "#5CE07A", "middle", 700);
+    return s;
+  }
+
+  if (def.faixaTensao) {
+    const v = i.tensao ?? def.faixaTensao.padrao;
+    const a = i.limite ?? (def.faixaCorrente ? def.faixaCorrente.padrao : 1);
+    s += txt(`${v.toFixed(1)} V  ${a.toFixed(2)} A`, x, y + 4, 16, "#7CFF9B", "middle", 700);
+    return s;
+  }
+  return s;
+}
+
 function camadaViva(def, inst, arte) {
   const i = inst || {};
   let s = "";
 
-  // Marcadores mandam: os do desenho revisado tem prioridade sobre os
-  // padroes da biblioteca. E assim que da para tirar a luz de uma peca
-  // que nao acende e por eixo onde ele realmente fica.
-  const marcas = arte.marcadores || def.marcadores || [];
+  // Marcadores: o desenho revisado manda em cada TIPO que ele define,
+  // e a biblioteca preenche os tipos que ele nao trouxe. Antes a lista
+  // do desenho substituia tudo, e ajustar a peca deixava de aparecer.
+  const doDesenho = arte.marcadores || [];
+  const tiposDoDesenho = new Set(doDesenho.map((m) => m.tipo));
+  const marcas = [
+    ...doDesenho,
+    ...(def.marcadores || []).filter((m) => !tiposDoDesenho.has(m.tipo)),
+  ];
   for (const m of marcas) {
     if (m.tipo === "luz") {
       if (m.forte) {
@@ -877,6 +955,7 @@ function camadaViva(def, inst, arte) {
       s += `<g fill="none" stroke="#5CE07A" stroke-width="3">
         <path d="M${m.x} ${m.y - 16}a22 22 0 010 32"/><path d="M${m.x + 10} ${m.y - 26}a34 34 0 010 52"/></g>`;
     else if (m.tipo === "vibra") s += eixoVivo({ ...m, estilo: "vibra" }, i.ligado);
+    else if (m.tipo === "ajuste") s += painelAjuste(def, i, m);
   }
 
   // Botao e chave: o desenho exportado e estatico, entao o efeito de
@@ -995,8 +1074,18 @@ function camadaViva(def, inst, arte) {
          <circle cx="${cx}" cy="${cy}" r="${20 + b * 14}" fill="${v.cor}" opacity="${0.18 + b * 0.3}"/>` + s;
   }
 
-  if (def.id === "ledrgb" && i.ligado)
-    s += `<circle cx="${def.w / 2}" cy="${def.h * 0.35}" r="${def.w * 0.34}" fill="#F2F2EE" opacity=".24"/>`;
+  // LED RGB: a cupula assume a cor dos canais que estao acionados.
+  if (def.id === "ledrgb") {
+    const c = i.canais || {};
+    const ligados = ["r", "g", "b"].filter((k) => c[k]);
+    if (ligados.length) {
+      const cor = { r: "#E24B4A", g: "#4ED17A", b: "#5B9BE8", rg: "#E9C542", rb: "#C77DFF", gb: "#5CE0D8", rgb: "#F2F2EE" }[ligados.join("")] || "#F2F2EE";
+      const cx = def.w / 2, cy = def.h * 0.35, raio = def.w * 0.3;
+      s += `<circle cx="${cx}" cy="${cy}" r="${raio * 1.7}" fill="${cor}" opacity=".22"/>
+            <circle cx="${cx}" cy="${cy}" r="${raio}" fill="${cor}" opacity=".85"/>`;
+      s += txt(ligados.join("").toUpperCase(), cx, def.h - 10, 12, cor);
+    }
+  }
 
   // Neopixel: os dezesseis quadradinhos acendem, cada um na sua cor.
   if (def.id === "neopixel" && i.ligado) {

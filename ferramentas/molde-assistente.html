@@ -116,6 +116,7 @@ footer .ok{color:var(--fosforo)}
       <option value="eixo">eixo de giro</option>
       <option value="som">som</option>
       <option value="vibra">vibracao</option>
+      <option value="ajuste">painel de ajuste</option>
     </select>
     <button id="b-grade" class="on">Grade</button>
     <button id="b-pinos" class="on">Pinos</button>
@@ -363,8 +364,8 @@ function pintar(soMesa) {
 /* Marcas do que se mexe, acende, soa ou mostra algo. Elas nao entram
    no desenho exportado: existem so para voce posicionar as formas em
    volta sem quebrar a animacao que a bancada aplica por cima. */
-const CORES_MARCA = { luz: "#5CE07A", eixo: "#E9C542", som: "#E0703C", vibra: "#C77DFF" };
-const ROTULO_MARCA = { luz: "luz de ligado", eixo: "eixo de giro", som: "som", vibra: "vibracao" };
+const CORES_MARCA = { luz: "#5CE07A", eixo: "#E9C542", som: "#E0703C", vibra: "#C77DFF", ajuste: "#7DD3FC" };
+const ROTULO_MARCA = { luz: "luz de ligado", eixo: "eixo de giro", som: "som", vibra: "vibracao", ajuste: "painel de ajuste" };
 
 function marcadoresEditaveis() {
   const lista = app.marcadores[app.atual] || [];

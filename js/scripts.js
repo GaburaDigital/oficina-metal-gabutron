@@ -109,6 +109,29 @@ export const SCRIPTS = [
     anima: { tela: ["SNAKE", "use o joystick"] },
   },
 
+  {
+    id: "cores-nos-botoes", nome: "Cores nos botoes", placas: ["microbura"],
+    resumo: "Botao A pinta o LED de azul, botao B pinta de verde.",
+    ligacoes: {
+      microbura: [
+        "canal G do LED RGB no anel P1",
+        "canal B do LED RGB no anel P2",
+        "GND do LED RGB (catodo comum) no anel GND",
+        "canal R pode ficar livre: este script so usa verde e azul",
+        "cada canal com resistor de 220 ohms, se o modulo nao tiver o dele",
+      ],
+    },
+    pede: ["ledrgb"],
+    saidas: { microbura: { anel1: { modo: "baixo" }, anel2: { modo: "baixo" } } },
+    // Enquanto o script roda, apertar o botao da placa muda o pino:
+    // e assim que o aluno ve a cor trocar na propria bancada.
+    reagirBotao: {
+      a: { anel2: { modo: "alto" }, anel1: { modo: "baixo" } },
+      b: { anel1: { modo: "alto" }, anel2: { modo: "baixo" } },
+    },
+    anima: { cor: true },
+  },
+
   /* ---------- Bura32 ---------- */
   {
     id: "casa-inteligente", nome: "Casa inteligente", placas: ["bura32"],
@@ -180,6 +203,17 @@ export function acharScript(id) {
 }
 
 /* Aplica o script no firmware da placa: e ele que faz o circuito viver. */
+/* Botao apertado com script ativo: aplica o estado que o script manda
+   para aquele botao e volta ao normal quando solta. */
+export function reagirAoBotao(comp, botao, apertado) {
+  const s = acharScript(comp.script);
+  if (!s || !s.reagirBotao || !s.reagirBotao[botao]) return false;
+  const base = s.saidas[comp.tipo] || {};
+  comp.firmware = JSON.parse(JSON.stringify(base));
+  if (apertado) Object.assign(comp.firmware, JSON.parse(JSON.stringify(s.reagirBotao[botao])));
+  return true;
+}
+
 export function aplicar(comp, script) {
   comp.script = script ? script.id : null;
   comp.firmware = script && script.saidas[comp.tipo] ? JSON.parse(JSON.stringify(script.saidas[comp.tipo])) : {};

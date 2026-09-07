@@ -20,6 +20,7 @@ import { PORID, P, NOME_CONTATO } from "./biblioteca.js";
 import { desenhar, tirasProtoboard } from "./desenhos.js";
 import { caminho, podeConectar, motivoRecusa } from "./fios.js";
 import { calcular } from "./circuito.js";
+import { reagirAoBotao } from "./scripts.js";
 import { svgQueimado, svgFumaca } from "./danos.js";
 import { svgJunta } from "./solda.js";
 import { SOM } from "./som.js";
@@ -224,6 +225,11 @@ function svgComponente(comp, ocupados) {
     eixoX: comp.eixoX, eixoY: comp.eixoY, passo: comp.passo,
     temCartao: comp.temMidia === "cartao-sd-midia", temMidia: comp.temMidia,
     leitura: comp.leitura, modo: comp.modo,
+    canais: d.id === "ledrgb" && estado.ultimoCircuito ? {
+      r: estado.ultimoCircuito.vDe(comp.id, "r") > 1.5,
+      g: estado.ultimoCircuito.vDe(comp.id, "g") > 1.5,
+      b: estado.ultimoCircuito.vDe(comp.id, "b") > 1.5,
+    } : null,
     trimpot: comp.trimpot, apertados: comp.apertados, jumperEnable: comp.jumperEnable,
     ocupados: comp.ocupados, pontasLigadas: comp.pontasLigadas,
     script: comp.script,
@@ -392,11 +398,17 @@ function tentarEncaixar(comp) {
         // Cabo de duas pontas: encaixa pela ponta mais proxima, e so se
         // ele estiver na mesma orientacao do conector.
         if (d.pontasEncaixe) {
-          const orientacaoOk = ((comp.rot || 0) % 180) === ((host.rot || 0) % 180);
+          // O conector so entra na posicao certa. Slot com "giro" exige
+          // que o cabo esteja girado nesse angulo — e por isso a tecla R
+          // faz parte da montagem do cyberdeck.
+          const exigido = ((slot.giro || 0) + (host.rot || 0)) % 180;
+          const orientacaoOk = ((comp.rot || 0) % 180) === exigido;
           for (const pt of d.pontasEncaixe) {
             if (pt.tipo !== slot.tipo) continue;
-            const alvoX = alvoSlot.x - pt.x, alvoY = alvoSlot.y - pt.y;
-            if (Math.hypot(comp.x - alvoX, comp.y - alvoY) > 150) continue;
+            if ((host.ocupados || {})[slot.tipo]) continue;
+            const p = girarPonto(pt.x, pt.y, d.w / 2, d.h / 2, comp.rot || 0);
+            const alvoX = alvoSlot.x - p.x, alvoY = alvoSlot.y - p.y;
+            if (Math.hypot(comp.x - alvoX, comp.y - alvoY) > 170) continue;
             if (!orientacaoOk) {
               if (ganchos.aoRecusarEncaixe) ganchos.aoRecusarEncaixe(comp, "orientacao");
               return false;
@@ -405,6 +417,7 @@ function tentarEncaixar(comp) {
             comp.pai = host.id;
             comp.pontasLigadas = [...new Set([...(comp.pontasLigadas || []), pt.id])];
             host.ocupados = { ...(host.ocupados || {}), [slot.tipo]: comp.id };
+            ligarOutraPonta(comp, d, pt);
             return true;
           }
           continue;
@@ -519,6 +532,41 @@ function acoplarVizinhos(comp) {
 
 function filhosDe(id) { return estado.comps.filter((c) => c.pai === id); }
 
+/* Cabo ja encaixado numa ponta: se a outra ponta cair sobre um conector
+   livre, ela tambem encaixa, e ai as tres pecas passam a andar juntas.
+   E o que faz o cyberdeck virar uma coisa so. */
+function ligarOutraPonta(cabo, d, usada) {
+  for (const outra of d.pontasEncaixe) {
+    if (outra.id === usada.id) continue;
+    const p = girarPonto(outra.x, outra.y, d.w / 2, d.h / 2, cabo.rot || 0);
+    const mundo = { x: cabo.x + p.x, y: cabo.y + p.y };
+    for (const host of estado.comps) {
+      if (host.id === cabo.id || host.id === cabo.pai) continue;
+      const hd = PORID[host.tipo];
+      for (const slot of hd.encaixes || (hd.encaixe ? [hd.encaixe] : [])) {
+        if (slot.tipo !== outra.tipo) continue;
+        if ((host.ocupados || {})[slot.tipo]) continue;
+        const ponto = { x: host.x + slot.x, y: host.y + slot.y };
+        if (Math.hypot(mundo.x - ponto.x, mundo.y - ponto.y) > 170) continue;
+        const exigido = ((slot.giro || 0) + (host.rot || 0)) % 180;
+        if (((cabo.rot || 0) % 180) !== exigido) continue;
+        // A peca solta vem ate o cabo, e nao o contrario: o cabo ja esta
+        // preso do outro lado.
+        host.x += ponto.x - mundo.x ? mundo.x - ponto.x : 0;
+        host.y += mundo.y - ponto.y;
+        host.x = cabo.x + p.x - slot.x;
+        host.y = cabo.y + p.y - slot.y;
+        host.pai = cabo.id;
+        host.ocupados = { ...(host.ocupados || {}), [slot.tipo]: cabo.id };
+        cabo.pontasLigadas = [...new Set([...(cabo.pontasLigadas || []), outra.id])];
+        if (ganchos.aoEncadear) ganchos.aoEncadear(cabo, host);
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 /* ---------- acoes --------------------------------------------- */
 
 export function adicionar(tipo, opcoes = {}) {
@@ -566,6 +614,17 @@ export function pegarDaPaleta(tipo, clientX, clientY, pointerId) {
   try { svg.setPointerCapture(pointerId); } catch (e) {}
   SOM.pegar();
   return comp;
+}
+
+/* Toda a corrente de encaixe: placa, cabo e tela andam juntos. */
+function descendentes(id, vistos = new Set()) {
+  const diretos = filhosDe(id).filter((c) => !vistos.has(c.id));
+  const saida = [];
+  for (const f of diretos) {
+    vistos.add(f.id);
+    saida.push(f, ...descendentes(f.id, vistos));
+  }
+  return saida;
 }
 
 function criarPontaSolta(x, y) {
@@ -790,6 +849,7 @@ function aoApertar(ev) {
     } else if (zona.dataset.acao.startsWith("botao:")) {
       const qual = zona.dataset.acao.slice(6);
       comp.apertados = [...(comp.apertados || []), qual];
+      reagirAoBotao(comp, qual, true);
       SOM.clique();
       recalcular();
       if (ganchos.aoApertarBotao) ganchos.aoApertarBotao(comp, qual);
@@ -831,7 +891,7 @@ function aoApertar(ev) {
     const m = telaParaMundo(ev.clientX, ev.clientY);
     arrasto = {
       id: comp.id, dx: m.x - comp.x, dy: m.y - comp.y, moveu: false,
-      filhos: filhosDe(comp.id).map((f) => ({ id: f.id, dx: f.x - comp.x, dy: f.y - comp.y })),
+      filhos: descendentes(comp.id).map((f) => ({ id: f.id, dx: f.x - comp.x, dy: f.y - comp.y })),
     };
     svg.setPointerCapture(ev.pointerId);
     SOM.pegar();
@@ -980,7 +1040,11 @@ function aoSoltar(ev) {
   if (arrasto && arrasto.acaoTrim) { arrasto = null; return; }
   if (arrasto && arrasto.acaoTecla) {
     const comp = achar(arrasto.acaoTecla);
-    if (comp) { comp.apertados = (comp.apertados || []).filter((x) => x !== arrasto.qual); recalcular(); }
+    if (comp) {
+      comp.apertados = (comp.apertados || []).filter((x) => x !== arrasto.qual);
+      reagirAoBotao(comp, arrasto.qual, false);
+      recalcular();
+    }
     arrasto = null;
     return;
   }

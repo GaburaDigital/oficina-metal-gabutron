@@ -94,12 +94,16 @@ function iniciarInterface() {
       }
       robo.dizer(`${PORID[comp.tipo].nome} tem duas fileiras de pinos separadas por um passo so. Na protoboard as duas cairiam na mesma coluna, ou seja, em curto. Esse tipo de modulo pede jumper macho-femea ou uma placa adaptadora — e assim tambem no laboratorio de verdade.`, { expressao: "pensando" });
     },
+    aoEncadear: (cabo, alvo) => {
+      robo.dizer(`${PORID[alvo.tipo].nome} ligada pela outra ponta do cabo. As tres pecas agora andam juntas: arraste qualquer uma.`, { expressao: "satisfeito" });
+    },
     aoEncaixar: (comp, n) => {
       robo.dizer(`${PORID[comp.tipo].nome} encaixado em ${n} furo${n > 1 ? "s" : ""}. Os furos ocupados ficam amarelos.`, { expressao: "satisfeito" });
     },
     aoInverter: (ponta) => robo.dizer(`Ponta da vez: ${ponta}. ${NOME_CONTATO[ponta]}.`, { expressao: "pensando" }),
     aoUsarFerramenta: usarFerramenta,
     aoApertarBotao: (comp, qual) => {
+      missoes.sessao.botoes.add(`${comp.tipo}:${qual}`);
       const d = PORID[comp.tipo];
       const b = (d.botoes || []).find((x) => x.id === qual);
       if (b && qual === "reset") robo.dizer(`${d.nome} reiniciada. Tudo que estava rodando comecou de novo.`, { expressao: "pensando", falar: false });
@@ -556,6 +560,13 @@ function ligarMissao() {
 
 function aoMudarBancada(est) {
   if (!missoes.sessao.missao || !est.ultimoCircuito) return;
+  // Anota as cores que o LED RGB chegou a mostrar: e assim que o
+  // checklist confere que o aluno testou os dois botoes.
+  for (const c of est.comps) {
+    if (c.tipo !== "ledrgb") continue;
+    const canais = ["r", "g", "b"].filter((k) => est.ultimoCircuito.vDe(c.id, k) > 1.5).join("");
+    if (canais) missoes.sessao.cores.add(canais);
+  }
   const r = missoes.avaliar(est.comps, est.ultimoCircuito);
   missoes.pintarPainel(q("#missao-caixa"), est.comps);
   if (r.completa && !missoes.sessao.concluida) {

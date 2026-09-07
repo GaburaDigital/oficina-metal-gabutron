@@ -5,7 +5,7 @@
    pegar a versao nova.
    ============================================================ */
 
-const VERSAO = "gabutron-v13";
+const VERSAO = "gabutron-v15";
 
 const ARQUIVOS = [
   "./",
@@ -49,6 +49,7 @@ const ARQUIVOS = [
   "ATIVIDADES/COMPONENTES/basico.json",
   "ATIVIDADES/CURIOSIDADES/falas-gabutron.json",
   "ATIVIDADES/CONSTRUCAO/bicho-de-estimacao.json",
+  "ATIVIDADES/CONSTRUCAO/cores-do-bichinho.json",
   "ATIVIDADES/CONSTRUCAO/braco-de-carga.json",
   "ATIVIDADES/CONSTRUCAO/central-de-bordo.json",
   "ATIVIDADES/CONSTRUCAO/comporta-automatica.json",

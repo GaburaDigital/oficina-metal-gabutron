@@ -311,13 +311,16 @@ Cada tipo de motor gira do seu jeito, e a animação roda no próprio SVG — se
 
 | Marcador | Comportamento |
 |---|---|
-| `servo` | braço varre de um lado ao outro |
-| `servo-continuo` | gira sem parar |
+| `servo` | braço de uma pá varrendo 170 graus |
+| `servo360` | braço de duas pás girando sem parar |
 | `dc` | eixo em cruz girando rápido |
 | `helice` | pás de motor de drone |
 | `passo` | disco entalhado avançando em passos |
 | `rotor` | hélice da bomba submersa |
 | `vibra` | tremor curto do motor de vibração |
+| `ajuste` | painel que mostra o efeito do ajuste: tensão escolhida, número de pilhas |
+
+Os marcadores do desenho revisado mandam em cada **tipo** que definem, e a biblioteca preenche os tipos que faltarem. Assim dá para redesenhar uma peça sem perder o painel de ajuste nem o eixo do motor.
 
 No assistente, o botão **Marcador** cria; arrastar move; Delete remove. Isso resolve os dois casos: peça que ganhou luz sem ter, e peça que acende mas não tinha marcador.
 
@@ -326,6 +329,8 @@ No assistente, o botão **Marcador** cria; arrastar move; Delete remove. Isso re
 Na sacola de jumpers aparece **Fio para solda** — mas só quando o ferro está ligado. Ele entra em qualquer contato, porque estanho não liga para formato de ponta, e não pode ficar pendurado no ar. É o atalho para quem já entendeu os tipos de conector; o aluno iniciante continua tendo que acertar macho, fêmea e jacaré.
 
 ## Cabo HDMI e encaixes
+
+O conector HDMI da Arubag Pi e o da tela ficam **em pé**, então o cabo precisa ser girado com `R` antes de encaixar. Encaixando uma ponta e soltando a tela sobre a outra, as três peças passam a andar juntas: arrastar qualquer uma leva o conjunto.
 
 Cada entrada aceita só o seu tipo: pen drive não entra em HDMI. A Arubag Pi tem as três — HDMI, USB e cartão SD. O cabo HDMI tem **duas pontas independentes**, cada uma encaixando num conector, e só entra se estiver na mesma orientação da entrada. Girar com `R` resolve.
 

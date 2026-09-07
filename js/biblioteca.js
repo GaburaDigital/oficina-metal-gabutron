@@ -239,6 +239,11 @@ add({
   limitePino: 5, limiteAlim: 90, limiteTotal: 120,
   usb: true, vinMin: 3, vinMax: 3.3,
   encaixaExpansao: "expansao-microbura",
+  botoes: [
+    { id: "a", n: "A", x: 66, y: 276, r: 30 },
+    { id: "b", n: "B", x: 414, y: 276, r: 30 },
+    { id: "reset", n: "RESET", x: 240, y: 456, r: 18 },
+  ],
 });
 add({
   id: "expansao-microbura", nome: "Expansao MicroBURA", caixa: "placas", arte: "expansao",
@@ -563,7 +568,7 @@ add({
   ],
   botoes: [{ id: "power", n: "PWR", x: 396, y: 264, r: 22 }],
   encaixes: [
-    { tipo: "hdmi", x: 264, y: 288, rotulo: "HDMI" },
+    { tipo: "hdmi", x: 264, y: 288, rotulo: "HDMI", giro: 90 },
     { tipo: "pendrive", x: 396, y: 168, rotulo: "USB" },
     { tipo: "cartao-sd-midia", x: 60, y: 180, rotulo: "cartao SD" },
   ],
@@ -1515,7 +1520,7 @@ add({
 add({
   id: "lcd7", nome: "Tela LCD 7 polegadas", caixa: "leds", arte: "lcd7", w: 600, h: 432,
   cor: "#1B1F26", alimenta: 4.5, tela: true, correnteTipica: 700, custo: 220,
-  encaixes: [{ tipo: "hdmi", x: 168, y: 408, rotulo: "entrada HDMI" }],
+  encaixes: [{ tipo: "hdmi", x: 168, y: 408, rotulo: "entrada HDMI", giro: 90 }],
   pinos: [
     { id: "vcc", n: "5V", rotulo: "Alimentacao propria da tela — ela nao se alimenta pelo HDMI", x: 408, y: 408, r: "borne", papel: "v+", lado: "cima" },
     { id: "gnd", n: "GND", rotulo: "Terra da alimentacao", x: 456, y: 408, r: "borne", papel: "gnd", lado: "cima" },
@@ -1565,8 +1570,8 @@ for (const [id, t] of Object.entries(TAMANHOS)) {
    pode mover, adicionar e remover cada um, e o que ele exportar manda.
    Sem isso, peca redesenhada perde a luz e o eixo do motor. */
 const EIXO = {
-  servo180: "servo", servo360: "servo-continuo", "servo-torque180": "servo",
-  "servo-torque360": "servo-continuo", motordc: "dc", "motordc-reducao": "dc",
+  servo180: "servo", servo360: "servo360", "servo-torque180": "servo",
+  "servo-torque360": "servo360", motordc: "dc", "motordc-reducao": "dc",
   "motor-drone": "helice", "motor-passo": "passo", bomba: "rotor", vibracao: "vibra",
 };
 for (const d of C) {
@@ -1577,6 +1582,10 @@ for (const d of C) {
   if (d.apito || /falante|buzzer|piezo|amplificador/.test(d.id)) m.push({ tipo: "som", x: d.w - 26, y: Math.round(d.h * 0.4) });
   if (d.id === "vibracao") m.push({ tipo: "vibra", x: Math.round(d.w / 2), y: Math.round(d.h / 2) });
   if (d.id === "laser") m.push({ tipo: "luz", x: d.w - 20, y: Math.round(d.h / 2), cor: "#E24B4A", forte: true });
+  // Peca com ajuste ganha um painel proprio: sem ele o aluno mexe na
+  // quantidade de pilhas ou na tensao e nao ve nada mudar na bancada.
+  if (d.slots || d.ajustavel || d.faixaTensao)
+    m.push({ tipo: "ajuste", x: Math.round(d.w / 2), y: d.h - 18 });
   if (m.length) d.marcadores = m;
 }
 

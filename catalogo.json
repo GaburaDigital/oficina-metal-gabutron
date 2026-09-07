@@ -348,6 +348,25 @@
           "pendrive"
         ],
         "fase": 6
+      },
+      {
+        "id": "cores-do-bichinho",
+        "titulo": "As cores do bichinho",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/cores-do-bichinho.json",
+        "tipo": "construcao",
+        "placa": "microbura",
+        "dificuldade": "facil",
+        "minutos": 18,
+        "pontos": 170,
+        "resumo": "LED RGB, script do deck e os botoes A e B: montar, programar e testar.",
+        "componentes": [
+          "microbura",
+          "ledrgb",
+          "resistor",
+          "protoboard"
+        ],
+        "fase": 6,
+        "usaScripts": true
       }
     ],
     "manutencao": [
