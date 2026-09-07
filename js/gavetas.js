@@ -107,7 +107,7 @@ function ligarEventos() {
     b.addEventListener("click", () => {
       corAtiva = b.dataset.cor;
       SOM.clique();
-      if (fioAtivo) aoEscolherFio(JUMPERS.find((x) => x.id === fioAtivo), corAtiva);
+      if (fioAtivo) aoEscolherFio([...JUMPERS, FIO_SOLDA].find((x) => x.id === fioAtivo), corAtiva);
       render(buscaAtual);
     });
   });

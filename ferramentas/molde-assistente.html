@@ -364,8 +364,10 @@ function pintar(soMesa) {
 /* Marcas do que se mexe, acende, soa ou mostra algo. Elas nao entram
    no desenho exportado: existem so para voce posicionar as formas em
    volta sem quebrar a animacao que a bancada aplica por cima. */
-const CORES_MARCA = { luz: "#5CE07A", eixo: "#E9C542", som: "#E0703C", vibra: "#C77DFF", ajuste: "#7DD3FC" };
-const ROTULO_MARCA = { luz: "luz de ligado", eixo: "eixo de giro", som: "som", vibra: "vibracao", ajuste: "painel de ajuste" };
+const CORES_MARCA = { luz: "#5CE07A", eixo: "#E9C542", som: "#E0703C", vibra: "#C77DFF",
+  ajuste: "#7DD3FC", botao: "#E24B4A", encaixe: "#F2F2EE" };
+const ROTULO_MARCA = { luz: "luz de ligado", eixo: "eixo de giro", som: "som", vibra: "vibracao",
+  ajuste: "painel de ajuste", botao: "botao", encaixe: "entrada" };
 
 function marcadoresEditaveis() {
   const lista = app.marcadores[app.atual] || [];
@@ -373,11 +375,17 @@ function marcadoresEditaveis() {
     const cor = CORES_MARCA[mk.tipo] || "#7DD3FC";
     const r = mk.r || 22;
     const sel = app.marcaSel === i;
+    const corpo = mk.tipo === "encaixe"
+      ? `<rect x="${mk.x - 46}" y="${mk.y - 26}" width="92" height="52" rx="5" fill="${cor}" fill-opacity="${sel ? 0.2 : 0.08}"
+           stroke="${cor}" stroke-width="${sel ? 3 : 2}" stroke-dasharray="6 5"
+           transform="rotate(${mk.giro || 0} ${mk.x} ${mk.y})"/>`
+      : `<circle cx="${mk.x}" cy="${mk.y}" r="${r}" fill="${cor}" fill-opacity="${sel ? 0.22 : 0.1}"
+           stroke="${cor}" stroke-width="${sel ? 3 : 2}" stroke-dasharray="5 4"/>`;
+    const nome = (ROTULO_MARCA[mk.tipo] || mk.tipo) + (mk.rotulo ? " " + mk.rotulo : "") + (mk.estilo ? " (" + mk.estilo + ")" : "");
     return `<g class="marca-alca" data-marca="${i}" style="cursor:move">
-      <circle cx="${mk.x}" cy="${mk.y}" r="${r}" fill="${cor}" fill-opacity="${sel ? 0.22 : 0.1}"
-        stroke="${cor}" stroke-width="${sel ? 3 : 2}" stroke-dasharray="5 4"/>
+      ${corpo}
       <path d="M${mk.x - r - 8} ${mk.y}h${r * 2 + 16}M${mk.x} ${mk.y - r - 8}v${r * 2 + 16}" stroke="${cor}" stroke-width="1.5"/>
-      <text x="${mk.x}" y="${mk.y - r - 12}" font-family="monospace" font-size="11" fill="${cor}" text-anchor="middle">${ROTULO_MARCA[mk.tipo] || mk.tipo}${mk.estilo ? " (" + mk.estilo + ")" : ""}</text>
+      <text x="${mk.x}" y="${mk.y - r - 12}" font-family="monospace" font-size="11" fill="${cor}" text-anchor="middle">${nome}</text>
     </g>`;
   }).join("");
 }
@@ -843,6 +851,8 @@ function iniciarMesa() {
     if (ev.key === "Escape") { penPontos = null; app.sel = null; pintar(); }
     if (ev.key === "Enter" && penPontos) fecharCaneta(false);
     if ((ev.key === "Delete" || ev.key === "Backspace") && app.marcaSel != null) {
+      const alvo = (app.marcadores[app.atual] || [])[app.marcaSel];
+      if (alvo && alvo.fixo) { recado("botao e entrada nao podem ser apagados aqui, so movidos"); return; }
       (app.marcadores[app.atual] || []).splice(app.marcaSel, 1);
       app.marcaSel = null; marcarEditado(); pintar();
       recado("marcador removido");
@@ -992,7 +1002,7 @@ function atualizarBarra() {
     pen: "Clique para fixar um ponto; arraste no clique para curvar. Enter fecha, Esc cancela.",
     text: "Clique para colocar um rotulo e depois edite o texto no painel.",
     led: "Clique onde fica a luz de ligado da peca.",
-    marca: "Escolha o tipo ao lado e clique na peca. Depois arraste para posicionar; Delete remove.",
+    marca: "Escolha o tipo ao lado e clique na peca. Arraste para posicionar; Delete remove. Botao e entrada nao apagam, so movem.",
     no: "Escolha um traco da caneta: os pontos dele aparecem em amarelo e voce arrasta cada um.",
   };
   q("#ajuda").textContent = dicas[app.ferramenta] || "";

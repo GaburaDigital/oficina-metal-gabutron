@@ -38,6 +38,7 @@ export const estado = {
   raiox: false,
   organizado: false,
   ferramentaFio: null,
+  midia: [],              // ligacoes de cabo e slot: { cabo, ponta, host, slot }
   modoFerramenta: null,   // null | "multimetro" | "solda"
   pendente: null,
   vista: { x: 60, y: 40, k: 0.42 },
@@ -231,7 +232,8 @@ function svgComponente(comp, ocupados) {
       b: estado.ultimoCircuito.vDe(comp.id, "b") > 1.5,
     } : null,
     trimpot: comp.trimpot, apertados: comp.apertados, jumperEnable: comp.jumperEnable,
-    ocupados: comp.ocupados, pontasLigadas: comp.pontasLigadas,
+    ocupados: Object.fromEntries(estado.midia.filter((l) => l.host === comp.id).map((l) => [l.slot, l.cabo])),
+    pontasLigadas: estado.midia.filter((l) => l.cabo === comp.id).map((l) => l.ponta),
     script: comp.script,
     ligado: estado.energizado && est.ligado,
     aceso: estado.energizado && est.aceso,
@@ -359,14 +361,6 @@ function tentarEncaixar(comp) {
   const d = PORID[comp.tipo];
   comp.encaixes = [];
   comp.pai = null;
-  comp.pontasLigadas = [];
-  // Tirar a peca do slot limpa a marca do hospedeiro: era isso que
-  // deixava o encaixe azul depois de remover o cartao.
-  for (const outro of estado.comps) {
-    if (!outro.ocupados) continue;
-    for (const [tipo, quem] of Object.entries(outro.ocupados))
-      if (quem === comp.id) delete outro.ocupados[tipo];
-  }
 
   // 1) A placa mae solta em cima de uma expansao ja apoiada: ela desce
   //    para a posicao e passa a andar junto.
@@ -387,7 +381,11 @@ function tentarEncaixar(comp) {
 
   // 2) Midia: cartao de memoria e pen drive entram no slot de quem
   //    tem encaixe, sem fio nenhum. E so mecanico, mas o aluno espera.
-  if (d.inerte || d.encaixavel || d.pontasEncaixe) {
+  if (d.pontasEncaixe || (d.encaixes || d.encaixe) || d.inerte || d.encaixavel) {
+    if (conectarMidia(comp)) return true;
+  }
+
+  if (false) {
     for (const host of estado.comps) {
       if (host.id === comp.id) continue;
       const hd = PORID[host.tipo];
@@ -532,6 +530,107 @@ function acoplarVizinhos(comp) {
 
 function filhosDe(id) { return estado.comps.filter((c) => c.pai === id); }
 
+/* ---------- encaixes mecanicos: cabo, cartao, pen drive ----------
+   Antes o cabo so conseguia falar com quem ele encontrasse na hora de
+   ser solto. Agora as ligacoes vivem numa lista propria: cada ponta
+   livre procura conector livre, e o conjunto todo passa a andar junto. */
+
+function slotsDe(comp) {
+  const d = PORID[comp.tipo];
+  return (d.encaixes || (d.encaixe ? [d.encaixe] : [])).map((s, i) => ({ ...s, indice: i }));
+}
+
+function slotOcupado(compId, tipo) {
+  return estado.midia.some((l) => l.host === compId && l.slot === tipo);
+}
+
+function pontaOcupada(caboId, ponta) {
+  return estado.midia.some((l) => l.cabo === caboId && l.ponta === ponta);
+}
+
+function mundoDoPonto(comp, x, y) {
+  const d = PORID[comp.tipo];
+  const p = girarPonto(x, y, d.w / 2, d.h / 2, comp.rot || 0);
+  return { x: comp.x + p.x, y: comp.y + p.y };
+}
+
+/* Tenta ligar tudo o que o componente recem-solto alcanca. */
+function conectarMidia(comp) {
+  const d = PORID[comp.tipo];
+  let ligou = false;
+
+  const casar = (cabo, cd, ponta, host, slot) => {
+    if (pontaOcupada(cabo.id, ponta.id) || slotOcupado(host.id, slot.tipo)) return false;
+    if (ponta.tipo !== slot.tipo) return false;
+    const pw = mundoDoPonto(cabo, ponta.x, ponta.y);
+    const sw = mundoDoPonto(host, slot.x, slot.y);
+    if (Math.hypot(pw.x - sw.x, pw.y - sw.y) > 170) return false;
+    const exigido = ((slot.giro || 0) + (host.rot || 0) + 360) % 180;
+    if (((cabo.rot || 0) % 180) !== exigido) {
+      if (ganchos.aoRecusarEncaixe) ganchos.aoRecusarEncaixe(cabo, "orientacao");
+      return false;
+    }
+    // Quem foi solto vai ate quem estava parado.
+    const mover = comp.id === cabo.id ? cabo : host;
+    const dx = comp.id === cabo.id ? sw.x - pw.x : pw.x - sw.x;
+    const dy = comp.id === cabo.id ? sw.y - pw.y : pw.y - sw.y;
+    mover.x += dx; mover.y += dy;
+    estado.midia.push({ cabo: cabo.id, ponta: ponta.id, host: host.id, slot: slot.tipo });
+    if (ganchos.aoEncadear) ganchos.aoEncadear(cabo, host);
+    return true;
+  };
+
+  // 1. sou um cabo procurando conector
+  for (const ponta of d.pontasEncaixe || []) {
+    for (const host of estado.comps) {
+      if (host.id === comp.id) continue;
+      for (const slot of slotsDe(host)) if (casar(comp, d, ponta, host, slot)) { ligou = true; break; }
+    }
+  }
+
+  // 2. sou peca com conector procurando ponta livre de cabo
+  for (const slot of slotsDe(comp)) {
+    for (const cabo of estado.comps) {
+      const cd = PORID[cabo.tipo];
+      if (cabo.id === comp.id || !cd.pontasEncaixe) continue;
+      for (const ponta of cd.pontasEncaixe) if (casar(cabo, cd, ponta, comp, slot)) { ligou = true; break; }
+    }
+  }
+
+  // 3. sou cartao ou pen drive: entro num slot do meu tipo
+  if (!d.pontasEncaixe && (d.inerte || d.encaixavel)) {
+    const meuTipo = d.encaixavel || comp.tipo;
+    for (const host of estado.comps) {
+      if (host.id === comp.id) continue;
+      for (const slot of slotsDe(host)) {
+        if (slot.tipo !== meuTipo || slotOcupado(host.id, slot.tipo)) continue;
+        const sw = mundoDoPonto(host, slot.x, slot.y);
+        if (Math.hypot(comp.x + d.w / 2 - sw.x, comp.y + d.h / 2 - sw.y) > 150) continue;
+        comp.x = sw.x - d.w / 2; comp.y = sw.y - d.h / 2;
+        estado.midia.push({ cabo: comp.id, ponta: "corpo", host: host.id, slot: slot.tipo });
+        ligou = true;
+        break;
+      }
+    }
+  }
+
+  return ligou;
+}
+
+/* Todo mundo ligado pelo mesmo cabo forma um grupo rigido. */
+function grupoMidia(id, vistos = new Set([id])) {
+  for (const l of estado.midia) {
+    const par = l.cabo === id ? l.host : l.host === id ? l.cabo : null;
+    if (par && !vistos.has(par)) { vistos.add(par); grupoMidia(par, vistos); }
+  }
+  return [...vistos];
+}
+
+export function soltarMidia(id) {
+  estado.midia = estado.midia.filter((l) => l.cabo !== id && l.host !== id);
+  recalcular();
+}
+
 /* Cabo ja encaixado numa ponta: se a outra ponta cair sobre um conector
    livre, ela tambem encaixa, e ai as tres pecas passam a andar juntas.
    E o que faz o cyberdeck virar uma coisa so. */
@@ -647,6 +746,7 @@ function limparPontasOrfas() {
 }
 
 export function remover(id) {
+  estado.midia = estado.midia.filter((l) => l.cabo !== id && l.host !== id);
   filhosDe(id).forEach((f) => { f.pai = null; f.encaixes = []; });
   estado.comps = estado.comps.filter((c) => c.id !== id);
   estado.fios = estado.fios.filter((f) => f.a.comp !== id && f.b.comp !== id);
@@ -692,6 +792,7 @@ function aoTopo(id) {
 export function limparBancada() {
   estado.comps = [];
   estado.fios = [];
+  estado.midia = [];
   estado.selecionado = null;
   estado.fioSelecionado = null;
   estado.seq = 1;
@@ -724,7 +825,7 @@ export function organizarFios() {
 
 export function recalcular() {
   limparPontasOrfas();
-  estado.ultimoCircuito = calcular(estado.comps, estado.fios.concat(ligacoesFisicas()), estado.energizado);
+  estado.ultimoCircuito = calcular(estado.comps, estado.fios.concat(ligacoesFisicas()), estado.energizado, estado.midia);
   redesenhar();
   if (ganchos.aoMudar) ganchos.aoMudar(estado);
 }
@@ -891,7 +992,9 @@ function aoApertar(ev) {
     const m = telaParaMundo(ev.clientX, ev.clientY);
     arrasto = {
       id: comp.id, dx: m.x - comp.x, dy: m.y - comp.y, moveu: false,
-      filhos: descendentes(comp.id).map((f) => ({ id: f.id, dx: f.x - comp.x, dy: f.y - comp.y })),
+      filhos: [...new Set([...descendentes(comp.id), ...grupoMidia(comp.id).map((x) => achar(x)).filter(Boolean)])]
+        .filter((f) => f && f.id !== comp.id)
+        .map((f) => ({ id: f.id, dx: f.x - comp.x, dy: f.y - comp.y })),
     };
     svg.setPointerCapture(ev.pointerId);
     SOM.pegar();
@@ -1128,13 +1231,13 @@ function clicarPino(compId, pinoId) {
   const alvo = pinoDe(compId, pinoId);
   if (!alvo) return;
 
-  // Fio de solda escolhido na sacola vence o ferro: o clique passa a
-  // ser tracado de fio, nao junta de proximidade. Sem essa regra as
-  // duas ferramentas brigavam pelo mesmo clique.
-  const fioDeSolda = estado.ferramentaFio && estado.ferramentaFio.tipo === "solda-fio";
+  // Regra unica e previsivel: se ha FIO na sacola, o clique traca fio.
+  // O ferro so solda por proximidade quando nao ha fio escolhido.
+  // Antes as duas coisas disputavam o mesmo clique e o resultado
+  // dependia da ordem em que voce clicou nos botoes.
+  const fioNaMao = !!estado.ferramentaFio;
 
-  // Com uma ferramenta na mao, o clique pertence a ela.
-  if (estado.modoFerramenta && !fioDeSolda) {
+  if (estado.modoFerramenta && !fioNaMao) {
     if (ganchos.aoUsarFerramenta) ganchos.aoUsarFerramenta(estado.modoFerramenta, compId, pinoId);
     return;
   }
@@ -1190,7 +1293,8 @@ function agendarSalvar() {
 
 export function serializar() {
   return {
-    formato: "gabutron-bancada", versao: 3,
+    formato: "gabutron-bancada", versao: 4,
+    midia: estado.midia,
     criado: new Date().toISOString(),
     comps: estado.comps, fios: estado.fios, vista: estado.vista,
   };
@@ -1200,6 +1304,7 @@ export function carregar(dados) {
   if (!dados || dados.formato !== "gabutron-bancada") return false;
   estado.comps = dados.comps || [];
   estado.fios = dados.fios || [];
+  estado.midia = dados.midia || [];
   estado.vista = dados.vista || estado.vista;
   estado.seq = 1 + Math.max(0, ...[...estado.comps, ...estado.fios].map((o) => parseInt(String(o.id).slice(1), 10) || 0));
   estado.selecionado = null;

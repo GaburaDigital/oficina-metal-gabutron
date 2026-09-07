@@ -23,7 +23,7 @@
      lado     e | d | cima | baixo — de que lado fica o rotulo
    ============================================================ */
 
-import { PINOS_AJUSTADOS, TAMANHOS } from "./arte.js";
+import { PINOS_AJUSTADOS, TAMANHOS, ARTE } from "./arte.js";
 
 export const P = 24; // passo entre furos
 
@@ -283,6 +283,7 @@ add({
   id: "suporteaa", nome: "Suporte de pilhas AA", caixa: "energia", arte: "suporte-aa", w: 336, h: 216,
   cor: "#1B1F26", fonte: true, custo: 12,
   slots: { min: 1, max: 6, padrao: 4, porSlot: 1.5, rotulo: "pilhas" },
+  slotsDinamicos: { topo: 16, passo: 44, base: 30, raio: 12, nome: "AA", corCaixa: "#1B1F26", corCelula: "#3A3F47" },
   pinos: [
     { id: "p", n: "+", rotulo: "Positivo — cada pilha AA soma 1,5 volt", x: 240, y: 192, r: "macho", papel: "v+", v: 6, lado: "baixo" },
     { id: "n", n: "-", rotulo: "Negativo — terra", x: 288, y: 192, r: "macho", papel: "gnd", lado: "baixo" },
@@ -924,9 +925,9 @@ add({
     { id: "rec", n: "REC", rotulo: "Segure para gravar", x: 96, y: 192, r: "macho", papel: "digital", lado: "baixo" },
     { id: "playe", n: "PLAYE", rotulo: "Toca a gravacao inteira com um toque", x: 120, y: 192, r: "macho", papel: "digital", lado: "baixo" },
     { id: "playl", n: "PLAYL", rotulo: "Toca enquanto ficar pressionado", x: 144, y: 192, r: "macho", papel: "digital", lado: "baixo" },
-    { id: "ft", n: "FT", rotulo: "Modo de gravacao por gatilho — dispara sem segurar o botao", x: 144, y: 192, r: "macho", papel: "digital", lado: "baixo" },
-    { id: "spp", n: "SP+", rotulo: "Alto-falante, positivo", x: 192, y: 192, r: "borne", papel: "sinal", lado: "baixo" },
-    { id: "spn", n: "SP-", rotulo: "Alto-falante, negativo", x: 240, y: 192, r: "borne", papel: "sinal", lado: "baixo" },
+    { id: "ft", n: "FT", rotulo: "Modo de gravacao por gatilho — dispara sem segurar o botao", x: 168, y: 192, r: "macho", papel: "digital", lado: "baixo" },
+    { id: "spp", n: "SP+", rotulo: "Alto-falante, positivo", x: 216, y: 192, r: "borne", papel: "sinal", lado: "baixo" },
+    { id: "spn", n: "SP-", rotulo: "Alto-falante, negativo", x: 264, y: 192, r: "borne", papel: "sinal", lado: "baixo" },
   ],
 });
 
@@ -1301,6 +1302,7 @@ add({
   id: "suporte-litio", nome: "Suporte de bateria de litio", caixa: "energia", arte: "suporte-litio", w: 336, h: 216,
   cor: "#1B1F26", fonte: true, custo: 14,
   slots: { min: 1, max: 4, padrao: 1, porSlot: 3.7, rotulo: "celulas" },
+  slotsDinamicos: { topo: 18, passo: 56, base: 32, raio: 14, nome: "18650", corCaixa: "#1B1F26", corCelula: "#134E3A" },
   pinos: [
     { id: "vout", n: "+", rotulo: "Celula de litio: 3,7 volts que caem devagar", x: 96, y: 168, r: "macho", papel: "v+", v: 3.7, lado: "baixo" },
     { id: "gnd", n: "-", rotulo: "Terra da fonte", x: 144, y: 168, r: "macho", papel: "gnd", lado: "baixo" }
@@ -1584,9 +1586,25 @@ for (const d of C) {
   if (d.id === "laser") m.push({ tipo: "luz", x: d.w - 20, y: Math.round(d.h / 2), cor: "#E24B4A", forte: true });
   // Peca com ajuste ganha um painel proprio: sem ele o aluno mexe na
   // quantidade de pilhas ou na tensao e nao ve nada mudar na bancada.
-  if (d.slots || d.ajustavel || d.faixaTensao)
+  if ((d.slots && !d.slotsDinamicos) || d.ajustavel || d.faixaTensao)
     m.push({ tipo: "ajuste", x: Math.round(d.w / 2), y: d.h - 18 });
   if (m.length) d.marcadores = m;
+}
+
+/* Botao e entrada tambem podem ser reposicionados no assistente. Sem
+   isto, um RESET desenhado em cima dos pinos ficava preso ali. */
+for (const d of C) {
+  const marcas = (ARTE[d.id] && ARTE[d.id].marcadores) || [];
+  for (const m of marcas) {
+    if (m.tipo === "botao") {
+      const b = (d.botoes || []).find((x) => x.id === m.ref);
+      if (b) { b.x = m.x; b.y = m.y; if (m.r) b.r = m.r; }
+    } else if (m.tipo === "encaixe") {
+      const lista = d.encaixes || (d.encaixe ? [d.encaixe] : []);
+      const e = lista.find((x) => x.tipo === m.ref);
+      if (e) { e.x = m.x; e.y = m.y; if (m.giro != null) e.giro = m.giro; }
+    }
+  }
 }
 
 /* Duas travas contra erro de montagem do catalogo. Elas ja pegaram

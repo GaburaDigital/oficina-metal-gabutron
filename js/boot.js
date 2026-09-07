@@ -18,6 +18,7 @@ const LINHAS = [
   ["missoes carregadas .......... 29 entre construcao, manutencao e hacking", "frio", 90],
   ["deck de scripts ............. 18 programas prontos", "ok", 90],
   ["ferro de solda e fio ........ [pronto]", "ok", 80],
+  ["encaixes mecanicos .......... hdmi, usb, cartao", "ok", 80],
   ["ferro de solda .............. [pronto]", "ok", 90],
   ["multimetro .................. [na caixa da energia]", "ok", 90],
   ["fonte de bancada ............ [0 a 30 V]", "ok", 90],

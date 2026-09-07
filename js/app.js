@@ -216,7 +216,18 @@ function ligarFerramentas() {
   q("#ponta-chip").addEventListener("click", () => bancada.inverterPontas());
 
   q("#b-solda").addEventListener("click", (e) => {
-    if (solda.estado.ativo) { solda.desligar(bancada); gavetas.mostrarFioDeSolda(false); e.currentTarget.classList.remove("ativo"); return; }
+    if (solda.estado.ativo) {
+      solda.desligar(bancada);
+      // Guardar o ferro tambem larga o fio de solda: ele nao existe sem ferro.
+      if (bancada.estado.ferramentaFio && bancada.estado.ferramentaFio.tipo === "solda-fio") {
+        bancada.escolherFio(null);
+        pintarChipDaPonta(null);
+      }
+      gavetas.mostrarFioDeSolda(false);
+      gavetas.largarFio();
+      e.currentTarget.classList.remove("ativo");
+      return;
+    }
     if (multimetro.estado.ativo) multimetro.fechar(bancada);
     bancada.escolherFio(null);
     gavetas.largarFio();
@@ -224,7 +235,7 @@ function ligarFerramentas() {
     solda.ligar(bancada);
     gavetas.mostrarFioDeSolda(true);
     e.currentTarget.classList.add("ativo");
-    robo.dizer("Ferro quente. Encoste em dois contatos que estejam perto um do outro e eles viram um so. Clicar numa junta pronta dessolda.", { expressao: "pensando" });
+    robo.dizer("Ferro quente. Sozinho, ele solda dois contatos que estejam encostados. Se voce pegar o Fio para solda na sacola, o clique passa a tracar fio soldado. Um ou outro, nunca os dois ao mesmo tempo.", { expressao: "pensando" });
   });
 
   q("#b-museu").addEventListener("click", () => { SOM.clique(); museu.abrir(); });
@@ -257,6 +268,12 @@ function ligarFerramentas() {
     if (bf) {
       const comp = bancada.estado.comps.find((c) => c.id === bf.dataset.abrirFonte);
       if (comp) fonteBancada.abrir(comp, bancada, {});
+      return;
+    }
+    const bs = ev.target.closest("[data-soltar]");
+    if (bs) {
+      bancada.soltarMidia(bs.dataset.soltar);
+      robo.dizer("Encaixes soltos. Da para separar as pecas agora.", { falar: false });
       return;
     }
     const bm = ev.target.closest("[data-abrir-mm]");
@@ -696,6 +713,9 @@ function pintarPropriedades(comp) {
   if (d.valores) partes.push(`<label>valor <select data-comp="${comp.id}" data-campo="valor">${d.valores.map((v) => `<option ${v === comp.valor ? "selected" : ""}>${v}</option>`).join("")}</select></label>`);
   if (d.variantes) partes.push(`<label>cor <select data-comp="${comp.id}" data-campo="variante">${d.variantes.map((v) => `<option ${v.nome === comp.variante ? "selected" : ""}>${v.nome}</option>`).join("")}</select></label>`);
   if (d.ajustavel) partes.push(`<label>saida <select data-comp="${comp.id}" data-campo="tensao">${d.ajustavel.map((v) => `<option ${v === comp.tensaoSaida ? "selected" : ""}>${v}</option>`).join("")}</select> V</label>`);
+  const ligacoes = bancada.estado.midia.filter((l) => l.cabo === comp.id || l.host === comp.id).length;
+  if (ligacoes) partes.push(`<span style="color:var(--fosforo)">${ligacoes} encaixe(s) mecanico(s)</span>`,
+    `<button class="btn" data-soltar="${comp.id}">Soltar encaixes</button>`);
   if ((comp.encaixes || []).length) partes.push(`<span style="color:var(--ambar)">${comp.encaixes.length} pino(s) na protoboard</span>`);
 
   caixa.hidden = partes.length < 2;

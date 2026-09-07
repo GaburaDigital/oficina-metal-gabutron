@@ -58,8 +58,22 @@ for (const d of COMPONENTES) {
 const marcadores = {};
 const eixoPadrao = {};
 for (const d of COMPONENTES) {
-  const lista = ARTE[d.id] && ARTE[d.id].marcadores ? ARTE[d.id].marcadores : d.marcadores;
-  if (lista && lista.length) marcadores[d.id] = JSON.parse(JSON.stringify(lista));
+  // Mescla por tipo, igual a bancada faz: o desenho manda no que ele
+  // define, a biblioteca preenche o resto.
+  const doDesenho = (ARTE[d.id] && ARTE[d.id].marcadores) || [];
+  const tipos = new Set(doDesenho.map((m) => m.tipo));
+  const lista = [...doDesenho, ...(d.marcadores || []).filter((m) => !tipos.has(m.tipo))];
+
+  // Botoes e entradas viram marcadores tambem: assim da para arrastar
+  // o RESET para fora dos pinos sem mexer em codigo.
+  for (const b of d.botoes || [])
+    if (!lista.some((m) => m.tipo === "botao" && m.ref === b.id))
+      lista.push({ tipo: "botao", ref: b.id, rotulo: b.n, x: b.x, y: b.y, r: b.r, fixo: true });
+  for (const e of d.encaixes || (d.encaixe ? [d.encaixe] : []))
+    if (!lista.some((m) => m.tipo === "encaixe" && m.ref === e.tipo))
+      lista.push({ tipo: "encaixe", ref: e.tipo, rotulo: e.rotulo, x: e.x, y: e.y, giro: e.giro || 0, fixo: true });
+
+  if (lista.length) marcadores[d.id] = JSON.parse(JSON.stringify(lista));
   const eixo = (d.marcadores || []).find((m) => m.tipo === "eixo");
   if (eixo) eixoPadrao[d.id] = eixo.estilo;
 }

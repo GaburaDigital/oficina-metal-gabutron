@@ -284,7 +284,7 @@ Peças que dependem de outra para funcionar, como no laboratório de verdade:
 | Regulador AMS1117, stepdown, stepup | entrada de energia acima da tensão de saída |
 | Cartão SD, pen drive | encaixam no slot do módulo MP3 e da caixa de som |
 
-**Suporte de pilhas e de bateria de lítio** têm número de slots ajustável nas propriedades, e a tensão acompanha: 1 a 6 pilhas AA (1,5 V cada), 1 a 4 células de lítio (3,7 V cada).
+**Suporte de pilhas e de bateria de lítio** têm o corpo **gerado por código**, porque o número de células muda com o ajuste: 1 a 6 pilhas AA (1,5 V cada), 1 a 4 células de lítio (3,7 V cada). A caixa cresce, as células aparecem e somem, a polaridade alterna e o rótulo mostra a conta pronta. Por isso essas duas peças são as únicas cujo desenho do assistente não é usado — um corpo estático não acompanha uma contagem variável.
 
 **Fonte de bancada e multímetro** são instrumentos: peças que vão para a bancada e abrem um painel próprio quando selecionadas. A fonte ajusta tensão e limite de corrente; o multímetro tem os quatro modos e as duas pontas.
 
@@ -319,14 +319,33 @@ Cada tipo de motor gira do seu jeito, e a animação roda no próprio SVG — se
 | `rotor` | hélice da bomba submersa |
 | `vibra` | tremor curto do motor de vibração |
 | `ajuste` | painel que mostra o efeito do ajuste: tensão escolhida, número de pilhas |
+| `botao` | posição de um botão físico da peça (RESET, EN, A, B) |
+| `encaixe` | posição de uma entrada: HDMI, USB, cartão |
+
+Botão e entrada podem ser **arrastados** no assistente, mas não apagados: eles são estruturais.
 
 Os marcadores do desenho revisado mandam em cada **tipo** que definem, e a biblioteca preenche os tipos que faltarem. Assim dá para redesenhar uma peça sem perder o painel de ajuste nem o eixo do motor.
 
 No assistente, o botão **Marcador** cria; arrastar move; Delete remove. Isso resolve os dois casos: peça que ganhou luz sem ter, e peça que acende mas não tinha marcador.
 
-## Fio para solda
+## Ferro de solda e fio para solda
 
-Na sacola de jumpers aparece **Fio para solda** — mas só quando o ferro está ligado. Ele entra em qualquer contato, porque estanho não liga para formato de ponta, e não pode ficar pendurado no ar. É o atalho para quem já entendeu os tipos de conector; o aluno iniciante continua tendo que acertar macho, fêmea e jacaré.
+A regra é uma só, e não depende da ordem em que você clica:
+
+| Na mão | O que o clique faz |
+|---|---|
+| só o ferro | solda dois contatos encostados |
+| ferro + Fio para solda | traça fio soldado |
+| qualquer jumper | traça fio normal |
+| nada | mostra o que é aquele pino |
+
+**Fio para solda** só aparece na sacola com o ferro ligado, entra em qualquer tipo de contato e não aceita ponta solta no ar. Guardar o ferro larga o fio junto.
+
+## Encaixes mecânicos
+
+Cartão, pen drive e cabo não usam fio: encaixam. As ligações vivem numa lista própria da bancada, então **qualquer ponta livre acha qualquer conector livre**, não importa a ordem. Encaixe o cabo na Arubag e depois solte a tela sobre a ponta que sobrou; ou encaixe primeiro na tela e leve o conjunto até a placa. Os dois caminhos funcionam.
+
+Peças ligadas formam um **grupo rígido**: arrastar qualquer uma leva todas. Para separar, selecione uma delas e use **Soltar encaixes** nas propriedades.
 
 ## Cabo HDMI e encaixes
 

@@ -149,13 +149,10 @@ export function verificar(regra, comps, circ) {
     }
 
     case "encaixado": {
-      // Peca de encaixe mecanico: cartao, pen drive, cabo. Conta quantos
-      // slots ela realmente ocupou.
-      const pecas = comps.filter((c) => c.tipo === regra.componente);
-      const total = pecas.reduce((soma, c) => {
-        if (c.pontasLigadas) return soma + c.pontasLigadas.length;
-        return soma + (comps.some((h) => Object.values(h.ocupados || {}).includes(c.id)) ? 1 : 0);
-      }, 0);
+      // Cartao, pen drive e cabo: conta quantas ligacoes mecanicas a
+      // peca tem de fato, lendo a lista de midia da bancada.
+      const pecas = comps.filter((c) => c.tipo === regra.componente).map((c) => c.id);
+      const total = (circ.midia || []).filter((l) => pecas.includes(l.cabo) || pecas.includes(l.host)).length;
       return total >= (regra.n || 1);
     }
 

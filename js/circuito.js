@@ -51,7 +51,7 @@ export function ohms(valor) {
 
 /* ============================================================ */
 
-export function calcular(comps, fios, energizado = true) {
+export function calcular(comps, fios, energizado = true, midia = []) {
   const u = new Uniao();
 
   /* ---- 1. nos ---- */
@@ -509,7 +509,7 @@ export function calcular(comps, fios, energizado = true) {
     diagnosticos: diag,
     avisos: diag.filter((x) => x.nivel !== "info"),
     tensao, terra, noDe: no, vDe, gndDe, pinosDoNo,
-    correnteFonte, correnteAresta, arestas, fiosRompidos,
+    correnteFonte, correnteAresta, arestas, fiosRompidos, midia,
     curto: curtos.length > 0,
   };
 }

@@ -856,7 +856,7 @@ function eixoVivo(m, on) {
           calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.2 1;0.4 0 0.2 1" repeatCount="indefinite"/></g>`
       : `<g transform="rotate(-85 ${x} ${y})">${braco}</g>`) + eixo;
   }
-  if (estilo === "servo360")
+  if (estilo === "servo360" || estilo === "servo-continuo")
     return girar(1.4, cubo + pa(0) + pa(180)) + eixo;
   if (estilo === "dc")
     return `<circle cx="${x}" cy="${y}" r="${r}" fill="#6C727B"/>` +
@@ -883,6 +883,36 @@ function eixoVivo(m, on) {
            values="0 0; 3 -2; -3 2; 0 0" dur="0.12s" repeatCount="indefinite"/></g>`
       : `<circle cx="${x}" cy="${y}" r="${r * 0.7}" fill="#8A8F98"/>`;
   return "";
+}
+
+/* Corpo que cresce com o numero de slots. Uma celula desenhada por
+   slot, com a mola de um lado e o contato do outro alternando, como
+   nos suportes de verdade. O rotulo mostra a conta pronta. */
+function corpoDeSlots(def, i) {
+  const n = i.slots ?? def.slots.padrao;
+  const cfg = def.slotsDinamicos;
+  const alt = cfg.topo + n * cfg.passo + cfg.base;
+  const larg = def.w;
+  let s = `<rect x="0" y="0" width="${larg}" height="${alt}" rx="10" fill="${cfg.corCaixa}" stroke="#05060A" stroke-width="3"/>`;
+
+  for (let k = 0; k < n; k++) {
+    const y = cfg.topo + k * cfg.passo;
+    const invertida = k % 2 === 1;
+    s += `<rect x="18" y="${y}" width="${larg - 36}" height="${cfg.passo - 10}" rx="${cfg.raio}" fill="${cfg.corCelula}" stroke="#101318" stroke-width="2"/>`;
+    // mola de um lado, contato chato do outro: e o que indica a polaridade
+    const mx = invertida ? larg - 34 : 34;
+    const cx = invertida ? 34 : larg - 34;
+    s += `<path d="M${mx - 8} ${y + 8}l16 6l-16 6l16 6" fill="none" stroke="#8A8F98" stroke-width="2.5"/>`;
+    s += `<rect x="${cx - 7}" y="${y + 8}" width="14" height="${cfg.passo - 26}" rx="2" fill="#C9A227"/>`;
+    s += txt(cfg.nome, larg / 2, y + cfg.passo / 2 - 1, 13, "#B9BEC6");
+    s += txt(invertida ? "-" : "+", mx, y + cfg.passo / 2 - 1, 13, "#E24B4A");
+    s += txt(invertida ? "+" : "-", cx, y + cfg.passo / 2 - 1, 13, "#8A8F98");
+  }
+
+  const v = (n * def.slots.porSlot).toFixed(1);
+  s += txt(`${n} ${def.slots.rotulo}`, 62, alt - 14, 12, "#8A8F98");
+  s += txt(`${v} V`, larg - 56, alt - 12, 17, "#E24B4A", "middle", 700);
+  return s;
 }
 
 /* Painel de ajuste desenhado POR CIMA do desenho da peca. Ele existe
@@ -1116,8 +1146,15 @@ function camadaViva(def, inst, arte) {
 }
 
 export function desenhar(def, inst) {
-  // Desenho revisado no assistente tem prioridade sobre o do codigo.
   const arte = ARTE[def.id];
+  // Peca cujo corpo depende do ajuste (suporte de pilhas, de litio) e
+  // desenhada por codigo: o numero de celulas muda, e desenho estatico
+  // nao acompanha. O que voce desenhar no assistente aparece ATRAS,
+  // entao decoracao fora do corpo continua valendo.
+  // Corpo inteiro gerado: as celulas antigas do desenho estatico
+  // brigariam com as geradas, entao aqui o codigo desenha sozinho.
+  if (def.slotsDinamicos) return corpoDeSlots(def, inst || {}) + camadaViva(def, inst, arte || {});
+  // Desenho revisado no assistente tem prioridade sobre o do codigo.
   if (arte) return ajustarArte(def, inst || {}, arte.svg) + camadaViva(def, inst, arte);
   const f = MAPA[def.arte] || modulo;
   return f(def, inst || {});
