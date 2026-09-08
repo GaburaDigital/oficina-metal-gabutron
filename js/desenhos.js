@@ -823,7 +823,8 @@ function ajustarArte(def, i, svg) {
 /* Eixo animado. Cada motor gira de um jeito, e a animacao roda no
    proprio SVG: nao precisa de laco em JavaScript e nao trava a bancada.
    O aluno ve o servo varrer, o DC girar rapido e o passo dar passos. */
-function eixoVivo(m, on) {
+function eixoVivo(m, on, an) {
+  const cfg = an || {};
   const { x, y, estilo } = m;
   const r = m.r || 26;
   const eixo = `<circle cx="${x}" cy="${y}" r="${r * 0.28}" fill="#6C727B"/>`;
@@ -850,19 +851,22 @@ function eixoVivo(m, on) {
 
   if (estilo === "servo") {
     const braco = cubo + pa(0);
+    const sv = cfg.servo || {};
+    const faixa = sv.modo === "onda" ? 55 : sv.modo === "botoes" ? 70 : 85;
+    const dur = sv.dur || 2.6;
     return (on
       ? `<g>${braco}<animateTransform attributeName="transform" type="rotate"
-          values="-85 ${x} ${y}; 85 ${x} ${y}; -85 ${x} ${y}" dur="2.6s"
+          values="-${faixa} ${x} ${y}; ${faixa} ${x} ${y}; -${faixa} ${x} ${y}" dur="${dur}s"
           calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.2 1;0.4 0 0.2 1" repeatCount="indefinite"/></g>`
       : `<g transform="rotate(-85 ${x} ${y})">${braco}</g>`) + eixo;
   }
   if (estilo === "servo360" || estilo === "servo-continuo")
-    return girar(1.4, cubo + pa(0) + pa(180)) + eixo;
+    return girar((cfg.servo && cfg.servo.dur) || 1.4, cubo + pa(0) + pa(180)) + eixo;
   if (estilo === "dc")
     return `<circle cx="${x}" cy="${y}" r="${r}" fill="#6C727B"/>` +
-      girar(0.35, `<path d="M${x} ${y - r} L${x} ${y + r} M${x - r} ${y} L${x + r} ${y}" stroke="#D5D9DE" stroke-width="5"/>`) + eixo;
+      girar((cfg.motor && cfg.motor.dur) || 0.35, `<path d="M${x} ${y - r} L${x} ${y + r} M${x - r} ${y} L${x + r} ${y}" stroke="#D5D9DE" stroke-width="5"/>`) + eixo;
   if (estilo === "helice")
-    return girar(0.22, `<ellipse cx="${x}" cy="${y}" rx="${r * 1.6}" ry="${r * 0.28}" fill="#B9BEC6" opacity=".85"/>
+    return girar((cfg.motor && cfg.motor.dur) || 0.22, `<ellipse cx="${x}" cy="${y}" rx="${r * 1.6}" ry="${r * 0.28}" fill="#B9BEC6" opacity=".85"/>
       <ellipse cx="${x}" cy="${y}" rx="${r * 0.28}" ry="${r * 1.6}" fill="#B9BEC6" opacity=".85"/>`) + eixo;
   if (estilo === "passo") {
     const dentes = Array.from({ length: 12 }, (_, k) => {
@@ -871,11 +875,11 @@ function eixoVivo(m, on) {
     }).join("");
     return `<circle cx="${x}" cy="${y}" r="${r}" fill="#9BA1AA"/>` +
       (on ? `<g>${dentes}<animateTransform attributeName="transform" type="rotate"
-        values="0 ${x} ${y}; 30 ${x} ${y}; 30 ${x} ${y}; 60 ${x} ${y}" dur="1.2s" repeatCount="indefinite"/></g>` : `<g>${dentes}</g>`) + eixo;
+        values="0 ${x} ${y}; 30 ${x} ${y}; 30 ${x} ${y}; 60 ${x} ${y}" dur="${(cfg.passo && cfg.passo.dur) || 1.2}s" repeatCount="indefinite"/></g>` : `<g>${dentes}</g>`) + eixo;
   }
   if (estilo === "rotor")
     return `<circle cx="${x}" cy="${y}" r="${r}" fill="#2A6BB0"/>` +
-      girar(0.5, `<path d="M${x} ${y - r * 0.8} L${x} ${y + r * 0.8} M${x - r * 0.8} ${y} L${x + r * 0.8} ${y}" stroke="#CFE4EE" stroke-width="6"/>`) + eixo;
+      girar((cfg.motor && cfg.motor.dur) || 0.5, `<path d="M${x} ${y - r * 0.8} L${x} ${y + r * 0.8} M${x - r * 0.8} ${y} L${x + r * 0.8} ${y}" stroke="#CFE4EE" stroke-width="6"/>`) + eixo;
   if (estilo === "vibra")
     return on
       ? `<g><circle cx="${x}" cy="${y}" r="${r * 0.7}" fill="#8A8F98"/>
@@ -959,8 +963,24 @@ function painelAjuste(def, i, m) {
   return s;
 }
 
+/* Numero que sobe e desce, para display e leitura de sensor. */
+function contadorSvg(c, x, y, tam, cor) {
+  const passos = 6;
+  const vals = Array.from({ length: passos + 1 }, (_, k) =>
+    Math.round(c.de + ((c.ate - c.de) * (k <= passos / 2 ? k : passos - k)) / (passos / 2)));
+  return `<text x="${x}" y="${y}" font-family="monospace" font-size="${tam}" font-weight="700"
+    fill="${cor}" text-anchor="middle">${vals[0]}${c.unidade}
+    <animate attributeName="textLength" values="1;1" dur="${c.dur}s" repeatCount="indefinite"/>
+    </text>` +
+    vals.map((v, k) => `<text x="${x}" y="${y}" font-family="monospace" font-size="${tam}" font-weight="700"
+      fill="${cor}" text-anchor="middle" opacity="0">${v}${c.unidade}
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;${(k / vals.length).toFixed(3)};1"
+        dur="${c.dur}s" repeatCount="indefinite"/></text>`).join("");
+}
+
 function camadaViva(def, inst, arte) {
   const i = inst || {};
+  const an = i.anima;
   let s = "";
 
   // Marcadores: o desenho revisado manda em cada TIPO que ele define,
@@ -980,10 +1000,14 @@ function camadaViva(def, inst, arte) {
              <circle cx="${m.x}" cy="${m.y}" r="9" fill="${m.cor || "#E24B4A"}"/>`
           : `<circle cx="${m.x}" cy="${m.y}" r="7" fill="#4A1E1E"/>`;
       } else s += ledAlim(m.x, m.y, i.ligado);
-    } else if (m.tipo === "eixo") s += eixoVivo(m, i.ligado);
-    else if (m.tipo === "som" && i.ligado)
-      s += `<g fill="none" stroke="#5CE07A" stroke-width="3">
-        <path d="M${m.x} ${m.y - 16}a22 22 0 010 32"/><path d="M${m.x + 10} ${m.y - 26}a34 34 0 010 52"/></g>`;
+    } else if (m.tipo === "eixo") s += eixoVivo(m, i.ligado, an);
+    else if (m.tipo === "som" && i.ligado) {
+      const ondas = `<path d="M${m.x} ${m.y - 16}a22 22 0 010 32"/><path d="M${m.x + 10} ${m.y - 26}a34 34 0 010 52"/>`;
+      s += an && an.som
+        ? `<g fill="none" stroke="#5CE07A" stroke-width="3">${ondas}
+           <animate attributeName="opacity" values="0.2;1;0.2" dur="${an.som.dur}s" repeatCount="indefinite"/></g>`
+        : `<g fill="none" stroke="#5CE07A" stroke-width="3">${ondas}</g>`;
+    }
     else if (m.tipo === "vibra") s += eixoVivo({ ...m, estilo: "vibra" }, i.ligado);
     else if (m.tipo === "ajuste") s += painelAjuste(def, i, m);
   }
@@ -1075,6 +1099,64 @@ function camadaViva(def, inst, arte) {
     s += txt("ENA e ENB com jumper", def.w / 2, def.h - 6, 12, "#E9C542");
   }
 
+  // Rele acionando: o contato muda de lado no ritmo do script.
+  if (an && an.rele && /rele/.test(def.id) && i.ligado) {
+    const cx = def.w * 0.5, cy = def.h * 0.42;
+    s += `<g><rect x="${cx - 26}" y="${cy - 10}" width="52" height="20" rx="4" fill="#5CE07A" opacity=".85"/>
+      <animate attributeName="opacity" values="0.15;1;0.15" dur="${an.rele.dur}s" repeatCount="indefinite"/></g>`;
+    s += txt("CLIC", cx, cy + 5, 12, "#062033");
+  }
+
+  // Cartao gravando: o LED de atividade pisca curto, como o de verdade.
+  if (an && an.gravando && def.id === "cartao-sd" && i.ligado) {
+    s += `<g><circle cx="${def.w - 30}" cy="${def.h * 0.3}" r="8" fill="#E9C542"/>
+      <animate attributeName="opacity" values="0;1;0;0" dur="${an.gravando.dur}s" repeatCount="indefinite"/></g>`;
+  }
+
+  // Sensor com leitura viva: o valor aparece ao lado da peca.
+  if (an && an.contador && !def.tela && /ultrassonico|dht|umidade|ldr|ir-linha|sw420/.test(def.id) && i.ligado)
+    s += contadorSvg(an.contador, def.w / 2, def.h - 4, 15, "#5CE07A");
+
+  // Lampada acionada pelo rele: acende e apaga no mesmo ritmo.
+  if (an && an.rele && def.id === "lampada12v" && i.ligado) {
+    s += `<g><circle cx="${def.w / 2}" cy="${def.h * 0.36}" r="${def.w * 0.55}" fill="#F5E08A" opacity=".3"/>
+      <animate attributeName="opacity" values="0.05;1;0.05" dur="${an.rele.dur}s" repeatCount="indefinite"/></g>`;
+  }
+
+  // Driver de passo: as quatro bobinas acendem em sequencia, que e o
+  // jeito de enxergar o passo acontecendo.
+  if (an && an.passo && def.id === "uln2003" && i.ligado) {
+    for (let k = 0; k < 4; k++) {
+      const x = def.w * 0.2 + k * def.w * 0.14, y = def.h * 0.3;
+      s += `<g><circle cx="${x}" cy="${y}" r="9" fill="#E24B4A"/>
+        <animate attributeName="opacity" values="0;1;0;0;0" keyTimes="0;${(k * 0.25).toFixed(2)};${(k * 0.25 + 0.12).toFixed(2)};0.99;1"
+          dur="${an.passo.dur * 4}s" repeatCount="indefinite"/></g>`;
+    }
+  }
+
+  // Expansao de servos: os canais piscam em onda, como numa mao que
+  // fecha dedo por dedo.
+  if (an && an.servo && def.id === "expansao-servo" && i.ligado) {
+    for (let k = 0; k < 12; k++) {
+      const x = 48 + k * 24;
+      s += `<g><circle cx="${x}" cy="${def.h * 0.55}" r="7" fill="#5CE07A"/>
+        <animate attributeName="opacity" values="0;1;0" keyTimes="0;${(0.05 + k * 0.07).toFixed(2)};1"
+          dur="${(an.servo.dur || 3) * 1.2}s" repeatCount="indefinite"/></g>`;
+    }
+  }
+
+  // Modulo MP3 tocando: o LED de atividade acompanha a musica.
+  if (an && (an.som || an.gravando) && def.id === "dfplayer" && i.ligado) {
+    s += `<g><circle cx="${def.w - 34}" cy="${def.h * 0.72}" r="9" fill="#5CE07A"/>
+      <animate attributeName="opacity" values="0.1;1;0.1" dur="${(an.som || an.gravando).dur * 2}s" repeatCount="indefinite"/></g>`;
+  }
+
+  // LED RGB esperando o aperto: sem isso o aluno nao sabe o que fazer.
+  if (an && an.cor && def.id === "ledrgb" && i.ligado) {
+    const ligados = ["r", "g", "b"].filter((k) => (i.canais || {})[k]);
+    if (!ligados.length) s += txt("aperte A ou B", def.w / 2, def.h - 6, 12, "#7DD3FC");
+  }
+
   // Slot de midia: sem a marca, ninguem descobre onde encaixa.
   // Cada slot tem tipo proprio: pen drive nao entra em HDMI. E ele so
   // fica azul enquanto REALMENTE tem alguma coisa dentro.
@@ -1096,7 +1178,14 @@ function camadaViva(def, inst, arte) {
     s += txt(ligada ? "ligada" : pt.rotulo, pt.x, pt.y + 42, 10, ligada ? "#5CE07A" : "#8A8F98");
   }
 
-  if (def.arte === "led" && i.aceso) {
+  if (def.arte === "led" && i.aceso && an && an.pisca) {
+    const v = (def.variantes || []).find((x) => x.nome === i.variante) || def.variantes[0];
+    const cx = def.w / 2, cy = def.h * 0.34;
+    // A cor do halo vem da variante escolhida: LED amarelo pisca amarelo.
+    s += `<g><circle cx="${cx}" cy="${cy}" r="54" fill="${v.cor}" opacity=".3"/>
+      <circle cx="${cx}" cy="${cy}" r="32" fill="${v.cor}" opacity=".5"/>
+      <animate attributeName="opacity" values="1;0.05;1" dur="${an.pisca.dur}s" repeatCount="indefinite"/></g>`;
+  } else if (def.arte === "led" && i.aceso) {
     const v = (def.variantes || []).find((x) => x.nome === i.variante) || def.variantes[0];
     const b = Math.max(0.2, Math.min(1, i.brilho ?? 1));
     const cx = def.w / 2, cy = def.h * 0.34;
@@ -1128,10 +1217,17 @@ function camadaViva(def, inst, arte) {
     }
   }
 
-  if (def.tela && i.ligado)
-    s += `<rect x="${def.w * 0.09}" y="${def.h * 0.1}" width="${def.w * 0.82}" height="${def.h * 0.5}" rx="4" fill="#2FA5D8" opacity=".5"/>` +
-         txt("METAL GABUTRON", def.w / 2, def.h * 0.3, 16, "#062033") +
-         txt("bancada online", def.w / 2, def.h * 0.44, 13, "#062033");
+  if (def.tela && i.ligado) {
+    const linhas = an && an.tela ? an.tela : ["METAL GABUTRON", "bancada online"];
+    s += `<rect x="${def.w * 0.09}" y="${def.h * 0.1}" width="${def.w * 0.82}" height="${def.h * 0.5}" rx="4" fill="#2FA5D8" opacity=".5"/>`;
+    s += txt(linhas[0], def.w / 2, def.h * 0.3, 16, "#062033");
+    const seg = linhas[1] || "";
+    if (seg.includes("{d}") && an && an.contador) {
+      const pre = seg.split("{d}")[0];
+      s += txt(pre, def.w / 2 - 30, def.h * 0.46, 14, "#062033");
+      s += contadorSvg(an.contador, def.w / 2 + 24, def.h * 0.46, 15, "#062033");
+    } else s += txt(seg, def.w / 2, def.h * 0.46, 13, "#062033");
+  }
 
   if (def.apito && i.ligado)
     s += `<g fill="none" stroke="#5CE07A" stroke-width="3">

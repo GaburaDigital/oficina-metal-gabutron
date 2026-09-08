@@ -379,6 +379,8 @@ Escolher um script não mostra código. Mostra a **lista de ligações que ele e
 | Bura32 | Casa inteligente, Mesa CNC, Estabilização de drone |
 | Tema espacial | Caixa-preta da nave, Farol solar do casco, Rádio pirata, Sonar de atracagem |
 
+Cada script **anima a bancada** quando o circuito está montado e energizado: LED pisca na cor da variante escolhida, servo varre, motor gira, display escreve, relé clica, cartão registra. Peça fora da lista de alvos do script não reage — e esse silêncio é a pista de que algo está faltando na montagem.
+
 As ligações são **por placa e com o pino exato**: `sinal do servo no pino ~9`, `SDA no GPIO 21`, `ECHO com divisor de tensão`. Ligar em qualquer porta ensinaria o oposto da robótica real, então o deck diz onde vai cada coisa.
 
 Missões podem marcar `usaScripts` no catálogo: quando o aluno abre o Firmware nelas, o painel já entra direto no deck.

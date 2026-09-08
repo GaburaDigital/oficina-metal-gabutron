@@ -5,7 +5,7 @@
    pegar a versao nova.
    ============================================================ */
 
-const VERSAO = "gabutron-v16";
+const VERSAO = "gabutron-v17";
 
 const ARQUIVOS = [
   "./",

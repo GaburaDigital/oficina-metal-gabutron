@@ -20,7 +20,7 @@ import { PORID, P, NOME_CONTATO } from "./biblioteca.js";
 import { desenhar, tirasProtoboard } from "./desenhos.js";
 import { caminho, podeConectar, motivoRecusa } from "./fios.js";
 import { calcular } from "./circuito.js";
-import { reagirAoBotao } from "./scripts.js";
+import { reagirAoBotao, acharScript } from "./scripts.js";
 import { svgQueimado, svgFumaca } from "./danos.js";
 import { svgJunta } from "./solda.js";
 import { SOM } from "./som.js";
@@ -213,7 +213,7 @@ function svgUmPino(comp, d, p, ocupados) {
 
 /* ---------- desenho dos componentes --------------------------- */
 
-function svgComponente(comp, ocupados) {
+function svgComponente(comp, ocupados, rodando) {
   const d = PORID[comp.tipo];
   if (!d) return "";
   const est = (estado.ultimoCircuito && estado.ultimoCircuito.estados.get(comp.id)) || {};
@@ -226,6 +226,7 @@ function svgComponente(comp, ocupados) {
     eixoX: comp.eixoX, eixoY: comp.eixoY, passo: comp.passo,
     temCartao: comp.temMidia === "cartao-sd-midia", temMidia: comp.temMidia,
     leitura: comp.leitura, modo: comp.modo,
+    anima: rodando && (rodando.anima.alvo || []).includes(comp.tipo) ? rodando.anima : null,
     canais: d.id === "ledrgb" && estado.ultimoCircuito ? {
       r: estado.ultimoCircuito.vDe(comp.id, "r") > 1.5,
       g: estado.ultimoCircuito.vDe(comp.id, "g") > 1.5,
@@ -329,12 +330,26 @@ function svgFio(f) {
 </g>`;
 }
 
+/* Script ativo na bancada: a animacao so vale para as pecas que ele
+   lista em "alvo", e so quando a bancada esta energizada. Montagem
+   errada nao anima nada — e esse silencio e a pista para o aluno. */
+function animacaoAtiva() {
+  if (!estado.energizado) return null;
+  for (const c of estado.comps) {
+    if (!c.script) continue;
+    const s = acharScript(c.script);
+    if (s && s.anima) return { anima: s.anima, script: s, placa: c };
+  }
+  return null;
+}
+
 export function redesenhar() {
   // Com multimetro ou ferro na mao o clique tem que chegar ao contato,
   // mesmo que passe um fio por cima dele.
   if (svg) svg.classList.toggle("com-ferramenta", !!estado.modoFerramenta);
   const ocupados = furosOcupados();
-  camadaComp.innerHTML = estado.comps.map((c) => svgComponente(c, ocupados)).join("");
+  const rodando = animacaoAtiva();
+  camadaComp.innerHTML = estado.comps.map((c) => svgComponente(c, ocupados, rodando)).join("");
   camadaFios.innerHTML = estado.fios.map(svgFio).join("");
   desenharTopo();
   agendarSalvar();

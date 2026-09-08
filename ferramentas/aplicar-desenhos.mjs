@@ -28,11 +28,16 @@ for (const c of editados) {
 
   const d = atual[c.id];
   if (!d) { ignorados.push(c.id); continue; }
+  // Gravamos a posicao ABSOLUTA de todo pino, e nao a diferenca.
+  // Comparar com o catalogo carregado nao funciona: ele ja vem com o
+  // ajuste anterior aplicado, entao pino que ficou igual ao ajuste
+  // antigo sumia da lista e voltava para a posicao original do codigo.
+  // Foi isso que fez os servos e a expansao reverterem.
   const mov = {};
   for (const p of c.pinos) {
     const orig = d.pinos.find((x) => x.id === p.id);
     if (!orig) { ignorados.push(`${c.id}.${p.id} (pino sumiu do catalogo)`); continue; }
-    if (orig.x !== p.x || orig.y !== p.y) mov[p.id] = { x: p.x, y: p.y };
+    mov[p.id] = { x: p.x, y: p.y };
   }
   const semDesenho = d.pinos.filter((p) => !c.pinos.some((x) => x.id === p.id)).map((p) => p.id);
   if (semDesenho.length) ignorados.push(`${c.id}: ${semDesenho.join(",")} nao estavam no desenho (exporte de novo para posiciona-los)`);

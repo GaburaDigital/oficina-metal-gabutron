@@ -16,7 +16,7 @@ const LINHAS = [
   ["sacola de jumpers ........... [ok]", "ok", 80],
   ["protoboard 400 pontos ....... [ok]", "ok", 80],
   ["missoes carregadas .......... 29 entre construcao, manutencao e hacking", "frio", 90],
-  ["deck de scripts ............. 18 programas prontos", "ok", 90],
+  ["deck de scripts ............. 18 programas com animacao", "ok", 90],
   ["ferro de solda e fio ........ [pronto]", "ok", 80],
   ["encaixes mecanicos .......... hdmi, usb, cartao", "ok", 80],
   ["ferro de solda .............. [pronto]", "ok", 90],
