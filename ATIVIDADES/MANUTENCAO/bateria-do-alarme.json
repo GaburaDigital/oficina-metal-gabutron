@@ -1,0 +1,67 @@
+{
+  "fase": 7,
+  "id": "bateria-do-alarme",
+  "titulo": "A bateria do alarme",
+  "tipo": "manutencao",
+  "dificuldade": "novato",
+  "minutos": 12,
+  "pontos": 130,
+  "briefing": "O alarme do corredor parou. Antes de abrir qualquer coisa, faca o teste que todo tecnico faz primeiro: meca a bateria. Uma celula que marca menos de tres volts ja nao move nada. Depois teste a continuidade dos fios e a resistencia do resistor. Sao tres modos do multimetro em cinco minutos, e e assim que se elimina suspeito antes de trocar peca.",
+  "objetivos": [
+    {
+      "id": "tensao",
+      "texto": "Medir tensao com o multimetro",
+      "regra": {
+        "tipo": "usouFerramenta",
+        "modo": "tensao"
+      }
+    },
+    {
+      "id": "continuidade",
+      "texto": "Medir continuidade",
+      "regra": {
+        "tipo": "usouFerramenta",
+        "modo": "continuidade"
+      }
+    },
+    {
+      "id": "resistencia",
+      "texto": "Medir resistencia",
+      "regra": {
+        "tipo": "usouFerramenta",
+        "modo": "resistencia"
+      }
+    },
+    {
+      "id": "acende",
+      "texto": "Alarme voltando a funcionar",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "buzzer"
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "Tensao se mede com a bancada LIGADA; continuidade e resistencia com ela DESLIGADA.",
+    "Ponta preta sempre no COM. Ela e a referencia de toda medida.",
+    "Uma pilha AA boa marca perto de 1,5 V. Some as do suporte e compare com o que o multimetro mostra.",
+    "Se o resistor marcar OL, ele abriu por dentro: troque."
+  ],
+  "erroComum": "Trocar a bateria sem medir. Metade das vezes a bateria estava boa.",
+  "sucesso": "Tres modos, tres suspeitos eliminados. Medir antes de trocar economiza peca e economiza aula.",
+  "componentesLiberados": [
+    "multimetro",
+    "suporteaa",
+    "buzzer",
+    "resistor",
+    "protoboard",
+    "interruptor"
+  ]
+}

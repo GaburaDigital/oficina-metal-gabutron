@@ -20,7 +20,7 @@ import { PORID, P, NOME_CONTATO } from "./biblioteca.js";
 import { desenhar, tirasProtoboard } from "./desenhos.js";
 import { caminho, podeConectar, motivoRecusa } from "./fios.js";
 import { calcular } from "./circuito.js";
-import { reagirAoBotao, acharScript } from "./scripts.js";
+import { reagirAoBotao, acharScript, faltaParaRodar } from "./scripts.js";
 import { svgQueimado, svgFumaca } from "./danos.js";
 import { svgJunta } from "./solda.js";
 import { SOM } from "./som.js";
@@ -213,6 +213,18 @@ function svgUmPino(comp, d, p, ocupados) {
 
 /* ---------- desenho dos componentes --------------------------- */
 
+/* Relacao entre a tensao que a peca esta recebendo e a nominal dela.
+   Abaixo de 1 ela anda devagar; acima, corre. */
+function forcaDe(comp, d) {
+  if (!estado.ultimoCircuito || d.alimenta === undefined) return 1;
+  const vp = d.pinos.find((p) => p.papel === "v+" && !(d.saidasMotor || []).includes(p.id));
+  if (!vp) return 1;
+  const v = estado.ultimoCircuito.vDe(comp.id, vp.id);
+  const nominal = d.tensaoNominal || d.alimenta || 5;
+  if (!v) return 1;
+  return Math.max(0.35, Math.min(2.2, v / nominal));
+}
+
 function svgComponente(comp, ocupados, rodando) {
   const d = PORID[comp.tipo];
   if (!d) return "";
@@ -227,6 +239,10 @@ function svgComponente(comp, ocupados, rodando) {
     temCartao: comp.temMidia === "cartao-sd-midia", temMidia: comp.temMidia,
     leitura: comp.leitura, modo: comp.modo,
     anima: rodando && (rodando.anima.alvo || []).includes(comp.tipo) ? rodando.anima : null,
+    // Quanto mais tensao acima do minimo, mais rapido o eixo gira. E a
+    // mesma conta que faz o motor de 3 V roncar e o de 9 V voar.
+    forca: forcaDe(comp, d),
+    forca: est.forca,
     canais: d.id === "ledrgb" && estado.ultimoCircuito ? {
       r: estado.ultimoCircuito.vDe(comp.id, "r") > 1.5,
       g: estado.ultimoCircuito.vDe(comp.id, "g") > 1.5,
@@ -334,12 +350,17 @@ function svgFio(f) {
    lista em "alvo", e so quando a bancada esta energizada. Montagem
    errada nao anima nada — e esse silencio e a pista para o aluno. */
 function animacaoAtiva() {
-  if (!estado.energizado) return null;
+  if (!estado.energizado || !estado.ultimoCircuito) return null;
   for (const c of estado.comps) {
     if (!c.script) continue;
     const s = acharScript(c.script);
-    if (s && s.anima) return { anima: s.anima, script: s, placa: c };
+    if (!s || !s.anima) continue;
+    const falta = faltaParaRodar(s, estado.comps, estado.ultimoCircuito);
+    estado.scriptParado = falta.length ? { script: s, falta } : null;
+    if (falta.length) return null;
+    return { anima: s.anima, script: s, placa: c };
   }
+  estado.scriptParado = null;
   return null;
 }
 
@@ -349,6 +370,7 @@ export function redesenhar() {
   if (svg) svg.classList.toggle("com-ferramenta", !!estado.modoFerramenta);
   const ocupados = furosOcupados();
   const rodando = animacaoAtiva();
+  if (ganchos.aoRodarScript) ganchos.aoRodarScript(rodando, estado.scriptParado);
   camadaComp.innerHTML = estado.comps.map((c) => svgComponente(c, ocupados, rodando)).join("");
   camadaFios.innerHTML = estado.fios.map(svgFio).join("");
   desenharTopo();
@@ -623,6 +645,7 @@ function conectarMidia(comp) {
         if (Math.hypot(comp.x + d.w / 2 - sw.x, comp.y + d.h / 2 - sw.y) > 150) continue;
         comp.x = sw.x - d.w / 2; comp.y = sw.y - d.h / 2;
         estado.midia.push({ cabo: comp.id, ponta: "corpo", host: host.id, slot: slot.tipo });
+        SOM.midia();
         ligou = true;
         break;
       }
@@ -817,7 +840,15 @@ export function limparBancada() {
 export function alternarEnergia() {
   estado.energizado = !estado.energizado;
   recalcular();
-  if (estado.energizado) SOM.energia(); else SOM.desliga();
+  if (estado.energizado) {
+    SOM.energia();
+    // Som de acordo com o que acordou: motor ronca, rele estala.
+    const vivos = [...estado.ultimoCircuito.estados.entries()].filter(([, e]) => e.ligado);
+    const temMotor = vivos.some(([id]) => /motor|bomba|servo/.test((estado.comps.find((c) => c.id === id) || {}).tipo || ""));
+    const temRele = vivos.some(([id]) => /rele/.test((estado.comps.find((c) => c.id === id) || {}).tipo || ""));
+    if (temMotor) setTimeout(() => SOM.motor(), 260);
+    if (temRele) setTimeout(() => SOM.rele(), 380);
+  } else SOM.desliga();
   if (ganchos.aoEnergizar) ganchos.aoEnergizar(estado.energizado, estado.ultimoCircuito);
   return estado.energizado;
 }
@@ -966,7 +997,7 @@ function aoApertar(ev) {
       const qual = zona.dataset.acao.slice(6);
       comp.apertados = [...(comp.apertados || []), qual];
       reagirAoBotao(comp, qual, true);
-      SOM.clique();
+      SOM.botao();
       recalcular();
       if (ganchos.aoApertarBotao) ganchos.aoApertarBotao(comp, qual);
       arrasto = { acaoTecla: comp.id, qual };

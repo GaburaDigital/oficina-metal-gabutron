@@ -36,15 +36,15 @@ function pinosGaburino() {
     ["SDA", "i2c", "Comunicacao I2C — linha de dados (SDA)"],
     ["AREF", "sinal", "Referencia externa para o conversor analogico"],
     ["GND", "gnd", "Terra — retorno da corrente"],
-    ["13", "digital", "Digital 13 — tambem SPI SCK e LED da placa"],
-    ["12", "digital", "Digital 12 — tambem SPI MISO"],
-    ["11", "pwm", "Digital 11 — PWM e SPI MOSI"],
-    ["10", "pwm", "Digital 10 — PWM e SPI SS"],
+    ["13", "digital", "Digital 13 — tambem SPI SCK e LED da placa", ["spi"]],
+    ["12", "digital", "Digital 12 — tambem SPI MISO", ["spi"]],
+    ["11", "pwm", "Digital 11 — PWM e SPI MOSI", ["spi"]],
+    ["10", "pwm", "Digital 10 — PWM e SPI SS", ["spi"]],
     ["9", "pwm", "Digital 9 — PWM"],
     ["8", "digital", "Digital 8"],
   ];
-  topoDir.forEach(([n, papel, rotulo], i) => {
-    p.push({ id: "t" + n, n: papel === "pwm" ? "~" + n : n, rotulo, x: 624 - i * P, y: 24, r: "femea", papel, lado: "baixo" });
+  topoDir.forEach(([n, papel, rotulo, extras], i) => {
+    p.push({ id: "t" + n, n: papel === "pwm" ? "~" + n : n, rotulo, x: 624 - i * P, y: 24, r: "femea", papel, extras, lado: "baixo" });
   });
 
   const topoEsq = [
@@ -130,10 +130,12 @@ function pinosBura32() {
   ];
   const p = [];
   esq.forEach(([n, papel, v, rotulo], i) =>
-    p.push({ id: "e" + i, n, rotulo, x: 24, y: 72 + i * P, r: "femea", papel, v, lado: "d" }));
+    p.push({ id: "e" + i, n, rotulo, x: 24, y: 72 + i * P, r: "femea", papel, v, lado: "d",
+      extras: papel === "digital" ? ["pwm"] : undefined }));
   dir.forEach(([n, papel, v, rotulo], i) =>
     p.push({
       id: "d" + i, n, rotulo, x: 264, y: 72 + i * P, r: "femea", papel, v, lado: "e",
+      extras: papel === "digital" ? ["pwm"] : papel === "spi" ? ["pwm"] : undefined,
       ...(n === "VIN" ? { entrada: true, vmin: 4.7, vmax: 5.5 } : {}),
     }));
   return p;
@@ -143,14 +145,14 @@ function pinosBura32() {
    Os outros pinos exigem o adaptador de expansao. */
 function pinosMicrobura() {
   const aneis = [
-    ["P0", "digital", null, "Anel P0 — digital, PWM e entrada analogica"],
-    ["P1", "digital", null, "Anel P1 — digital, PWM e entrada analogica"],
-    ["P2", "digital", null, "Anel P2 — digital, PWM e entrada analogica"],
+    ["P0", "digital", null, "Anel P0 — digital, PWM e entrada analogica", ["pwm", "analog"]],
+    ["P1", "digital", null, "Anel P1 — digital, PWM e entrada analogica", ["pwm", "analog"]],
+    ["P2", "digital", null, "Anel P2 — digital, PWM e entrada analogica", ["pwm", "analog"]],
     ["3V", "v+", 3.3, "Anel de 3,3 volts — so para carga pequena"],
     ["GND", "gnd", null, "Anel de terra"],
   ];
-  const p = aneis.map(([n, papel, v, rotulo], i) => ({
-    id: "anel" + i, n, rotulo, x: 72 + i * 96, y: 456, r: "pad", papel, v, grande: true, lado: "cima",
+  const p = aneis.map(([n, papel, v, rotulo, extras], i) => ({
+    id: "anel" + i, n, rotulo, x: 72 + i * 96, y: 456, r: "pad", papel, v, extras, grande: true, lado: "cima",
   }));
   // Conector de bateria no topo, igual ao da micro:bit real. Aceita de
   // 3 a 3,3 volts: e por aqui que o projeto sai do cabo e anda sozinho.
@@ -261,6 +263,8 @@ add({
 add({
   id: "motor-passo", nome: "Motor de passo 28BYJ-48", caixa: "motores", arte: "motor-passo", agrupaCom: "uln2003",
   w: 288, h: 288, cor: "#3A3F47", alimenta: 4.5, correnteTipica: 240, custo: 16,
+  tensaoNominal: 5, tensaoMax: 6,
+  tensaoNominal: 5, tensaoMax: 7,
   pinos: [
     { id: "com", n: "VM", rotulo: "Fio vermelho — comum das bobinas, vai no COM do driver", x: 48, y: 264, r: "macho", papel: "v+", lado: "baixo" },
     { id: "a", n: "AZ", rotulo: "Fio azul — bobina A", x: 96, y: 264, r: "macho", papel: "sinal", lado: "baixo" },
@@ -273,7 +277,7 @@ add({
 /* alimentacao */
 add({
   id: "bateria9v", nome: "Bateria 9V", caixa: "energia", arte: "bateria", w: 168, h: 216,
-  cor: "#2A2E36", fonte: true, custo: 8,
+  cor: "#2A2E36", fonte: true, correnteMax: 500, custo: 8,
   pinos: [
     { id: "p", n: "+", rotulo: "Positivo — 9 volts", x: 48, y: 192, r: "macho", papel: "v+", v: 9, lado: "baixo" },
     { id: "n", n: "-", rotulo: "Negativo — terra", x: 96, y: 192, r: "macho", papel: "gnd", lado: "baixo" },
@@ -281,7 +285,7 @@ add({
 });
 add({
   id: "suporteaa", nome: "Suporte de pilhas AA", caixa: "energia", arte: "suporte-aa", w: 336, h: 216,
-  cor: "#1B1F26", fonte: true, custo: 12,
+  cor: "#1B1F26", fonte: true, correnteMax: 2000, custo: 12,
   slots: { min: 1, max: 6, padrao: 4, porSlot: 1.5, rotulo: "pilhas" },
   slotsDinamicos: { topo: 16, passo: 44, base: 30, raio: 12, nome: "AA", corCaixa: "#1B1F26", corCelula: "#3A3F47" },
   pinos: [
@@ -291,7 +295,7 @@ add({
 });
 add({
   id: "fonte-protoboard", nome: "Fonte de protoboard", caixa: "energia", arte: "fonte-pb",
-  w: 288, h: 168, cor: "#134E3A", regulador: true, ajustavel: [3.3, 5], custo: 15,
+  w: 288, h: 168, cor: "#134E3A", regulador: true, correnteMax: 800, ajustavel: [3.3, 5], custo: 15,
   pinos: [
     { id: "inp", n: "IN+", rotulo: "Entrada de energia — ela NAO gera nada, so regula. De 7 a 12 volts", x: 24, y: 24, r: "borne", papel: "v+", entrada: true, vmin: 6.5, vmax: 12, lado: "baixo" },
     { id: "inn", n: "IN-", rotulo: "Entrada, negativo", x: 72, y: 24, r: "borne", papel: "gnd", lado: "baixo" },
@@ -302,6 +306,7 @@ add({
 add({
   id: "rele", nome: "Modulo rele 5V", caixa: "energia", arte: "modulo", w: 288, h: 192,
   cor: "#1B4E8A", alimenta: 4.5, custo: 18, correnteTipica: 75,
+  contatos: { comum: "com", repouso: "nc", acionado: "no" },
   pinos: [
     { id: "gnd", n: "GND", rotulo: "Terra do lado de controle", x: 48, y: 168, r: "macho", papel: "gnd", lado: "baixo" },
     { id: "in", n: "IN", rotulo: "Sinal que aciona a bobina", x: 72, y: 168, r: "macho", papel: "sinal", lado: "baixo" },
@@ -314,6 +319,7 @@ add({
 add({
   id: "rele3v", nome: "Modulo rele 3V", caixa: "energia", arte: "modulo", w: 288, h: 192,
   cor: "#1B4E8A", alimenta: 3, custo: 18, correnteTipica: 45,
+  contatos: { comum: "com", repouso: "nc", acionado: "no" },
   pinos: [
     { id: "gnd", n: "GND", rotulo: "Terra do lado de controle", x: 120, y: 168, r: "macho", papel: "gnd", lado: "baixo" },
     { id: "in", n: "IN", rotulo: "Sinal que aciona a bobina", x: 144, y: 168, r: "macho", papel: "sinal", lado: "baixo" },
@@ -420,6 +426,7 @@ add({
 add({
   id: "neopixel", nome: "Neopixel 4x4", caixa: "leds", arte: "neopixel", w: 264, h: 288,
   cor: "#12151C", alimenta: 4.5, correnteTipica: 320, custo: 45,
+  tensaoNominal: 5, tensaoMax: 5.5,
   pinos: [
     { id: "gnd", n: "GND", rotulo: "Terra", x: 48, y: 264, r: "macho", papel: "gnd", lado: "baixo" },
     { id: "vcc", n: "VCC", rotulo: "5 volts — no branco total sao quase 1 ampere", x: 96, y: 264, r: "macho", papel: "v+", lado: "baixo" },
@@ -442,6 +449,8 @@ add({
 add({
   id: "buzzer", nome: "Buzzer ativo", caixa: "som", arte: "buzzer", w: 144, h: 168,
   cor: "#0B0D11", alimenta: 3, apito: true, correnteTipica: 30, custo: 6,
+  tensaoNominal: 5, tensaoMax: 6,
+  tensaoNominal: 5, tensaoMax: 6.5,
   pinos: [
     { id: "p", n: "+", rotulo: "Positivo — lado marcado na peca", x: 48, y: 144, r: "macho", papel: "v+", lado: "baixo" },
     { id: "n", n: "-", rotulo: "Negativo — vai para o GND", x: 72, y: 144, r: "macho", papel: "gnd", lado: "baixo" },
@@ -524,6 +533,8 @@ add({
 add({
   id: "servo180", nome: "Micro servo 180", caixa: "motores", arte: "servo", w: 288, h: 216,
   cor: "#1E58A8", alimenta: 4.5, correnteTipica: 550, precisaPwm: "sig", custo: 25,
+  tensaoNominal: 5, tensaoMax: 6.5,
+  tensaoNominal: 5, tensaoMax: 7,
   pinos: [
     { id: "gnd", n: "GND", rotulo: "Fio marrom ou preto — terra", x: 264, y: 96, r: "femea", papel: "gnd", fio: "#3A3F47", lado: "e" },
     { id: "vcc", n: "VCC", rotulo: "Fio vermelho — de 4,8 a 6 volts, fonte externa", x: 264, y: 120, r: "femea", papel: "v+", fio: "#E24B4A", lado: "e" },
@@ -533,6 +544,8 @@ add({
 add({
   id: "motordc", nome: "Motor DC", caixa: "motores", arte: "motor", w: 360, h: 192,
   cor: "#565C66", alimenta: 3, correnteTipica: 800, custo: 15, bipolar: true,
+  tensaoNominal: 6, tensaoMax: 9,
+  tensaoNominal: 6, tensaoMax: 9,
   pinos: [
     { id: "a", n: "+", rotulo: "Terminal — inverta os dois e o motor gira ao contrario", x: 288, y: 144, r: "macho", papel: "v+", fio: "#E24B4A", lado: "baixo" },
     { id: "b", n: "-", rotulo: "Terminal — inverta os dois e o motor gira ao contrario", x: 336, y: 144, r: "macho", papel: "gnd", fio: "#2A2E36", lado: "baixo" },
@@ -801,6 +814,7 @@ add({
 add({
   id: "laser", nome: "Diodo laser", caixa: "leds", arte: "modulo",
   w: 216, h: 168, cor: "#8A2C28", alimenta: 4.5, correnteTipica: 40,
+  tensaoNominal: 5, tensaoMax: 6,
   pinos: [
     { id: "a", n: "+", rotulo: "Positivo — 5 volts", x: 120, y: 144, r: "macho", papel: "v+", lado: "baixo" },
     { id: "b", n: "-", rotulo: "Negativo — terra", x: 168, y: 144, r: "macho", papel: "gnd", lado: "baixo" }
@@ -867,6 +881,8 @@ add({
   // Passivo e piezo: consome quase nada, e por isso cabe direto num
   // pino de 3,3 volts. O ativo e magnetico e puxa dez vezes mais.
   w: 216, h: 192, cor: "#0B0D11", alimenta: 3, apito: true, correnteTipica: 3, custo: 6,
+  tensaoNominal: 5, tensaoMax: 6,
+  tensaoNominal: 3.3, tensaoMax: 6,
   pinos: [
     { id: "a", n: "+", rotulo: "Positivo — precisa de onda quadrada para tocar", x: 120, y: 168, r: "macho", papel: "v+", lado: "baixo" },
     { id: "b", n: "-", rotulo: "Negativo — terra", x: 168, y: 168, r: "macho", papel: "gnd", lado: "baixo" }
@@ -876,6 +892,8 @@ add({
 add({
   id: "altofalante", nome: "Alto-falante 8 ohms", caixa: "som", arte: "falante",
   w: 264, h: 240, cor: "#3A3F47", alimenta: 2, bipolar: true, correnteTipica: 300, custo: 12,
+  tensaoNominal: 5, tensaoMax: 8,
+  tensaoNominal: 5, tensaoMax: 8,
   pinos: [
     { id: "a", n: "+", rotulo: "Terminal do alto-falante", x: 168, y: 216, r: "macho", papel: "v+", lado: "baixo" },
     { id: "b", n: "-", rotulo: "Terminal do alto-falante", x: 216, y: 216, r: "macho", papel: "gnd", lado: "baixo" }
@@ -1091,6 +1109,8 @@ add({
 add({
   id: "motordc-reducao", nome: "Motor DC com reducao", caixa: "motores", arte: "motor",
   w: 384, h: 216, cor: "#565C66", alimenta: 3, correnteTipica: 900, bipolar: true, custo: 22,
+  tensaoNominal: 6, tensaoMax: 9,
+  tensaoNominal: 6, tensaoMax: 9,
   pinos: [
     { id: "a", n: "+", rotulo: "Terminal — inverta os dois e ele gira ao contrario", x: 288, y: 192, r: "macho", papel: "v+", lado: "baixo" },
     { id: "b", n: "-", rotulo: "Terminal — inverta os dois e ele gira ao contrario", x: 336, y: 192, r: "macho", papel: "gnd", lado: "baixo" }
@@ -1100,6 +1120,8 @@ add({
 add({
   id: "motor-drone", nome: "Motor de drone", caixa: "motores", arte: "motor",
   w: 240, h: 192, cor: "#565C66", alimenta: 3, correnteTipica: 1400, bipolar: true, custo: 18,
+  tensaoNominal: 3.7, tensaoMax: 6,
+  tensaoNominal: 4.2, tensaoMax: 6,
   pinos: [
     { id: "a", n: "+", rotulo: "Terminal — muita rotacao, pouco torque", x: 144, y: 168, r: "macho", papel: "v+", lado: "baixo" },
     { id: "b", n: "-", rotulo: "Terminal", x: 192, y: 168, r: "macho", papel: "gnd", lado: "baixo" }
@@ -1109,6 +1131,8 @@ add({
 add({
   id: "bomba", nome: "Bomba submersa", caixa: "motores", arte: "bomba",
   w: 288, h: 264, cor: "#1B4E8A", alimenta: 3, correnteTipica: 700, bipolar: true, custo: 20,
+  tensaoNominal: 4.5, tensaoMax: 6,
+  tensaoNominal: 6, tensaoMax: 9,
   pinos: [
     { id: "a", n: "+", rotulo: "Positivo — de 3 a 6 volts", x: 192, y: 240, r: "macho", papel: "v+", lado: "baixo" },
     { id: "b", n: "-", rotulo: "Negativo", x: 240, y: 240, r: "macho", papel: "gnd", lado: "baixo" }
@@ -1118,6 +1142,8 @@ add({
 add({
   id: "vibracao", nome: "Motor de vibracao", caixa: "motores", arte: "modulo",
   w: 240, h: 168, cor: "#1B1F26", alimenta: 3, correnteTipica: 90, custo: 8,
+  tensaoNominal: 3, tensaoMax: 5.5,
+  tensaoNominal: 5, tensaoMax: 6.5,
   pinos: [
     { id: "vcc", n: "VCC", rotulo: "De 3 a 5 volts", x: 48, y: 144, r: "macho", papel: "v+", lado: "baixo" },
     { id: "gnd", n: "GND", rotulo: "Terra", x: 72, y: 144, r: "macho", papel: "gnd", lado: "baixo" },
@@ -1128,6 +1154,8 @@ add({
 add({
   id: "servo360", nome: "Micro servo 360", caixa: "motores", arte: "servo", w: 288, h: 216,
   cor: "#1E58A8", alimenta: 4.5, correnteTipica: 600, precisaPwm: "sig", custo: 26,
+  tensaoNominal: 5, tensaoMax: 6.5,
+  tensaoNominal: 5, tensaoMax: 7,
   pinos: [
     { id: "gnd", n: "GND", rotulo: "Fio marrom ou preto — terra", x: 264, y: 96, r: "femea", papel: "gnd", lado: "e" },
     { id: "vcc", n: "VCC", rotulo: "Fio vermelho — alimentacao externa, gira sem parar, e a velocidade que voce controla", x: 264, y: 120, r: "femea", papel: "v+", lado: "e" },
@@ -1138,6 +1166,8 @@ add({
 add({
   id: "servo-torque180", nome: "Servo de alto torque 180", caixa: "motores", arte: "servo", w: 288, h: 216,
   cor: "#1E58A8", alimenta: 4.5, correnteTipica: 900, precisaPwm: "sig", custo: 48,
+  tensaoNominal: 6, tensaoMax: 7.4,
+  tensaoNominal: 5, tensaoMax: 7,
   pinos: [
     { id: "gnd", n: "GND", rotulo: "Fio marrom ou preto — terra", x: 264, y: 96, r: "femea", papel: "gnd", lado: "e" },
     { id: "vcc", n: "VCC", rotulo: "Fio vermelho — alimentacao externa, forte, e por isso puxa muito mais corrente", x: 264, y: 120, r: "femea", papel: "v+", lado: "e" },
@@ -1148,6 +1178,8 @@ add({
 add({
   id: "servo-torque360", nome: "Servo de alto torque 360", caixa: "motores", arte: "servo", w: 288, h: 216,
   cor: "#1E58A8", alimenta: 4.5, correnteTipica: 900, precisaPwm: "sig", custo: 52,
+  tensaoNominal: 6, tensaoMax: 7.4,
+  tensaoNominal: 5, tensaoMax: 7,
   pinos: [
     { id: "gnd", n: "GND", rotulo: "Fio marrom ou preto — terra", x: 264, y: 96, r: "femea", papel: "gnd", lado: "e" },
     { id: "vcc", n: "VCC", rotulo: "Fio vermelho — alimentacao externa, forte e de giro continuo", x: 264, y: 120, r: "femea", papel: "v+", lado: "e" },
@@ -1247,7 +1279,7 @@ add({
 
 add({
   id: "stepdown", nome: "Regulador stepdown", caixa: "energia", arte: "modulo", w: 288, h: 192,
-  cor: "#134E3A", ajustavel: [3.3, 5, 9, 12], custo: 12, regulador: true,
+  cor: "#134E3A", ajustavel: [3.3, 5, 9, 12], custo: 12, regulador: true, correnteMax: 2000, correnteMax: 2000,
   trimpot: { x: 240, y: 60, r: 28, rotulo: "tensao de saida", tipo: "tensao" },
   pinos: [
     { id: "inp", n: "IN+", rotulo: "Entrada positiva — abaixa a tensao com pouca perda", x: 48, y: 168, r: "macho", papel: "v+", entrada: true, vmin: 1, vmax: 30, lado: "baixo" },
@@ -1259,7 +1291,7 @@ add({
 
 add({
   id: "stepup", nome: "Regulador stepup", caixa: "energia", arte: "modulo", w: 288, h: 192,
-  cor: "#134E3A", ajustavel: [3.3, 5, 9, 12], custo: 12, regulador: true,
+  cor: "#134E3A", ajustavel: [3.3, 5, 9, 12], custo: 12, regulador: true, correnteMax: 2000, correnteMax: 2000,
   trimpot: { x: 240, y: 60, r: 28, rotulo: "tensao de saida", tipo: "tensao" },
   pinos: [
     { id: "inp", n: "IN+", rotulo: "Entrada positiva — levanta a tensao acima da entrada", x: 48, y: 168, r: "macho", papel: "v+", entrada: true, vmin: 1, vmax: 30, lado: "baixo" },
@@ -1282,7 +1314,7 @@ add({
 
 add({
   id: "fonte-tomada", nome: "Fonte de tomada", caixa: "energia", arte: "modulo", w: 288, h: 192,
-  cor: "#1B1F26", fonte: true, ajustavel: [5, 9], custo: 25,
+  cor: "#1B1F26", fonte: true, correnteMax: 3000, ajustavel: [5, 9], custo: 25,
   pinos: [
     { id: "vout", n: "+", rotulo: "Fonte de parede — escolha 5 ou 9 volts na peca, 3 amperes de folga", x: 96, y: 168, r: "macho", papel: "v+", v: 9, lado: "baixo" },
     { id: "gnd", n: "-", rotulo: "Terra da fonte", x: 144, y: 168, r: "macho", papel: "gnd", lado: "baixo" }
@@ -1291,7 +1323,7 @@ add({
 
 add({
   id: "bateria-recarregavel", nome: "Bateria recarregavel 5V", caixa: "energia", arte: "modulo", w: 288, h: 192,
-  cor: "#134E3A", fonte: true, custo: 60,
+  cor: "#134E3A", fonte: true, correnteMax: 3000, custo: 60,
   pinos: [
     { id: "vout", n: "+", rotulo: "Power bank: 5 volts firmes e 3 amperes", x: 96, y: 168, r: "macho", papel: "v+", v: 5, lado: "baixo" },
     { id: "gnd", n: "-", rotulo: "Terra da fonte", x: 144, y: 168, r: "macho", papel: "gnd", lado: "baixo" }
@@ -1300,7 +1332,7 @@ add({
 
 add({
   id: "suporte-litio", nome: "Suporte de bateria de litio", caixa: "energia", arte: "suporte-litio", w: 336, h: 216,
-  cor: "#1B1F26", fonte: true, custo: 14,
+  cor: "#1B1F26", fonte: true, correnteMax: 3000, custo: 14,
   slots: { min: 1, max: 4, padrao: 1, porSlot: 3.7, rotulo: "celulas" },
   slotsDinamicos: { topo: 18, passo: 56, base: 32, raio: 14, nome: "18650", corCaixa: "#1B1F26", corCelula: "#134E3A" },
   pinos: [
@@ -1311,7 +1343,7 @@ add({
 
 add({
   id: "celula-solar", nome: "Celula solar", caixa: "energia", arte: "solar",
-  w: 336, h: 240, cor: "#20344F", fonte: true, custo: 30,
+  w: 336, h: 240, cor: "#20344F", fonte: true, correnteMax: 200, custo: 30,
   pinos: [
     { id: "a", n: "+", rotulo: "Positivo — so entrega energia com luz forte em cima", x: 240, y: 216, r: "macho", papel: "v+", lado: "baixo" },
     { id: "b", n: "-", rotulo: "Negativo", x: 288, y: 216, r: "macho", papel: "gnd", lado: "baixo" }
@@ -1499,7 +1531,7 @@ add({
 
 add({
   id: "tp4056", nome: "Carregador TP4056", caixa: "energia", arte: "modulo",
-  w: 336, h: 216, cor: "#134E3A", regulador: true, correnteMax: 1000, custo: 12,
+  w: 336, h: 216, cor: "#134E3A", regulador: true, correnteMax: 1000, correnteMax: 1000, custo: 12,
   pinos: [
     { id: "vinp", n: "VIN+", rotulo: "Entrada de carga — 5 volts, do USB ou do painel solar", x: 48, y: 192, r: "macho", papel: "v+", entrada: true, vmin: 4.5, vmax: 6, lado: "baixo" },
     { id: "vinn", n: "VIN-", rotulo: "Entrada de carga, negativo", x: 72, y: 192, r: "macho", papel: "gnd", lado: "baixo" },
@@ -1513,6 +1545,8 @@ add({
 add({
   id: "lampada12v", nome: "Lampada 12V", caixa: "leds", arte: "lampada", w: 240, h: 288,
   cor: "#E9C542", alimenta: 9, correnteTipica: 420, bipolar: true, custo: 8,
+  tensaoNominal: 12, tensaoMax: 14,
+  tensaoNominal: 12, tensaoMax: 15,
   pinos: [
     { id: "a", n: "1", rotulo: "Terminal da lampada — nao tem polaridade", x: 72, y: 264, r: "macho", papel: "v+", lado: "baixo" },
     { id: "b", n: "2", rotulo: "Terminal da lampada", x: 168, y: 264, r: "macho", papel: "gnd", lado: "baixo" },

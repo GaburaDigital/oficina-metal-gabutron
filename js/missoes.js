@@ -20,6 +20,7 @@
    ============================================================ */
 
 import { PORID } from "./biblioteca.js";
+import { verificar as avaliarRegra, contexto } from "./regras.js";
 import { catalogo, carregarMissao } from "./conteudo.js";
 import { ico } from "./icones.js";
 import { SOM } from "./som.js";
@@ -40,140 +41,13 @@ export const sessao = {
 
 /* ---------- verificacao das regras ---------------------------- */
 
-function pinosDe(comps, alvo) {
-  const saida = [];
-  for (const c of comps) {
-    if (alvo.componente && c.tipo !== alvo.componente) continue;
-    const d = PORID[c.tipo];
-    if (!d) continue;
-    for (const p of d.pinos) {
-      if (alvo.pino && p.id !== alvo.pino) continue;
-      if (alvo.papel && p.papel !== alvo.papel) continue;
-      if (alvo.nome && p.n !== alvo.nome) continue;
-      saida.push({ comp: c, pino: p });
-    }
-  }
-  return saida;
-}
-
+/* A sessao alimenta o contexto do avaliador: ferramentas usadas,
+   botoes apertados e cores vistas sao coisas que a missao registra. */
 export function verificar(regra, comps, circ) {
-  if (!regra) return false;
-  const conta = (t) => comps.filter((c) => c.tipo === t && !c.queimado).length;
-
-  switch (regra.tipo) {
-    case "existe":
-      return conta(regra.componente) >= (regra.n || 1);
-
-    case "mesmoNo": {
-      const a = pinosDe(comps, regra.a), b = pinosDe(comps, regra.b);
-      return a.some((x) => b.some((y) =>
-        !(x.comp.id === y.comp.id && x.pino.id === y.pino.id) &&
-        circ.noDe(x.comp.id, x.pino.id) === circ.noDe(y.comp.id, y.pino.id)));
-    }
-
-    case "ligado":
-      return comps.filter((c) => c.tipo === regra.componente &&
-        (circ.estados.get(c.id) || {}).ligado).length >= (regra.n || 1);
-
-    case "aceso":
-      return comps.filter((c) => c.tipo === regra.componente &&
-        (circ.estados.get(c.id) || {}).aceso).length >= (regra.n || 1);
-
-    case "pinoEm": {
-      const alvos = pinosDe(comps, { componente: regra.componente, pino: regra.pino });
-      return alvos.some(({ comp, pino }) => {
-        const lista = circ.pinosDoNo.get(circ.noDe(comp.id, pino.id)) || [];
-        return lista.some((it) => it.comp.id !== comp.id && it.pino.papel === regra.papelAlvo);
-      });
-    }
-
-    case "tensaoEm": {
-      const alvos = pinosDe(comps, regra);
-      return alvos.some(({ comp, pino }) => {
-        const v = circ.vDe(comp.id, pino.id);
-        return v >= (regra.min ?? 0) && v <= (regra.max ?? 99);
-      });
-    }
-
-    case "firmware":
-      return comps.filter((c) => c.tipo === regra.componente)
-        .reduce((soma, c) => soma + Object.values(c.firmware || {})
-          .filter((f) => f.modo === regra.modo).length, 0) >= (regra.n || 1);
-
-    case "emSerie": {
-      // Duas pecas em serie de verdade: um terminal de cada uma no
-      // mesmo no, e o outro terminal de cada uma em nos diferentes.
-      const as = comps.filter((c) => c.tipo === regra.a && !c.queimado);
-      const bs = comps.filter((c) => c.tipo === regra.b && !c.queimado);
-      for (const ca of as) {
-        const da = PORID[ca.tipo];
-        for (const cb of bs) {
-          const db = PORID[cb.tipo];
-          for (const pa of da.pinos) {
-            for (const pb of db.pinos) {
-              const compartilham = circ.noDe(ca.id, pa.id) === circ.noDe(cb.id, pb.id);
-              if (!compartilham) continue;
-              const outroA = da.pinos.find((x) => x.id !== pa.id);
-              const outroB = db.pinos.find((x) => x.id !== pb.id);
-              if (!outroA || !outroB) continue;
-              if (circ.noDe(ca.id, outroA.id) !== circ.noDe(cb.id, outroB.id)) return true;
-            }
-          }
-        }
-      }
-      return false;
-    }
-
-    case "correnteEm": {
-      const alvos = comps.filter((c) => c.tipo === regra.componente);
-      return alvos.some((c) => {
-        const e = circ.estados.get(c.id) || {};
-        const i = e.corrente || 0;
-        return i >= (regra.min ?? 0) && i <= (regra.max ?? 1e9);
-      });
-    }
-
-    case "usouFerramenta":
-      return sessao.ferramentas.has(regra.modo || regra.ferramenta);
-
-    case "semRompidos":
-      // nenhum fio partido por dentro continuou no circuito
-      return !(circ.fiosRompidos || []).length;
-
-    case "trimpotEntre": {
-      const alvos = comps.filter((c) => c.tipo === regra.componente);
-      return alvos.some((c) => {
-        const v = c.trimpot ?? 50;
-        return v >= (regra.min ?? 0) && v <= (regra.max ?? 100);
-      });
-    }
-
-    case "encaixado": {
-      // Cartao, pen drive e cabo: conta quantas ligacoes mecanicas a
-      // peca tem de fato, lendo a lista de midia da bancada.
-      const pecas = comps.filter((c) => c.tipo === regra.componente).map((c) => c.id);
-      const total = (circ.midia || []).filter((l) => pecas.includes(l.cabo) || pecas.includes(l.host)).length;
-      return total >= (regra.n || 1);
-    }
-
-    case "scriptAtivo":
-      return comps.some((c) => c.tipo === regra.componente && c.script === regra.script);
-
-    case "botaoUsado":
-      // Registrado quando o aluno aperta o botao de verdade na bancada.
-      return sessao.botoes.has(`${regra.componente}:${regra.botao}`);
-
-    case "corDoLed": {
-      // O LED chegou a mostrar essa cor durante a missao?
-      return sessao.cores.has(regra.cor);
-    }
-
-    case "semCriticos":
-      return !circ.diagnosticos.some((d) => d.nivel === "critico");
-
-    default:
-      return false;
-  }
+  contexto.ferramentas = sessao.ferramentas;
+  contexto.botoes = sessao.botoes;
+  contexto.cores = sessao.cores;
+  return avaliarRegra(regra, comps, circ);
 }
 
 export function avaliar(comps, circ) {
@@ -221,15 +95,19 @@ export function gastoAtual(comps) {
    outra ate o tempo acabar. E o formato que funciona em aula. */
 export const treino = { ativo: false, fila: [], feitas: 0, filtros: null };
 
-export function montarTreino(filtros) {
+export function montarTreino(filtros = {}) {
+  // Filtro ausente vale como "tudo": chamar sem argumento nao pode
+  // derrubar o treino no meio da aula.
+  const tipos = filtros.tipos || [];
+  const dificuldades = filtros.dificuldades || [];
   const todas = [...(catalogo.construcao || []), ...(catalogo.manutencao || []), ...(catalogo.hacking || [])]
-    .filter((m) => (filtros.tipos.length ? filtros.tipos.includes(m.tipo) : true))
-    .filter((m) => (filtros.dificuldades.length ? filtros.dificuldades.includes(m.dificuldade) : true));
+    .filter((m) => (tipos.length ? tipos.includes(m.tipo) : true))
+    .filter((m) => (dificuldades.length ? dificuldades.includes(m.dificuldade) : true));
   const embaralhada = todas.map((m) => [Math.random(), m]).sort((a, b) => a[0] - b[0]).map((x) => x[1]);
   treino.ativo = embaralhada.length > 0;
   treino.fila = embaralhada;
   treino.feitas = 0;
-  treino.filtros = filtros;
+  treino.filtros = { tipos, dificuldades, ...filtros };
   return embaralhada.length;
 }
 

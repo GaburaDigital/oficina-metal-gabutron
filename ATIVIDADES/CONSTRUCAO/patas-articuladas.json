@@ -1,0 +1,80 @@
+{
+  "fase": 7,
+  "id": "patas-articuladas",
+  "titulo": "Quatro patas articuladas",
+  "tipo": "construcao",
+  "placa": "bura32",
+  "dificuldade": "hacker",
+  "minutos": 32,
+  "pontos": 300,
+  "creditos": 420,
+  "briefing": "Robo caminhante de quatro patas, tres juntas cada. Sao doze servos, e ai mora a licao: doze servos puxam varios amperes juntos. A expansao de 16 servos existe justamente porque a placa nao da conta. A logica dela vem da Bura32, mas o V+ vem de FORA, de uma fonte que aguente. Fonte de protoboard de 800 mA nao serve nem para dois servos.",
+  "objetivos": [
+    {
+      "id": "expansao",
+      "texto": "Expansao de 16 servos energizada",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "expansao-servo"
+      }
+    },
+    {
+      "id": "i2c",
+      "texto": "SDA da expansao numa linha I2C",
+      "regra": {
+        "tipo": "pinoEm",
+        "componente": "expansao-servo",
+        "pino": "sda",
+        "papelAlvo": "i2c"
+      }
+    },
+    {
+      "id": "externa",
+      "texto": "V+ da expansao numa fonte capaz de segurar os servos",
+      "regra": {
+        "tipo": "mesmoNo",
+        "a": {
+          "componente": "expansao-servo",
+          "pino": "v+"
+        },
+        "b": {
+          "componente": "fonte-tomada",
+          "pino": "vout"
+        }
+      }
+    },
+    {
+      "id": "servos",
+      "texto": "Pelo menos quatro servos energizados",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "servo180",
+        "n": 4
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "A expansao tem DUAS alimentacoes: VCC para a logica e V+ para os servos. Nao confunda.",
+    "Cada canal tem G, V e sinal. O servo inteiro entra ali, com os tres fios.",
+    "Use a fonte de tomada de 3 amperes. Fonte de protoboard para em 800 mA.",
+    "O GND da fonte tem que ser o mesmo da Bura32, senao os sinais nao valem nada."
+  ],
+  "erroComum": "Alimentar os servos pelo VCC da logica. Funciona com um, treme com dois e reinicia com tres.",
+  "sucesso": "Doze servos numa fonte que aguenta. Voce entendeu por que existe alimentacao separada para a logica e para a forca.",
+  "componentesLiberados": [
+    "bura32",
+    "expansao-servo",
+    "servo180",
+    "servo-torque180",
+    "fonte-tomada",
+    "protoboard",
+    "resistor"
+  ]
+}

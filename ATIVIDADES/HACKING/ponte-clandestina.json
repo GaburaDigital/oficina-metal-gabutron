@@ -1,0 +1,77 @@
+{
+  "fase": 7,
+  "id": "ponte-clandestina",
+  "titulo": "Ponte clandestina",
+  "tipo": "hacking",
+  "dificuldade": "hacker",
+  "minutos": 26,
+  "pontos": 270,
+  "briefing": "A rede da nave e fechada, mas ninguem disse que ela e a unica rede. Monte uma ponte: o modulo ethernet de um lado, o wifi do outro, e a Bura32 no meio passando pacote de um para o outro. Duas armadilhas te esperam. Os dois modulos falam SPI e disputam o mesmo barramento, entao cada um precisa do proprio CS. E o ESP-01 puxa 250 mA no pico de transmissao, bem mais do que o regulador da placa entrega.",
+  "objetivos": [
+    {
+      "id": "ethernet",
+      "texto": "Modulo ethernet energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "enc28j60"
+      }
+    },
+    {
+      "id": "wifi",
+      "texto": "Modulo wifi energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "esp01"
+      }
+    },
+    {
+      "id": "externa",
+      "texto": "Wifi alimentado por regulador proprio",
+      "regra": {
+        "tipo": "mesmoNo",
+        "a": {
+          "componente": "esp01",
+          "pino": "vcc"
+        },
+        "b": {
+          "componente": "ams1117",
+          "pino": "outp"
+        }
+      }
+    },
+    {
+      "id": "spi",
+      "texto": "CS do ethernet numa linha SPI",
+      "regra": {
+        "tipo": "pinoEm",
+        "componente": "enc28j60",
+        "pino": "cs",
+        "papelAlvo": "spi"
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "Nenhum dos dois entra na protoboard: sao barras de dois pinos. Use jumper macho-femea.",
+    "SCK, MISO e MOSI podem ser compartilhados. O CS de cada modulo tem que ser separado.",
+    "O ESP-01 exige que o CH_PD fique em nivel alto, senao ele nem liga.",
+    "Alimente o wifi por um regulador dedicado. O da placa nao segura os 250 mA do pico."
+  ],
+  "erroComum": "Dar o mesmo CS para os dois modulos. Eles respondem juntos e a comunicacao vira lixo.",
+  "sucesso": "Dois barramentos, uma ponte. E voce entendeu por que CS existe e por que modulo de radio pede fonte propria.",
+  "componentesLiberados": [
+    "bura32",
+    "enc28j60",
+    "esp01",
+    "ams1117",
+    "bateria9v",
+    "protoboard",
+    "resistor"
+  ]
+}

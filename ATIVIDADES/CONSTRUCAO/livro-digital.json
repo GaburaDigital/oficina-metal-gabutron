@@ -1,0 +1,72 @@
+{
+  "fase": 7,
+  "id": "livro-digital",
+  "titulo": "Livro digital do deck",
+  "tipo": "construcao",
+  "placa": "gaburino",
+  "dificuldade": "intermediario",
+  "minutos": 24,
+  "pontos": 220,
+  "creditos": 200,
+  "briefing": "A biblioteca da nave cabe num aparelho de bolso. Monte um leitor: tela e-paper para a pagina, encoder para virar folha, botao para marcar e bluetooth para receber livro novo. O e-paper e teimoso de proposito: ele gasta energia so para MUDAR a imagem e nada para manter. Por isso ele tem o pino BUSY, avisando que ainda esta redesenhando.",
+  "objetivos": [
+    {
+      "id": "epaper",
+      "texto": "Display e-paper energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "epaper"
+      }
+    },
+    {
+      "id": "spi",
+      "texto": "CLK do e-paper numa linha SPI",
+      "regra": {
+        "tipo": "pinoEm",
+        "componente": "epaper",
+        "pino": "clk",
+        "papelAlvo": "spi"
+      }
+    },
+    {
+      "id": "encoder",
+      "texto": "Encoder energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "encoder"
+      }
+    },
+    {
+      "id": "bluetooth",
+      "texto": "Modulo bluetooth energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "hc06"
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "O e-paper trabalha em 3,3 volts e fala SPI: CLK, DIN, CS, DC, RST e BUSY.",
+    "O encoder tem CLK e DT. Comparando os dois a placa sabe para que lado voce girou.",
+    "Com a bancada ligada, arraste o botao do encoder para cima e para baixo e veja o passo mudar.",
+    "O RXD do HC-06 e de 3,3 V: divisor de tensao antes dele."
+  ],
+  "erroComum": "Alimentar o e-paper com 5 V. Ele e de 3,3 e nao perdoa.",
+  "sucesso": "Leitor pronto. E-paper gasta energia so para virar a pagina: e por isso que leitor de verdade dura semanas.",
+  "componentesLiberados": [
+    "gaburino",
+    "epaper",
+    "encoder",
+    "botao",
+    "hc06",
+    "protoboard",
+    "resistor"
+  ]
+}

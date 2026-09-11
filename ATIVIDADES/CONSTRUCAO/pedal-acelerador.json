@@ -1,0 +1,61 @@
+{
+  "fase": 7,
+  "id": "pedal-acelerador",
+  "titulo": "Pedal do acelerador",
+  "tipo": "construcao",
+  "dificuldade": "facil",
+  "minutos": 15,
+  "pontos": 140,
+  "creditos": 100,
+  "briefing": "Simulador de direcao para o deck de treino. Sem placa: bateria de litio, interruptor, diodo, capacitor e um motor. A chave gangorra liga e desliga, o diodo protege o circuito do coice da bobina quando o motor para, e o capacitor segura a queda de tensao no arranque. Repare no motor: a celula de litio da 3,7 volts e o motor quer 6. Ele vai girar devagar, e isso e a licao.",
+  "objetivos": [
+    {
+      "id": "chave",
+      "texto": "Chave gangorra no circuito",
+      "regra": {
+        "tipo": "existe",
+        "componente": "interruptor"
+      }
+    },
+    {
+      "id": "motor",
+      "texto": "Motor girando com a chave ligada",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "motordc"
+      }
+    },
+    {
+      "id": "diodo",
+      "texto": "Diodo protegendo o circuito",
+      "regra": {
+        "tipo": "existe",
+        "componente": "diodo"
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "A chave entra em SERIE com o motor. Em paralelo ela vira curto.",
+    "Energize a bancada e clique na chave: ela fica no estado que voce deixar.",
+    "Uma celula de litio da 3,7 V. Coloque mais celulas no suporte e veja o motor acelerar.",
+    "O diodo em paralelo com o motor, catodo no positivo, e o que segura o coice da bobina."
+  ],
+  "erroComum": "Colocar a chave em paralelo com o motor. Ligar a chave faz curto na bateria.",
+  "sucesso": "Chave, diodo, capacitor e motor. Voce viu a tensao virar velocidade com os proprios olhos.",
+  "componentesLiberados": [
+    "suporte-litio",
+    "interruptor",
+    "motordc",
+    "diodo",
+    "capacitor-eletro",
+    "protoboard",
+    "resistor"
+  ]
+}

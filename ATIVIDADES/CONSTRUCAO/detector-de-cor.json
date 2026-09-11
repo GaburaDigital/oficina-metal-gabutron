@@ -1,0 +1,77 @@
+{
+  "fase": 7,
+  "id": "detector-de-cor",
+  "titulo": "Detector de cor",
+  "tipo": "construcao",
+  "placa": "microbura",
+  "dificuldade": "intermediario",
+  "minutos": 22,
+  "pontos": 200,
+  "creditos": 200,
+  "briefing": "Separador de pecas por cor para o almoxarifado. O sensor TCS3200 le a cor e a matriz Neopixel repete ela em tamanho grande. Dois cuidados: o sensor precisa de mais pinos do que os cinco aneis oferecem, entao a expansao entra; e o Neopixel no branco total passa de 900 mA, muito acima do que a MicroBURA entrega. Fonte externa para ele, sempre.",
+  "objetivos": [
+    {
+      "id": "expansao",
+      "texto": "Expansao da MicroBURA acoplada",
+      "regra": {
+        "tipo": "existe",
+        "componente": "expansao-microbura"
+      }
+    },
+    {
+      "id": "sensor",
+      "texto": "Sensor de cor energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "tcs3200"
+      }
+    },
+    {
+      "id": "neo",
+      "texto": "Neopixel energizado por fonte externa",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "neopixel"
+      }
+    },
+    {
+      "id": "externa",
+      "texto": "Neopixel alimentado pela fonte, nao pelo anel 3V",
+      "regra": {
+        "tipo": "mesmoNo",
+        "a": {
+          "componente": "neopixel",
+          "pino": "vcc"
+        },
+        "b": {
+          "componente": "fonte-tomada",
+          "pino": "vout"
+        }
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "O sensor de cor usa S0 a S3 mais OUT: sao cinco pinos, e por isso a expansao e necessaria.",
+    "S0 e S1 escolhem a escala de frequencia; S2 e S3 escolhem o filtro de cor.",
+    "O Neopixel vai na fonte de tomada. GND dela junto com o GND da placa.",
+    "O pino LED do sensor acende os brancos que iluminam a peca lida."
+  ],
+  "erroComum": "Pendurar o Neopixel no anel 3V. A MicroBURA reinicia no primeiro pixel branco.",
+  "sucesso": "Le a cor e mostra grande. E voce descobriu quantos pinos um sensor pode exigir.",
+  "componentesLiberados": [
+    "microbura",
+    "expansao-microbura",
+    "tcs3200",
+    "neopixel",
+    "fonte-tomada",
+    "protoboard",
+    "resistor"
+  ]
+}

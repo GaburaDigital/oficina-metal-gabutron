@@ -1,0 +1,67 @@
+{
+  "fase": 7,
+  "id": "cracha-falso",
+  "titulo": "O cracha falso",
+  "tipo": "hacking",
+  "dificuldade": "facil",
+  "minutos": 16,
+  "pontos": 170,
+  "briefing": "A porta do laboratorio le a cor do cracha para liberar a entrada. Verde entra, vermelho nao. Sua missao e entender por que isso e uma ideia terrivel: monte o leitor com o sensor de cor e descubra que qualquer papel colorido engana ele. Seguranca que depende de uma so caracteristica facil de copiar nao e seguranca, e decoracao.",
+  "objetivos": [
+    {
+      "id": "sensor",
+      "texto": "Sensor de cor energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "tcs3200"
+      }
+    },
+    {
+      "id": "rele",
+      "texto": "Rele da fechadura energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "rele"
+      }
+    },
+    {
+      "id": "trava",
+      "texto": "Fechadura ligada no contato do rele",
+      "regra": {
+        "tipo": "mesmoNo",
+        "a": {
+          "componente": "rele",
+          "pino": "com"
+        },
+        "b": {
+          "componente": "lampada12v",
+          "pino": "a"
+        }
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "O sensor de cor usa S2 e S3 para escolher o filtro: vermelho, verde ou azul.",
+    "O rele isola o lado de controle do lado da carga. A lampada tem fonte propria.",
+    "Use o contato NA para a fechadura abrir quando o rele acionar.",
+    "Depois de funcionar, pense: quantos objetos verdes existem nesta sala?"
+  ],
+  "erroComum": "Ligar a lampada de 12 V no lado de controle do rele. Os dois lados sao isolados de proposito.",
+  "sucesso": "Funciona, e por isso mesmo e ruim. Cor e facil de copiar. Seguranca de verdade usa mais de um fator.",
+  "componentesLiberados": [
+    "gaburino",
+    "tcs3200",
+    "rele",
+    "lampada12v",
+    "fonte-tomada",
+    "protoboard",
+    "resistor"
+  ]
+}

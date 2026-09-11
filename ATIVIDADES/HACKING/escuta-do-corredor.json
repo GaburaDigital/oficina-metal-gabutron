@@ -1,0 +1,71 @@
+{
+  "fase": 7,
+  "id": "escuta-do-corredor",
+  "titulo": "Escuta do corredor",
+  "tipo": "hacking",
+  "dificuldade": "intermediario",
+  "minutos": 20,
+  "pontos": 200,
+  "briefing": "Andam falando de mim pelos corredores e eu quero saber o que. Monte uma escuta: sensor de som detectando conversa, gravador de voz registrando e cartao guardando. Antes que voce ache que isso e so diversao, repare no que esta aprendendo: qualquer aparelho com microfone e memoria e uma escuta em potencial. Saber montar uma e saber reconhecer uma.",
+  "objetivos": [
+    {
+      "id": "som",
+      "texto": "Sensor de som energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "ky037"
+      }
+    },
+    {
+      "id": "gravador",
+      "texto": "Gravador de voz energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "isd1820"
+      }
+    },
+    {
+      "id": "cartao",
+      "texto": "Modulo de cartao SD energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "cartao-sd"
+      }
+    },
+    {
+      "id": "trimpot",
+      "texto": "Sensibilidade do sensor num ponto util",
+      "regra": {
+        "tipo": "trimpotEntre",
+        "componente": "ky037",
+        "min": 30,
+        "max": 80
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "O KY-037 tem saida analogica (A0) e digital (D0). O trimpot ajusta a partir de que volume o D0 dispara.",
+    "Energize e gire o trimpot: com a bancada ligada ele mostra a sensibilidade.",
+    "O gravador tem REC, PLAYE e PLAYL. O pino FT dispara a gravacao sem segurar botao.",
+    "Sensibilidade no maximo grava o proprio ventilador. Ache o meio."
+  ],
+  "erroComum": "Deixar o trimpot no extremo. Ou grava tudo, ou nao grava nada.",
+  "sucesso": "Escuta montada. E agora voce sabe reconhecer uma: microfone, memoria e um jeito de disparar sozinho.",
+  "componentesLiberados": [
+    "gaburino",
+    "ky037",
+    "isd1820",
+    "cartao-sd",
+    "cartao-sd-midia",
+    "altofalante",
+    "protoboard",
+    "resistor"
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "fase": 7,
+  "id": "fonte-desregulada",
+  "titulo": "A fonte desregulada",
+  "tipo": "manutencao",
+  "dificuldade": "intermediario",
+  "minutos": 18,
+  "pontos": 180,
+  "briefing": "Alguem deixou a fonte de bancada no valor errado e o proximo aluno vai ligar um modulo de 3,3 volts nela. Sua tarefa: ajustar a fonte ANTES de conectar qualquer coisa, conferindo com o multimetro. Essa ordem nao e frescura. Fonte ajustada depois da carga ligada ja matou mais placa do que curto-circuito.",
+  "objetivos": [
+    {
+      "id": "mediu",
+      "texto": "Conferir a saida da fonte com o multimetro",
+      "regra": {
+        "tipo": "usouFerramenta",
+        "modo": "tensao"
+      }
+    },
+    {
+      "id": "ajustada",
+      "texto": "Fonte ajustada em 3,3 volts",
+      "regra": {
+        "tipo": "tensaoEm",
+        "componente": "fonte-bancada",
+        "pino": "vout",
+        "min": 3.0,
+        "max": 3.6
+      }
+    },
+    {
+      "id": "modulo",
+      "texto": "Modulo de 3,3 V energizado e inteiro",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "esp01"
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "Selecione a fonte e clique em abrir painel da fonte. Ajuste a tensao antes de ligar o modulo.",
+    "Confirme com o multimetro nos proprios bornes da fonte. Nunca confie so no visor.",
+    "O ESP-01 e de 3,3 volts em tudo: alimentacao e pinos. Cinco volts nele e adeus.",
+    "Baixe tambem o limite de corrente: fonte bem ajustada segura um curto sem queimar nada."
+  ],
+  "erroComum": "Ligar o modulo primeiro e ajustar depois. Nesse instante ele ja recebeu a tensao errada.",
+  "sucesso": "Ajustar antes de conectar. E um habito de cinco segundos que salva modulo de vinte reais.",
+  "componentesLiberados": [
+    "multimetro",
+    "fonte-bancada",
+    "esp01",
+    "protoboard",
+    "resistor"
+  ]
+}

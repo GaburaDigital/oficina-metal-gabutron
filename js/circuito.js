@@ -51,7 +51,22 @@ export function ohms(valor) {
 
 /* ============================================================ */
 
-export function calcular(comps, fios, energizado = true, midia = []) {
+/* Peca pode ter varios terras: a expansao de servos tem um por canal.
+   Vale o pino chamado GND, e na duvida qualquer um que esteja aterrado.
+   Antes a checagem pegava sempre o primeiro da lista — o do canal 0 —
+   e acusava falta de terra numa montagem correta. */
+function pinoDeTerra(d, aterrado) {
+  const gnds = d.pinos.filter((p) => p.papel === "gnd");
+  if (!gnds.length) return undefined;
+  if (aterrado) { const ok = gnds.find((p) => aterrado(p.id)); if (ok) return ok; }
+  return gnds.find((p) => /^(gnd|-)$/i.test((p.n || "").trim())) || gnds[0];
+}
+
+export function calcular(comps, fios, energizado = true, midia = [], reles = null) {
+  // Rele muda o proprio circuito: o contato COM salta de NF para NA
+  // quando a bobina puxa. Como isso altera os nos, calculamos uma vez
+  // para saber o estado das bobinas e refazemos com os contatos certos.
+  const estadoReles = reles || new Map();
   const u = new Uniao();
 
   /* ---- 1. nos ---- */
@@ -71,6 +86,11 @@ export function calcular(comps, fios, energizado = true, midia = []) {
     if (c.queimado) continue; // peca queimada deixa de conduzir
     (d.ligacoes || []).forEach(([a, b]) => u.juntar(chave(c.id, a), chave(c.id, b)));
     if (c.pressionado) (d.ligacoesFechado || []).forEach(([a, b]) => u.juntar(chave(c.id, a), chave(c.id, b)));
+    if (d.contatos) {
+      const puxada = estadoReles.get(c.id) === true;
+      const alvo = puxada ? d.contatos.acionado : d.contatos.repouso;
+      u.juntar(chave(c.id, d.contatos.comum), chave(c.id, alvo));
+    }
     // Chave de tres pinos: solta ela nao fica aberta, fica na outra
     // posicao. E por isso que ela serve para escolher entre dois caminhos.
     else (d.ligacoesAberto || []).forEach(([a, b]) => u.juntar(chave(c.id, a), chave(c.id, b)));
@@ -135,7 +155,9 @@ export function calcular(comps, fios, energizado = true, midia = []) {
       // modulo real. Ajuste antes de ligar a carga.
       if (d.trimpot && d.trimpot.tipo === "tensao" && p.id === "outp")
         vFixa = Number((1.2 + ((c.trimpot ?? 50) / 100) * 10.8).toFixed(1));
-      const limite = d.instrumento ? (c.limite ?? d.faixaCorrente.padrao) * 1000 : (d.correnteMax ?? d.limiteAlim ?? 3000);
+      const limite = d.instrumento
+        ? (c.limite ?? d.faixaCorrente.padrao) * 1000
+        : (d.correnteMax ?? d.limiteAlim ?? 3000);
       if (vFixa != null) { registrarFonte(r, c, d, p, vFixa, limite); continue; }
 
       const est = fw[p.id];
@@ -338,7 +360,7 @@ export function calcular(comps, fios, energizado = true, midia = []) {
     const d = PORID[c.tipo];
     if (!d || c.queimado || !d.correnteTipica || d.alimenta === undefined) continue;
     const vplus = d.pinos.find((p) => p.papel === "v+");
-    const gp = d.pinos.find((p) => p.papel === "gnd");
+    const gp = pinoDeTerra(d);
     if (!vplus || !gp) continue;
     const rv = no(c.id, vplus.id);
     const ligado = (tensao.get(rv) ?? 0) >= (d.alimenta || 0) && terra.has(no(c.id, gp.id));
@@ -375,7 +397,7 @@ export function calcular(comps, fios, energizado = true, midia = []) {
     if (ativa(c, d)) e.ligado = true;
     else if (d.alimenta !== undefined) {
       const vplus = d.pinos.find((p) => p.papel === "v+");
-      const gp = d.pinos.find((p) => p.papel === "gnd");
+      const gp = pinoDeTerra(d);
       let v = vplus ? vDe(c.id, vplus.id) : 0;
       let g = gp ? gndDe(c.id, gp.id) : false;
       if (d.bipolar && vplus && gp) {
@@ -389,6 +411,15 @@ export function calcular(comps, fios, energizado = true, midia = []) {
       }
       e.ligado = v >= (d.alimenta || 0) && g;
       e.tensaoRecebida = v;
+      // Quanto mais tensao, mais rapido gira e mais forte apita. Acima
+      // da tensao maxima a peca aquece e queima, como na bancada real.
+      if (d.tensaoNominal && e.ligado) {
+        e.forca = Math.min(2.5, v / d.tensaoNominal);
+        if (d.tensaoMax && v > d.tensaoMax)
+          avisar("critico", c.id,
+            `${d.nome} foi feito para ${d.tensaoNominal} volts e esta recebendo ${v.toFixed(1)}. Ele gira alem do que aguenta, esquenta e queima.`,
+            { tipo: "queima" });
+      }
       if (v > 0 && !g) avisar("aviso", c.id, `${d.nome} recebeu tensao mas o GND nao esta ligado. Corrente e ida e volta: sem retorno, ela nao sai de casa.`);
       if (g && v > 0 && v < (d.alimenta || 0)) avisar("aviso", c.id, `${d.nome} esta recebendo so ${v.toFixed(1)} volts e precisa de pelo menos ${d.alimenta}.`);
       if (e.ligado && d.correnteTipica) e.corrente = d.correnteTipica;
@@ -416,6 +447,23 @@ export function calcular(comps, fios, energizado = true, midia = []) {
     if (d.id === "capacitor-eletro" && d.polarizado) {
       if (vDe(c.id, "n") > vDe(c.id, "p") + 0.5)
         avisar("critico", c.id, "Capacitor eletrolitico ligado ao contrario. Ele nao avisa: ele estoura.", { tipo: "queima" });
+    }
+
+    // Regulador e fonte tem limite proprio de corrente, igual ao do
+    // mundo real: AMS1117 e fonte de protoboard param em 800 mA, o
+    // stepdown em 2 A, a fonte de tomada em 3 A. Passar disso e o
+    // motivo classico de projeto que "funciona sozinho e falha junto".
+    if ((d.regulador || d.fonte) && d.correnteMax && !c.queimado) {
+      let entregue = 0;
+      for (const p of d.pinos) entregue += correnteFonte.get(chave(c.id, p.id)) || 0;
+      e.correnteEntregue = entregue;
+      if (entregue > d.correnteMax) {
+        avisar("critico", c.id,
+          `${d.nome} esta entregando ${entregue.toFixed(0)} miliamperes e aguenta ${d.correnteMax}. Ou voce divide a carga em mais de um regulador, ou troca por um que aguente mais corrente.`,
+          { tipo: "sobrecarga" });
+      } else if (entregue > d.correnteMax * 0.85) {
+        avisar("aviso", c.id, `${d.nome} esta em ${entregue.toFixed(0)} de ${d.correnteMax} miliamperes. Esta no limite: qualquer peca a mais derruba.`);
+      }
     }
 
     if (d.alimentada) {
@@ -485,7 +533,7 @@ export function calcular(comps, fios, energizado = true, midia = []) {
     // GND comum: o sinal da placa precisa de referencia. E o erro que
     // mais faz servo tremer e sensor ler lixo, e o mais dificil de ver.
     if (!d.alimentada && !d.fonte) {
-      const gp = d.pinos.find((p) => p.papel === "gnd");
+      const gp = pinoDeTerra(d);
       const sinais = d.pinos.filter((p) => ["pwm", "digital", "sinal", "analog", "i2c", "spi"].includes(p.papel));
       if (gp && sinais.length) {
         for (const sp of sinais) {
@@ -502,6 +550,23 @@ export function calcular(comps, fios, energizado = true, midia = []) {
     }
 
     estados.set(c.id, e);
+  }
+
+  // Segunda passada: se alguma bobina mudou de estado, os contatos
+  // mudaram junto e o circuito precisa ser refeito.
+  if (!reles) {
+    const novo = new Map();
+    let mudou = false;
+    for (const c of comps) {
+      const d = PORID[c.tipo];
+      if (!d || !d.contatos) continue;
+      const e = estados.get(c.id) || {};
+      const sinal = vDe(c.id, "in") > 2;
+      const puxada = !!(e.ligado && sinal);
+      novo.set(c.id, puxada);
+      if (puxada !== (estadoReles.get(c.id) === true)) mudou = true;
+    }
+    if (mudou) return calcular(comps, fios, energizado, midia, novo);
   }
 
   return {

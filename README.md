@@ -484,6 +484,26 @@ Isso reconstrói `assistente-desenho.html` com todas as peças atuais e com os d
 
 ---
 
+
+## Pontos de atenção para a aula
+
+**Os scripts confiam na montagem.** Escolher um script no Deck não faz nada sozinho: se a fiação não fecha eletricamente, nada se mexe e o GabuTRON diz o que está faltando. Isso é proposital — o silêncio é a pista. Se um aluno reclamar que "o programa não funciona", a resposta quase sempre está nas ligações listadas na aba do deck.
+
+**Limites de corrente são reais.** Fonte de protoboard e AMS1117 param em 800 mA, stepdown e stepup em 2 A, fonte de tomada em 3 A. Um servo grande já ocupa boa parte de um AMS1117. Projeto com muitos servos precisa de mais de um regulador ou de um que aguente mais — e é isso que a missão da mão robótica e a das patas articuladas cobram.
+
+**A animação segue a eletrônica.** O eixo gira mais rápido com mais tensão, o LED brilha conforme a corrente, e peça acima da tensão nominal queima. Um motor de 6 V ligado em 9 V vai reclamar antes de parar de funcionar.
+
+**Peça queimada vai para o Museu dos Desastres** na segunda vez. O primeiro erro é só aviso: a bancada desliga e o GabuTRON explica.
+
+## Verificação automática
+
+```bash
+node ferramentas/verificar-missoes.mjs            # todas as missões
+node ferramentas/verificar-missoes.mjs nome-da-missao   # detalhe de uma
+```
+
+O verificador lê as regras de cada missão e **monta o circuito sozinho**, seguindo só o que a missão pede. Se ele fecha todos os objetivos, a missão é possível. É a garantia de que nenhum aluno vai travar num exercício sem solução. Rode sempre que criar ou editar missão.
+
 ## Atalhos
 
 | Tecla | Ação |

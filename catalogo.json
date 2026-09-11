@@ -1,6 +1,6 @@
 {
   "projeto": "Oficina do Metal GabuTRON",
-  "versao": 6,
+  "versao": 7,
   "atualizado": "2026-09-02",
   "comoUsar": "Este arquivo e o indice do conteudo. Para adicionar material: 1) coloque o .json na pasta certa dentro de ATIVIDADES; 2) escreva uma linha aqui apontando para ele. O campo fase diz a partir de qual fase do projeto a missao pode ser jogada. O site le so este arquivo ao abrir e busca a missao inteira quando o aluno clica nela, por isso o menu carrega rapido mesmo com centenas de exercicios.",
   "conteudos": {
@@ -367,6 +367,210 @@
         ],
         "fase": 6,
         "usaScripts": true
+      },
+      {
+        "id": "solda-controle",
+        "titulo": "Solda do controle de videogame",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/solda-controle.json",
+        "tipo": "construcao",
+        "dificuldade": "intermediario",
+        "minutos": 25,
+        "pontos": 210,
+        "resumo": "Placa perfurada, dois botoes e um joystick: duas trilhas de solda.",
+        "componentes": [
+          "fenolite",
+          "botao",
+          "joystick",
+          "resistor",
+          "suporteaa"
+        ],
+        "fase": 7
+      },
+      {
+        "id": "teclado-musical",
+        "titulo": "Teclado musical de bolso",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/teclado-musical.json",
+        "tipo": "construcao",
+        "dificuldade": "intermediario",
+        "minutos": 22,
+        "pontos": 190,
+        "resumo": "Pilhas, botoes e passivos: cada tecla toca uma nota.",
+        "componentes": [
+          "suporteaa",
+          "botao",
+          "buzzer-passivo",
+          "resistor",
+          "capacitor-ceramico"
+        ],
+        "fase": 7
+      },
+      {
+        "id": "pedal-acelerador",
+        "titulo": "Pedal do acelerador",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/pedal-acelerador.json",
+        "tipo": "construcao",
+        "dificuldade": "facil",
+        "minutos": 15,
+        "pontos": 140,
+        "resumo": "Sem placa: chave, diodo e capacitor movendo um motor.",
+        "componentes": [
+          "suporte-litio",
+          "interruptor",
+          "motordc",
+          "diodo",
+          "capacitor-eletro"
+        ],
+        "fase": 7
+      },
+      {
+        "id": "seis-leds",
+        "titulo": "Seis LEDs na protoboard",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/seis-leds.json",
+        "tipo": "construcao",
+        "dificuldade": "novato",
+        "minutos": 15,
+        "pontos": 120,
+        "resumo": "Trilhos da protoboard alimentando seis LEDs de uma vez.",
+        "componentes": [
+          "protoboard",
+          "suporteaa",
+          "led",
+          "resistor"
+        ],
+        "fase": 7
+      },
+      {
+        "id": "livro-digital",
+        "titulo": "Livro digital do deck",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/livro-digital.json",
+        "tipo": "construcao",
+        "dificuldade": "intermediario",
+        "minutos": 24,
+        "pontos": 220,
+        "resumo": "E-paper, encoder e bluetooth: um leitor que dura semanas.",
+        "componentes": [
+          "gaburino",
+          "epaper",
+          "encoder",
+          "botao",
+          "hc06"
+        ],
+        "fase": 7,
+        "placa": "gaburino"
+      },
+      {
+        "id": "radio-amador",
+        "titulo": "Radio amador da nave",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/radio-amador.json",
+        "tipo": "construcao",
+        "dificuldade": "hacker",
+        "minutos": 28,
+        "pontos": 260,
+        "resumo": "LCD de 16 pinos, dois potenciometros e radio.",
+        "componentes": [
+          "gaburino",
+          "lcd16",
+          "potenciometro",
+          "nrf24l01",
+          "protoboard"
+        ],
+        "fase": 7,
+        "placa": "gaburino"
+      },
+      {
+        "id": "patas-articuladas",
+        "titulo": "Quatro patas articuladas",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/patas-articuladas.json",
+        "tipo": "construcao",
+        "dificuldade": "hacker",
+        "minutos": 32,
+        "pontos": 300,
+        "resumo": "Doze servos pela expansao I2C, com fonte que aguenta.",
+        "componentes": [
+          "bura32",
+          "expansao-servo",
+          "servo180",
+          "servo-torque180",
+          "fonte-tomada"
+        ],
+        "fase": 7,
+        "placa": "bura32"
+      },
+      {
+        "id": "cofre-inteligente",
+        "titulo": "Cofre inteligente",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/cofre-inteligente.json",
+        "tipo": "construcao",
+        "dificuldade": "intermediario",
+        "minutos": 24,
+        "pontos": 230,
+        "resumo": "Teclado, display e servo de alto torque girando a tranca.",
+        "componentes": [
+          "bura32",
+          "keypad",
+          "lcdi2c",
+          "servo-torque180",
+          "fonte-tomada"
+        ],
+        "fase": 7,
+        "placa": "bura32"
+      },
+      {
+        "id": "submarino",
+        "titulo": "Prototipo de submarino",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/submarino.json",
+        "tipo": "construcao",
+        "dificuldade": "hacker",
+        "minutos": 30,
+        "pontos": 280,
+        "resumo": "Duas bombas pela ponte H e um leme de giro continuo.",
+        "componentes": [
+          "bura32",
+          "ponteh",
+          "bomba",
+          "servo-torque360",
+          "fonte-tomada"
+        ],
+        "fase": 7,
+        "placa": "bura32"
+      },
+      {
+        "id": "detector-de-cor",
+        "titulo": "Detector de cor",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/detector-de-cor.json",
+        "tipo": "construcao",
+        "dificuldade": "intermediario",
+        "minutos": 22,
+        "pontos": 200,
+        "resumo": "Sensor de cor e Neopixel repetindo a leitura em tamanho grande.",
+        "componentes": [
+          "microbura",
+          "expansao-microbura",
+          "tcs3200",
+          "neopixel",
+          "fonte-tomada"
+        ],
+        "fase": 7,
+        "placa": "microbura"
+      },
+      {
+        "id": "tela-com-vibracao",
+        "titulo": "Tela de toque com resposta",
+        "arquivo": "ATIVIDADES/CONSTRUCAO/tela-com-vibracao.json",
+        "tipo": "construcao",
+        "dificuldade": "hacker",
+        "minutos": 28,
+        "pontos": 250,
+        "resumo": "Tela TFT e quatro motores de vibracao dando retorno ao toque.",
+        "componentes": [
+          "microbura",
+          "expansao-microbura",
+          "tft",
+          "vibracao",
+          "fonte-tomada"
+        ],
+        "fase": 7,
+        "placa": "microbura"
       }
     ],
     "manutencao": [
@@ -489,6 +693,60 @@
           "multimetro"
         ],
         "fase": 6
+      },
+      {
+        "id": "bateria-do-alarme",
+        "titulo": "A bateria do alarme",
+        "arquivo": "ATIVIDADES/MANUTENCAO/bateria-do-alarme.json",
+        "tipo": "manutencao",
+        "dificuldade": "novato",
+        "minutos": 12,
+        "pontos": 130,
+        "resumo": "Tensao, continuidade e resistencia: os tres testes basicos.",
+        "componentes": [
+          "multimetro",
+          "suporteaa",
+          "buzzer",
+          "resistor",
+          "protoboard"
+        ],
+        "fase": 7
+      },
+      {
+        "id": "equipamento-morto",
+        "titulo": "O equipamento que nao liga",
+        "arquivo": "ATIVIDADES/MANUTENCAO/equipamento-morto.json",
+        "tipo": "manutencao",
+        "dificuldade": "facil",
+        "minutos": 16,
+        "pontos": 160,
+        "resumo": "Siga a tensao do comeco ao fim ate ela sumir.",
+        "componentes": [
+          "multimetro",
+          "bateria9v",
+          "ams1117",
+          "ultrassonico",
+          "protoboard"
+        ],
+        "fase": 7
+      },
+      {
+        "id": "fonte-desregulada",
+        "titulo": "A fonte desregulada",
+        "arquivo": "ATIVIDADES/MANUTENCAO/fonte-desregulada.json",
+        "tipo": "manutencao",
+        "dificuldade": "intermediario",
+        "minutos": 18,
+        "pontos": 180,
+        "resumo": "Ajustar a fonte antes de ligar a carga, conferindo no multimetro.",
+        "componentes": [
+          "multimetro",
+          "fonte-bancada",
+          "esp01",
+          "protoboard",
+          "resistor"
+        ],
+        "fase": 7
       }
     ],
     "hacking": [
@@ -538,6 +796,60 @@
           "led"
         ],
         "fase": 5
+      },
+      {
+        "id": "escuta-do-corredor",
+        "titulo": "Escuta do corredor",
+        "arquivo": "ATIVIDADES/HACKING/escuta-do-corredor.json",
+        "tipo": "hacking",
+        "dificuldade": "intermediario",
+        "minutos": 20,
+        "pontos": 200,
+        "resumo": "Sensor de som, gravador e cartao: uma escuta e como reconhecer uma.",
+        "componentes": [
+          "gaburino",
+          "ky037",
+          "isd1820",
+          "cartao-sd",
+          "cartao-sd-midia"
+        ],
+        "fase": 7
+      },
+      {
+        "id": "ponte-clandestina",
+        "titulo": "Ponte clandestina",
+        "arquivo": "ATIVIDADES/HACKING/ponte-clandestina.json",
+        "tipo": "hacking",
+        "dificuldade": "hacker",
+        "minutos": 26,
+        "pontos": 270,
+        "resumo": "Ethernet e wifi no mesmo SPI, cada um com o seu CS.",
+        "componentes": [
+          "bura32",
+          "enc28j60",
+          "esp01",
+          "ams1117",
+          "bateria9v"
+        ],
+        "fase": 7
+      },
+      {
+        "id": "cracha-falso",
+        "titulo": "O cracha falso",
+        "arquivo": "ATIVIDADES/HACKING/cracha-falso.json",
+        "tipo": "hacking",
+        "dificuldade": "facil",
+        "minutos": 16,
+        "pontos": 170,
+        "resumo": "Fechadura que le cor, e por que isso nao e seguranca.",
+        "componentes": [
+          "gaburino",
+          "tcs3200",
+          "rele",
+          "lampada12v",
+          "fonte-tomada"
+        ],
+        "fase": 7
       }
     ]
   }

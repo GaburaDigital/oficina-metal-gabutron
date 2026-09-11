@@ -1,0 +1,78 @@
+{
+  "fase": 7,
+  "id": "tela-com-vibracao",
+  "titulo": "Tela de toque com resposta",
+  "tipo": "construcao",
+  "placa": "microbura",
+  "dificuldade": "hacker",
+  "minutos": 28,
+  "pontos": 250,
+  "creditos": 300,
+  "briefing": "Painel de toque com resposta tatil: a tela TFT mostra os botoes e quatro motores de vibracao dao o retorno no dedo. A tela usa SPI, o que exige a expansao. E os motores de vibracao puxam 90 mA cada: quatro juntos sao 360, muito acima dos 90 que a MicroBURA inteira entrega. Fonte externa, e GND comum.",
+  "objetivos": [
+    {
+      "id": "expansao",
+      "texto": "Expansao da MicroBURA na bancada",
+      "regra": {
+        "tipo": "existe",
+        "componente": "expansao-microbura"
+      }
+    },
+    {
+      "id": "tela",
+      "texto": "Tela TFT energizada",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "tft"
+      }
+    },
+    {
+      "id": "vibra",
+      "texto": "Quatro motores de vibracao energizados",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "vibracao",
+        "n": 4
+      }
+    },
+    {
+      "id": "externa",
+      "texto": "Motores alimentados por fonte externa",
+      "regra": {
+        "tipo": "mesmoNo",
+        "a": {
+          "componente": "vibracao",
+          "pino": "vcc"
+        },
+        "b": {
+          "componente": "fonte-tomada",
+          "pino": "vout"
+        }
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "A tela usa SCK, SDI, CS, DC e RST. Sao cinco pinos de SPI: a expansao resolve.",
+    "Cada motor de vibracao tem VCC, GND e SINAL. So o sinal vem da placa.",
+    "Quatro motores sao 360 mA. A fonte de tomada aguenta; a MicroBURA nao.",
+    "Energize e veja os motores tremendo no desenho."
+  ],
+  "erroComum": "Alimentar os quatro motores pelo anel 3V. A placa desliga no primeiro toque.",
+  "sucesso": "Toque com resposta. Sinal vem da placa, forca vem da fonte: essa divisao resolve metade dos projetos.",
+  "componentesLiberados": [
+    "microbura",
+    "expansao-microbura",
+    "tft",
+    "vibracao",
+    "fonte-tomada",
+    "protoboard",
+    "resistor"
+  ]
+}

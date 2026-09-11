@@ -1,0 +1,72 @@
+{
+  "fase": 7,
+  "id": "teclado-musical",
+  "titulo": "Teclado musical de bolso",
+  "tipo": "construcao",
+  "dificuldade": "intermediario",
+  "minutos": 22,
+  "pontos": 190,
+  "creditos": 120,
+  "briefing": "Instrumento sem placa nenhuma: so pilhas, botoes e componentes passivos. Cada botao entra com um resistor diferente no caminho do buzzer, e resistencia diferente da tensao diferente, que da nota diferente. O capacitor suaviza o estalo e o diodo impede que uma tecla apertada alimente a outra pelo caminho de tras. Isso e eletronica pura: nenhuma linha de codigo envolvida.",
+  "objetivos": [
+    {
+      "id": "pilhas",
+      "texto": "Suporte de pilhas alimentando o circuito",
+      "regra": {
+        "tipo": "existe",
+        "componente": "suporteaa"
+      }
+    },
+    {
+      "id": "buzzer",
+      "texto": "Buzzer passivo tocando",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "buzzer-passivo"
+      }
+    },
+    {
+      "id": "botoes",
+      "texto": "Pelo menos dois botoes no circuito",
+      "regra": {
+        "tipo": "existe",
+        "componente": "botao",
+        "n": 2
+      }
+    },
+    {
+      "id": "resistor",
+      "texto": "Resistor em serie com o buzzer",
+      "regra": {
+        "tipo": "emSerie",
+        "a": "resistor",
+        "b": "buzzer-passivo"
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "Comece com um botao so, e faca ele tocar. Depois repita com resistor diferente.",
+    "Cada botao precisa do proprio resistor: e a resistencia que muda a nota.",
+    "O diodo vai com o catodo virado para o buzzer, para a corrente so ir num sentido.",
+    "Buzzer passivo e piezo: consome quase nada, entao as pilhas duram."
+  ],
+  "erroComum": "Ligar todos os botoes no mesmo resistor. Todas as teclas tocam a mesma nota.",
+  "sucesso": "Um instrumento sem microcontrolador. Resistor, capacitor e diodo fazendo musica: isso e eletronica analogica.",
+  "componentesLiberados": [
+    "suporteaa",
+    "botao",
+    "buzzer-passivo",
+    "resistor",
+    "capacitor-ceramico",
+    "diodo",
+    "protoboard",
+    "interruptor"
+  ]
+}

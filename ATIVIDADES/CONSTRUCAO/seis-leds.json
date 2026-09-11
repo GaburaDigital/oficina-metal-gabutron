@@ -1,0 +1,60 @@
+{
+  "fase": 7,
+  "id": "seis-leds",
+  "titulo": "Seis LEDs na protoboard",
+  "tipo": "construcao",
+  "dificuldade": "novato",
+  "minutos": 15,
+  "pontos": 120,
+  "creditos": 90,
+  "briefing": "Painel de sinalizacao do corredor. Sem placa de controle: pilhas alimentando os trilhos da protoboard e seis LEDs, cada um com o seu resistor. O ponto desta missao e o trilho: energize UMA vez os trilhos vermelho e azul, e depois todos os LEDs bebem dali. Se voce ligar cada LED direto nas pilhas, vai virar um ninho de fios.",
+  "objetivos": [
+    {
+      "id": "proto",
+      "texto": "Protoboard na bancada",
+      "regra": {
+        "tipo": "existe",
+        "componente": "protoboard"
+      }
+    },
+    {
+      "id": "leds",
+      "texto": "Seis LEDs acesos",
+      "regra": {
+        "tipo": "aceso",
+        "componente": "led",
+        "n": 6
+      }
+    },
+    {
+      "id": "resistores",
+      "texto": "Resistor em serie com LED",
+      "regra": {
+        "tipo": "emSerie",
+        "a": "resistor",
+        "b": "led"
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "Ligue o positivo das pilhas no trilho vermelho e o negativo no azul. So isso, uma vez.",
+    "Use o Raio-X para ver que o trilho atravessa a placa inteira.",
+    "Cada LED precisa do proprio resistor. Um resistor para seis LEDs nao serve.",
+    "Quatro pilhas dao 6 V. Com 220 ohms, cada LED puxa uns 18 mA."
+  ],
+  "erroComum": "Usar um resistor so para todos os LEDs. Eles disputam a corrente e ficam fracos.",
+  "sucesso": "Trilho energizado uma vez, seis LEDs bebendo dele. E assim que se monta painel sem virar ninho de fios.",
+  "componentesLiberados": [
+    "protoboard",
+    "suporteaa",
+    "led",
+    "resistor"
+  ]
+}

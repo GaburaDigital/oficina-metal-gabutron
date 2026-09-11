@@ -823,8 +823,11 @@ function ajustarArte(def, i, svg) {
 /* Eixo animado. Cada motor gira de um jeito, e a animacao roda no
    proprio SVG: nao precisa de laco em JavaScript e nao trava a bancada.
    O aluno ve o servo varrer, o DC girar rapido e o passo dar passos. */
-function eixoVivo(m, on, an) {
+function eixoVivo(m, on, an, forca) {
   const cfg = an || {};
+  // Motor com mais tensao gira mais rapido: a duracao encolhe junto.
+  const f = Math.max(0.35, Math.min(2.5, forca || 1));
+  const ritmo = (d) => (d / f).toFixed(2);
   const { x, y, estilo } = m;
   const r = m.r || 26;
   const eixo = `<circle cx="${x}" cy="${y}" r="${r * 0.28}" fill="#6C727B"/>`;
@@ -853,7 +856,7 @@ function eixoVivo(m, on, an) {
     const braco = cubo + pa(0);
     const sv = cfg.servo || {};
     const faixa = sv.modo === "onda" ? 55 : sv.modo === "botoes" ? 70 : 85;
-    const dur = sv.dur || 2.6;
+    const dur = ritmo(sv.dur || 2.6);
     return (on
       ? `<g>${braco}<animateTransform attributeName="transform" type="rotate"
           values="-${faixa} ${x} ${y}; ${faixa} ${x} ${y}; -${faixa} ${x} ${y}" dur="${dur}s"
@@ -861,12 +864,12 @@ function eixoVivo(m, on, an) {
       : `<g transform="rotate(-85 ${x} ${y})">${braco}</g>`) + eixo;
   }
   if (estilo === "servo360" || estilo === "servo-continuo")
-    return girar((cfg.servo && cfg.servo.dur) || 1.4, cubo + pa(0) + pa(180)) + eixo;
+    return girar(ritmo((cfg.servo && cfg.servo.dur) || 1.4), cubo + pa(0) + pa(180)) + eixo;
   if (estilo === "dc")
     return `<circle cx="${x}" cy="${y}" r="${r}" fill="#6C727B"/>` +
-      girar((cfg.motor && cfg.motor.dur) || 0.35, `<path d="M${x} ${y - r} L${x} ${y + r} M${x - r} ${y} L${x + r} ${y}" stroke="#D5D9DE" stroke-width="5"/>`) + eixo;
+      girar(ritmo((cfg.motor && cfg.motor.dur) || 0.35), `<path d="M${x} ${y - r} L${x} ${y + r} M${x - r} ${y} L${x + r} ${y}" stroke="#D5D9DE" stroke-width="5"/>`) + eixo;
   if (estilo === "helice")
-    return girar((cfg.motor && cfg.motor.dur) || 0.22, `<ellipse cx="${x}" cy="${y}" rx="${r * 1.6}" ry="${r * 0.28}" fill="#B9BEC6" opacity=".85"/>
+    return girar(ritmo((cfg.motor && cfg.motor.dur) || 0.22), `<ellipse cx="${x}" cy="${y}" rx="${r * 1.6}" ry="${r * 0.28}" fill="#B9BEC6" opacity=".85"/>
       <ellipse cx="${x}" cy="${y}" rx="${r * 0.28}" ry="${r * 1.6}" fill="#B9BEC6" opacity=".85"/>`) + eixo;
   if (estilo === "passo") {
     const dentes = Array.from({ length: 12 }, (_, k) => {
@@ -875,11 +878,11 @@ function eixoVivo(m, on, an) {
     }).join("");
     return `<circle cx="${x}" cy="${y}" r="${r}" fill="#9BA1AA"/>` +
       (on ? `<g>${dentes}<animateTransform attributeName="transform" type="rotate"
-        values="0 ${x} ${y}; 30 ${x} ${y}; 30 ${x} ${y}; 60 ${x} ${y}" dur="${(cfg.passo && cfg.passo.dur) || 1.2}s" repeatCount="indefinite"/></g>` : `<g>${dentes}</g>`) + eixo;
+        values="0 ${x} ${y}; 30 ${x} ${y}; 30 ${x} ${y}; 60 ${x} ${y}" dur="${ritmo((cfg.passo && cfg.passo.dur) || 1.2)}s" repeatCount="indefinite"/></g>` : `<g>${dentes}</g>`) + eixo;
   }
   if (estilo === "rotor")
     return `<circle cx="${x}" cy="${y}" r="${r}" fill="#2A6BB0"/>` +
-      girar((cfg.motor && cfg.motor.dur) || 0.5, `<path d="M${x} ${y - r * 0.8} L${x} ${y + r * 0.8} M${x - r * 0.8} ${y} L${x + r * 0.8} ${y}" stroke="#CFE4EE" stroke-width="6"/>`) + eixo;
+      girar(ritmo((cfg.motor && cfg.motor.dur) || 0.5), `<path d="M${x} ${y - r * 0.8} L${x} ${y + r * 0.8} M${x - r * 0.8} ${y} L${x + r * 0.8} ${y}" stroke="#CFE4EE" stroke-width="6"/>`) + eixo;
   if (estilo === "vibra")
     return on
       ? `<g><circle cx="${x}" cy="${y}" r="${r * 0.7}" fill="#8A8F98"/>
@@ -916,6 +919,13 @@ function corpoDeSlots(def, i) {
   const v = (n * def.slots.porSlot).toFixed(1);
   s += txt(`${n} ${def.slots.rotulo}`, 62, alt - 14, 12, "#8A8F98");
   s += txt(`${v} V`, larg - 56, alt - 12, 17, "#E24B4A", "middle", 700);
+
+  // Fio vermelho no positivo e azul no negativo, no mesmo padrao das
+  // outras fontes da bancada.
+  const pos = def.pinos.find((p) => p.papel === "v+");
+  const neg = def.pinos.find((p) => p.papel === "gnd");
+  if (pos) s += `<path d="M${pos.x} ${alt - 6}v${pos.y - alt + 10}" stroke="#E24B4A" stroke-width="8" stroke-linecap="round"/>`;
+  if (neg) s += `<path d="M${neg.x} ${alt - 6}v${neg.y - alt + 10}" stroke="#3F5FB0" stroke-width="8" stroke-linecap="round"/>`;
   return s;
 }
 
@@ -1000,7 +1010,7 @@ function camadaViva(def, inst, arte) {
              <circle cx="${m.x}" cy="${m.y}" r="9" fill="${m.cor || "#E24B4A"}"/>`
           : `<circle cx="${m.x}" cy="${m.y}" r="7" fill="#4A1E1E"/>`;
       } else s += ledAlim(m.x, m.y, i.ligado);
-    } else if (m.tipo === "eixo") s += eixoVivo(m, i.ligado, an);
+    } else if (m.tipo === "eixo") s += eixoVivo(m, i.ligado, an, i.forca);
     else if (m.tipo === "som" && i.ligado) {
       const ondas = `<path d="M${m.x} ${m.y - 16}a22 22 0 010 32"/><path d="M${m.x + 10} ${m.y - 26}a34 34 0 010 52"/>`;
       s += an && an.som

@@ -5,7 +5,7 @@
    pegar a versao nova.
    ============================================================ */
 
-const VERSAO = "gabutron-v17";
+const VERSAO = "gabutron-v18";
 
 const ARQUIVOS = [
   "./",
@@ -43,11 +43,30 @@ const ARQUIVOS = [
   "js/arte.js",
   "js/fonte-bancada.js",
   "js/scripts.js",
+  "js/regras.js",
+  "js/selo.js",
   "assets/favicon.svg",
   "assets/favicon-16.svg",
   "assets/icone-pwa.svg",
   "ATIVIDADES/COMPONENTES/basico.json",
   "ATIVIDADES/CURIOSIDADES/falas-gabutron.json",
+  "ATIVIDADES/CONSTRUCAO/cofre-inteligente.json",
+  "ATIVIDADES/CONSTRUCAO/detector-de-cor.json",
+  "ATIVIDADES/CONSTRUCAO/livro-digital.json",
+  "ATIVIDADES/CONSTRUCAO/patas-articuladas.json",
+  "ATIVIDADES/CONSTRUCAO/pedal-acelerador.json",
+  "ATIVIDADES/CONSTRUCAO/radio-amador.json",
+  "ATIVIDADES/CONSTRUCAO/seis-leds.json",
+  "ATIVIDADES/CONSTRUCAO/solda-controle.json",
+  "ATIVIDADES/CONSTRUCAO/submarino.json",
+  "ATIVIDADES/CONSTRUCAO/teclado-musical.json",
+  "ATIVIDADES/CONSTRUCAO/tela-com-vibracao.json",
+  "ATIVIDADES/MANUTENCAO/bateria-do-alarme.json",
+  "ATIVIDADES/MANUTENCAO/equipamento-morto.json",
+  "ATIVIDADES/MANUTENCAO/fonte-desregulada.json",
+  "ATIVIDADES/HACKING/cracha-falso.json",
+  "ATIVIDADES/HACKING/escuta-do-corredor.json",
+  "ATIVIDADES/HACKING/ponte-clandestina.json",
   "ATIVIDADES/CONSTRUCAO/bicho-de-estimacao.json",
   "ATIVIDADES/CONSTRUCAO/cores-do-bichinho.json",
   "ATIVIDADES/CONSTRUCAO/braco-de-carga.json",

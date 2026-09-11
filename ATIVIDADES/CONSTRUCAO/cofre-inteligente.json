@@ -1,0 +1,87 @@
+{
+  "fase": 7,
+  "id": "cofre-inteligente",
+  "titulo": "Cofre inteligente",
+  "tipo": "construcao",
+  "placa": "bura32",
+  "dificuldade": "intermediario",
+  "minutos": 24,
+  "pontos": 230,
+  "creditos": 260,
+  "briefing": "Cofre do almoxarifado: teclado para a senha, display avisando o estado e um servo de alto torque girando a tranca. Servo de alto torque puxa quase um ampere no pico. Se voce alimentar pela placa, a Bura32 reinicia bem na hora de abrir, o que e a pior hora possivel.",
+  "objetivos": [
+    {
+      "id": "teclado",
+      "texto": "Teclado 4x4 na bancada",
+      "regra": {
+        "tipo": "existe",
+        "componente": "keypad"
+      }
+    },
+    {
+      "id": "display",
+      "texto": "Display I2C energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "lcdi2c"
+      }
+    },
+    {
+      "id": "servo",
+      "texto": "Servo de alto torque energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "servo-torque180"
+      }
+    },
+    {
+      "id": "pwm",
+      "texto": "Sinal do servo num pino PWM",
+      "regra": {
+        "tipo": "pinoEm",
+        "componente": "servo-torque180",
+        "pino": "sig",
+        "papelAlvo": "pwm"
+      }
+    },
+    {
+      "id": "gnd",
+      "texto": "GND da fonte do servo no GND da placa",
+      "regra": {
+        "tipo": "mesmoNo",
+        "a": {
+          "componente": "fonte-tomada",
+          "pino": "gnd"
+        },
+        "b": {
+          "componente": "bura32",
+          "papel": "gnd"
+        }
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "Comece pelo servo: fonte externa e GND comum. O resto e leve.",
+    "O display I2C quer 5 V; SDA e SCL sao de 3,3 e a Bura32 fala nessa tensao.",
+    "As teclas do teclado sao clicaveis com a bancada energizada: teste a senha.",
+    "Alto torque puxa perto de 900 mA. A fonte de tomada de 3 A da conta com folga."
+  ],
+  "erroComum": "Alimentar o servo de alto torque pelos 5 V da placa. Ela reinicia exatamente quando o cofre vai abrir.",
+  "sucesso": "Tranca com forca de verdade, alimentada por quem aguenta. Cofre que abre sem reiniciar e cofre confiavel.",
+  "componentesLiberados": [
+    "bura32",
+    "keypad",
+    "lcdi2c",
+    "servo-torque180",
+    "fonte-tomada",
+    "protoboard",
+    "resistor"
+  ]
+}

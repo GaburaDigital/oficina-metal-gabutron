@@ -1,0 +1,84 @@
+{
+  "fase": 7,
+  "id": "solda-controle",
+  "titulo": "Solda do controle de videogame",
+  "tipo": "construcao",
+  "dificuldade": "intermediario",
+  "minutos": 25,
+  "pontos": 210,
+  "creditos": 140,
+  "briefing": "Na placa perfurada cada ilha e uma ilha de verdade: nada se liga sozinho. Voce vai soldar um controle com dois botoes e um joystick, e o desafio nao e prender as pecas — e criar DOIS caminhos de solda, um juntando todos os GND e outro juntando todos os VCC. Ligue o ferro na barra de ferramentas. Sozinho ele solda contatos encostados; com o Fio para solda na sacola, ele traca fio. Um ou outro, nunca os dois.",
+  "objetivos": [
+    {
+      "id": "placa",
+      "texto": "Placa perfurada na bancada",
+      "regra": {
+        "tipo": "existe",
+        "componente": "fenolite"
+      }
+    },
+    {
+      "id": "botoes",
+      "texto": "Dois botoes na placa",
+      "regra": {
+        "tipo": "existe",
+        "componente": "botao",
+        "n": 2
+      }
+    },
+    {
+      "id": "joystick",
+      "texto": "Joystick analogico energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "joystick"
+      }
+    },
+    {
+      "id": "trilha-gnd",
+      "texto": "GND do joystick no mesmo caminho do botao",
+      "regra": {
+        "tipo": "mesmoNo",
+        "a": {
+          "componente": "joystick",
+          "pino": "gnd"
+        },
+        "b": {
+          "componente": "botao",
+          "pino": "1a"
+        }
+      }
+    },
+    {
+      "id": "soldou",
+      "texto": "Usar o ferro de solda",
+      "regra": {
+        "tipo": "usouFerramenta",
+        "ferramenta": "solda"
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "Cada furo da placa perfurada e isolado. Sem solda, nada conduz.",
+    "Faca primeiro a trilha de GND: vai ser a mais longa e a que todo mundo usa.",
+    "Com o ferro ligado, clique em dois contatos encostados para uni-los. Para vencer distancia, pegue o Fio para solda.",
+    "O joystick precisa de VCC e GND para acordar: e a segunda trilha."
+  ],
+  "erroComum": "Montar na placa perfurada como se fosse protoboard e esperar que as fileiras se liguem sozinhas.",
+  "sucesso": "Duas trilhas, um controle. Na placa perfurada quem faz o circuito e voce, nao a placa.",
+  "componentesLiberados": [
+    "fenolite",
+    "botao",
+    "joystick",
+    "resistor",
+    "suporteaa",
+    "led"
+  ]
+}

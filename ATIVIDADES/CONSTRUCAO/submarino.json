@@ -1,0 +1,78 @@
+{
+  "fase": 7,
+  "id": "submarino",
+  "titulo": "Prototipo de submarino",
+  "tipo": "construcao",
+  "placa": "bura32",
+  "dificuldade": "hacker",
+  "minutos": 30,
+  "pontos": 280,
+  "creditos": 380,
+  "briefing": "Sonda submersivel para inspecionar o tanque de agua. Duas bombas controladas por ponte H fazem o lastro encher e esvaziar, e um servo de giro continuo move o leme. As bombas puxam 700 mA cada uma. Some com o servo e faca a conta antes de escolher a fonte: e essa conta que separa projeto que funciona de projeto que reinicia sozinho.",
+  "objetivos": [
+    {
+      "id": "ponte",
+      "texto": "Ponte H alimentada e com GND comum",
+      "regra": {
+        "tipo": "mesmoNo",
+        "a": {
+          "componente": "ponteh",
+          "pino": "gnd"
+        },
+        "b": {
+          "componente": "bura32",
+          "papel": "gnd"
+        }
+      }
+    },
+    {
+      "id": "bombas",
+      "texto": "Duas bombas ligadas",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "bomba",
+        "n": 2
+      }
+    },
+    {
+      "id": "leme",
+      "texto": "Servo de giro continuo energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "servo-torque360"
+      }
+    },
+    {
+      "id": "pwm",
+      "texto": "ENA da ponte H em PWM ou com jumper",
+      "regra": {
+        "tipo": "existe",
+        "componente": "ponteh"
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "Uma bomba em OUT1/OUT2 e a outra em OUT3/OUT4. Inverter os fios inverte o fluxo.",
+    "A ponte H precisa de alimentacao propria no +12V e GND comum com a placa.",
+    "Duas bombas mais um servo passam de 2 amperes. Fonte de tomada de 3 A da conta.",
+    "Bomba nao tem polaridade: trocar os fios so troca o sentido, e nessa missao isso e util."
+  ],
+  "erroComum": "Usar a fonte de protoboard de 800 mA. Uma bomba ja estoura o limite.",
+  "sucesso": "Lastro, leme e uma fonte dimensionada. Fazer a conta da corrente antes de montar e o que separa engenheiro de sortudo.",
+  "componentesLiberados": [
+    "bura32",
+    "ponteh",
+    "bomba",
+    "servo-torque360",
+    "fonte-tomada",
+    "protoboard",
+    "resistor"
+  ]
+}

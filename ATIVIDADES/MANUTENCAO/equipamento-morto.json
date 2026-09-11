@@ -1,0 +1,73 @@
+{
+  "fase": 7,
+  "id": "equipamento-morto",
+  "titulo": "O equipamento que nao liga",
+  "tipo": "manutencao",
+  "dificuldade": "facil",
+  "minutos": 16,
+  "pontos": 160,
+  "briefing": "Chegou uma peca do deck que simplesmente nao liga. Nao ha fumaca, nao ha cheiro, nao ha nada. O metodo e sempre o mesmo e voce vai treinar ele: siga a tensao do comeco ao fim. Meca na fonte, depois na entrada do regulador, depois na saida dele, depois no modulo. Onde a tensao sumir, o defeito esta ali ou logo antes.",
+  "objetivos": [
+    {
+      "id": "mediu",
+      "texto": "Medir tensao ao longo do caminho",
+      "regra": {
+        "tipo": "usouFerramenta",
+        "modo": "tensao"
+      }
+    },
+    {
+      "id": "regulador",
+      "texto": "Regulador recebendo tensao na entrada",
+      "regra": {
+        "tipo": "tensaoEm",
+        "componente": "ams1117",
+        "pino": "inp",
+        "min": 6.5,
+        "max": 15
+      }
+    },
+    {
+      "id": "saida",
+      "texto": "Saida do regulador em 5 volts",
+      "regra": {
+        "tipo": "tensaoEm",
+        "componente": "ams1117",
+        "pino": "outp",
+        "min": 4.7,
+        "max": 5.3
+      }
+    },
+    {
+      "id": "vivo",
+      "texto": "Modulo voltando a funcionar",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "ultrassonico"
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "Comece medindo a bateria. Se ela estiver boa, avance para a entrada do regulador.",
+    "O AMS1117 precisa de pelo menos 6,5 V na entrada para entregar 5 na saida.",
+    "Tensao na entrada e nada na saida significa regulador aberto ou GND solto.",
+    "Meca sempre com a ponta preta no GND do circuito, nao em qualquer metal."
+  ],
+  "erroComum": "Medir so na ponta final e concluir que tudo esta quebrado. A tensao some num ponto especifico.",
+  "sucesso": "Voce seguiu a tensao ate ela sumir. Esse metodo acha defeito em qualquer aparelho, de qualquer tamanho.",
+  "componentesLiberados": [
+    "multimetro",
+    "bateria9v",
+    "ams1117",
+    "ultrassonico",
+    "protoboard",
+    "resistor"
+  ]
+}

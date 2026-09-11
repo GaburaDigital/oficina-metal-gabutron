@@ -1,0 +1,78 @@
+{
+  "fase": 7,
+  "id": "radio-amador",
+  "titulo": "Radio amador da nave",
+  "tipo": "construcao",
+  "placa": "gaburino",
+  "dificuldade": "hacker",
+  "minutos": 28,
+  "pontos": 260,
+  "creditos": 240,
+  "briefing": "Estacao de radio do deck. Display de 16 pinos mostrando a frequencia, dois potenciometros para sintonia e volume, e o modulo de radio para o enlace. O LCD de 16 pinos e o velho de guerra: ele precisa de um potenciometro so para o CONTRASTE, no pino VO. Tela apagada nesse display quase sempre e contraste, nao codigo. E o modulo de radio e de 3,3 V: 5 volts nele e adeus.",
+  "objetivos": [
+    {
+      "id": "lcd",
+      "texto": "Display de 16 pinos energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "lcd16"
+      }
+    },
+    {
+      "id": "contraste",
+      "texto": "Cursor do potenciometro no pino VO do display",
+      "regra": {
+        "tipo": "mesmoNo",
+        "a": {
+          "componente": "potenciometro",
+          "pino": "w"
+        },
+        "b": {
+          "componente": "lcd16",
+          "pino": "vo"
+        }
+      }
+    },
+    {
+      "id": "radio",
+      "texto": "Modulo de radio energizado",
+      "regra": {
+        "tipo": "ligado",
+        "componente": "nrf24l01"
+      }
+    },
+    {
+      "id": "spi",
+      "texto": "SCK do radio numa linha SPI",
+      "regra": {
+        "tipo": "pinoEm",
+        "componente": "nrf24l01",
+        "pino": "sck",
+        "papelAlvo": "spi"
+      }
+    },
+    {
+      "id": "sem-dano",
+      "texto": "Nenhum limite estourado",
+      "regra": {
+        "tipo": "semCriticos"
+      }
+    }
+  ],
+  "dicas": [
+    "Comece pelo contraste: VO no cursor do potenciometro, extremos no 5 V e no GND.",
+    "O display usa quatro vias de dado (D4 a D7) mais RS e E. RW vai no GND.",
+    "O radio e de 3,3 volts, inclusive nos pinos. Nao ligue no 5 V da placa.",
+    "O segundo potenciometro pode ir numa entrada analogica para virar o volume."
+  ],
+  "erroComum": "Esquecer o potenciometro de contraste. A tela fica acesa e vazia, e todo mundo culpa o codigo.",
+  "sucesso": "Contraste, dados e radio. Esse display de 16 pinos ensina paciencia, e agora voce sabe onde ele mente.",
+  "componentesLiberados": [
+    "gaburino",
+    "lcd16",
+    "potenciometro",
+    "nrf24l01",
+    "protoboard",
+    "resistor"
+  ]
+}

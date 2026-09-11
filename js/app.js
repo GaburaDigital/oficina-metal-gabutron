@@ -21,9 +21,11 @@ import * as firmware from "./firmware.js";
 import * as museu from "./museu.js";
 import { NOME_CONTATO } from "./biblioteca.js";
 import * as danos from "./danos.js";
+import { baixarSelo } from "./selo.js";
 import * as multimetro from "./multimetro.js";
 import * as solda from "./solda.js";
 import * as fonteBancada from "./fonte-bancada.js";
+import { descreverFalta } from "./scripts.js";
 import { carregarCatalogo, textoDe } from "./conteudo.js";
 import { registrarPwa, prepararInstalacao } from "./pwa.js";
 
@@ -31,6 +33,7 @@ const q = (s) => document.querySelector(s);
 let compSelecionado = null;
 let restam = 0, cronometro = null;
 let modo = "livre";
+let ultimoAvisoScript = "nada";
 let treinoEmCurso = false;
 
 /* ---------- partida ------------------------------------------- */
@@ -110,6 +113,13 @@ function iniciarInterface() {
       else if (b) robo.dizer(`Botao ${b.n} da ${d.nome} pressionado.`, { expressao: "neutro", falar: false });
     },
     aoMudarPonta: pintarChipDaPonta,
+    aoRodarScript: (rodando, parado) => {
+      const chave = rodando ? "rodando:" + rodando.script.id : parado ? "parado:" + parado.script.id + parado.falta.length : "nada";
+      if (chave === ultimoAvisoScript) return;
+      ultimoAvisoScript = chave;
+      if (rodando) robo.dizer(`${rodando.script.nome} rodando. A bancada esta reagindo: e assim que se confere se a montagem ficou certa.`, { expressao: "satisfeito" });
+      else if (parado) robo.dizer(`${parado.script.nome} carregado, mas parado: a fiacao ainda nao fecha. Abra o Firmware e confira a lista de ligacoes deste script.`, { expressao: "pensando" });
+    },
     svgFerramenta: () => (multimetro.estado.ativo ? multimetro.svgPontas(bancada) : "") + (solda.estado.ativo ? solda.svgFerro(bancada) : ""),
     aoArrastar: (x, y) => q("#lixeira").classList.toggle("mirada", sobreLixeira(x, y)),
     aoSoltarPeca: (id, x, y) => {
@@ -575,7 +585,23 @@ function ligarMissao() {
   });
 }
 
+let avisoScript = null;
+
+/* Script escolhido mas montagem incompleta: o GabuTRON diz o que falta
+   uma vez so, para nao virar sermao repetido. */
+function conferirScript(est) {
+  const f = est.scriptFalta;
+  if (!f) { avisoScript = null; return; }
+  const chave = f.script.id + ":" + f.faltando.map((r) => r.tipo + (r.componente || "")).join(",");
+  if (chave === avisoScript) return;
+  avisoScript = chave;
+  const nomeDe = (id) => (PORID[id] || {}).nome;
+  robo.dizer(`O script ${f.script.nome} esta carregado, mas nao roda assim: ${descreverFalta(f.faltando[0], nomeDe)}. Confira as ligacoes na aba do deck.`,
+    { expressao: "pensando" });
+}
+
 function aoMudarBancada(est) {
+  conferirScript(est);
   if (!missoes.sessao.missao || !est.ultimoCircuito) return;
   // Anota as cores que o LED RGB chegou a mostrar: e assim que o
   // checklist confere que o aluno testou os dois botoes.
@@ -621,6 +647,7 @@ function festejar(m, resultado) {
   </div>
   <div class="janela-base" style="justify-content:center">
     <button class="btn" id="fim-editar">Continuar editando</button>
+    <button class="btn" id="fim-selo">Baixar selo</button>
     <button class="btn" id="fim-refazer">Refazer missao</button>
     <button class="btn btn-verde" id="fim-proxima">Proxima missao</button>
   </div>
@@ -633,6 +660,10 @@ function festejar(m, resultado) {
   q("#fim-editar").addEventListener("click", () => {
     fecha();
     robo.dizer("Bancada liberada. Mexa a vontade: a missao ja esta contada.", { expressao: "satisfeito", falar: false });
+  });
+  q("#fim-selo").addEventListener("click", async () => {
+    await baixarSelo(m, resultado, missoes.sessao);
+    robo.dizer("Selo salvo. Cole no caderno, mande para casa ou entregue ao professor.", { falar: false });
   });
   q("#fim-refazer").addEventListener("click", () => { fecha(); escolherMissao(m); });
   q("#fim-proxima").addEventListener("click", async () => {

@@ -76,6 +76,12 @@ export const SOM = {
   bip:      () => tom({ f: 1400, dur: 0.025, vol: 0.02 }),
   bipLongo: () => tom({ f: 900, dur: 0.35, tipo: "sine", vol: 0.05 }),
   boot:     () => { tom({ f: 110, dur: 0.5, tipo: "sine", vol: 0.05 }); tom({ f: 220, dur: 0.5, tipo: "sine", vol: 0.03, atraso: 0.05 }); },
+  rele:     () => { tom({ f: 1100, dur: 0.02, vol: 0.05 }); tom({ f: 320, dur: 0.05, vol: 0.045, atraso: 0.02 }); },
+  passo:    () => tom({ f: 520, dur: 0.03, tipo: "square", vol: 0.03 }),
+  midia:    () => { tom({ f: 700, dur: 0.05, vol: 0.04 }); tom({ f: 1050, dur: 0.07, vol: 0.035, atraso: 0.05 }); },
+  motor:    () => tom({ f: 90, f2: 190, dur: 0.3, tipo: "sawtooth", vol: 0.035 }),
+  botao:    () => { tom({ f: 900, dur: 0.02, vol: 0.03 }); tom({ f: 600, dur: 0.03, vol: 0.025, atraso: 0.02 }); },
+  selo:     () => [660, 880, 1320].forEach((f, i) => tom({ f, dur: 0.12, vol: 0.04, atraso: i * 0.09 })),
   solda:    () => { ruido({ dur: 0.5, vol: 0.06, corte: 3400 }); tom({ f: 60, dur: 0.2, vol: 0.03 }); },
   tecla:    () => tom({ f: 1600 + Math.random() * 500, dur: 0.012, vol: 0.012 }),
 };
